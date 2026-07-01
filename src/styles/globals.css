@@ -1,0 +1,141 @@
+@import "tailwindcss";
+
+@theme {
+  /* Typography Configuration */
+  --font-sans: var(--font-urbanist), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+  /* Brand Colors */
+  --color-primary-900: #0F172A;
+  --color-primary-700: #1E293B;
+  --color-primary-500: #334155;
+  --color-accent-gold: #D4AF37;
+  --color-accent-blue: #2563EB;
+  --color-white: #FFFFFF;
+
+  /* Neutral Palette Mappings */
+  --color-gray-50: #F8FAFC;
+  --color-gray-100: #F1F5F9;
+  --color-gray-200: #E2E8F0;
+  --color-gray-300: #CBD5E1;
+  --color-gray-400: #94A3B8;
+  --color-gray-500: #64748B;
+  --color-gray-700: #334155;
+  --color-gray-900: #0F172A;
+
+  /* Semantic Alerts & Badges States */
+  --color-success: #16A34A;
+  --color-warning: #F59E0B;
+  --color-error: #DC2626;
+  --color-info: #2563EB;
+  --color-pending: #EA580C;
+  --color-processing: #4F46E5;
+
+  /* Dedicated Contextual Background Colors */
+  --color-bg-primary: #FFFFFF;
+  --color-bg-secondary: #F8FAFC;
+  --color-bg-dashboard: #F1F5F9;
+  --color-bg-card: #FFFFFF;
+  --color-bg-modal: #FFFFFF;
+  --color-bg-sidebar: #0F172A;
+  --color-bg-header: #0F172A;
+  --color-bg-footer: #1E293B;
+
+  /* Spacing Constraints */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-xxl: 3rem;
+  --spacing-xxxl: 4rem;
+  --spacing-hero: 6rem;
+
+  /* Custom Border Radius Constraints */
+  --radius-button: 10px;
+  --radius-input: 10px;
+  --radius-card: 16px;
+  --radius-modal: 20px;
+  --radius-badge: 9999px;
+  --radius-avatar: 9999px;
+}
+
+/* Global Reset & Base Typography Hierarchy styling */
+html,
+body {
+  height: 100%;
+  background-color: var(--color-bg-primary);
+  color: var(--color-gray-900);
+  font-family: var(--font-sans);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Typography styles matching the UXS specs */
+h1 {
+  font-size: 3rem; /* 48px */
+  font-weight: 700;
+  line-height: 3.5rem; /* 56px */
+  color: var(--color-gray-900);
+}
+
+h2 {
+  font-size: 2.5rem; /* 40px */
+  font-weight: 700;
+  line-height: 3rem; /* 48px */
+}
+
+h3 {
+  font-size: 2rem; /* 32px */
+  font-weight: 700;
+  line-height: 2.5rem; /* 40px */
+}
+
+h4 {
+  font-size: 1.75rem; /* 28px */
+  font-weight: 700;
+  line-height: 2.25rem; /* 36px */
+}
+
+h5 {
+  font-size: 1.5rem; /* 24px */
+  font-weight: 600;
+  line-height: 2rem; /* 32px */
+}
+
+h6 {
+  font-size: 1.25rem; /* 20px */
+  font-weight: 600;
+  line-height: 1.75rem; /* 28px */
+}
+
+p {
+  font-size: 1rem; /* 16px */
+  font-weight: 400;
+  line-height: 1.5rem; /* 24px */
+}
+
+.text-large-body {
+  font-size: 1.125rem; /* 18px */
+  font-weight: 400;
+  line-height: 1.75rem; /* 28px */
+}
+
+.text-small-body {
+  font-size: 0.875rem; /* 14px */
+  font-weight: 400;
+  line-height: 1.25rem; /* 20px */
+}
+
+.text-caption {
+  font-size: 0.75rem; /* 12px */
+  font-weight: 400;
+  line-height: 1.125rem; /* 18px */
+}
+
+.text-overline {
+  font-size: 0.6875rem; /* 11px */
+  font-weight: 600;
+  line-height: 1rem; /* 16px */
+  text-transform: uppercase;
+}

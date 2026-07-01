@@ -1,36 +1,82 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 3M Car Rentals — Next-Generation Web Platform
+
+A production-grade, enterprise-level luxury car rental platform built for Goa's premium mobility market.
+
+## Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Frontend | Next.js 16 (App Router), React 19, TypeScript |
+| Styling | Tailwind CSS v4 |
+| Database | Supabase (PostgreSQL) |
+| Auth | Supabase Auth |
+| Deployment | Vercel |
 
 ## Getting Started
 
-First, run the development server:
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/arsalansarguru-jpg/3M-Car-Rentals.git
+cd 3M-Car-Rentals
+```
+
+### 2. Install dependencies
+
+```bash
+npm install
+```
+
+### 3. Configure environment variables
+
+```bash
+cp .env.example .env.local
+```
+
+Fill in your Supabase credentials in `.env.local`. Get them from your [Supabase Dashboard → Project Settings → API](https://supabase.com/dashboard).
+
+### 4. Run the database schema
+
+Open the [Supabase SQL Editor](https://supabase.com/dashboard) and run the contents of `src/lib/schema.sql`.
+
+### 5. Start the development server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 6. Verify database connection
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Visit [http://localhost:3000/api/health](http://localhost:3000/api/health) — you should see all 5 roles returned.
 
-## Learn More
+## Project Structure
 
-To learn more about Next.js, take a look at the following resources:
+```
+src/
+├── app/                    # Next.js App Router pages and API routes
+│   ├── api/health/         # Database health check endpoint
+│   ├── auth/login/         # Login page
+│   └── auth/register/      # Registration page
+├── components/
+│   ├── ui/                 # Reusable design system components
+│   ├── booking/            # Booking domain components
+│   ├── fleet/              # Fleet domain components
+│   └── dashboard/          # Dashboard domain components
+├── hooks/                  # Custom React hooks
+├── lib/                    # Third-party client configurations
+│   ├── supabase.ts         # Browser-side Supabase client
+│   ├── supabase-admin.ts   # Server-only admin client
+│   └── schema.sql          # PostgreSQL database schema
+├── services/               # Business logic layer
+├── styles/                 # Global CSS and design tokens
+├── types/                  # TypeScript type definitions
+└── utils/                  # Shared utility functions
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Security Notes
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Never commit `.env.local` — it is excluded by `.gitignore`
+- The `SUPABASE_SERVICE_ROLE_KEY` must never be prefixed with `NEXT_PUBLIC_`
+- Row Level Security is enabled on all database tables
