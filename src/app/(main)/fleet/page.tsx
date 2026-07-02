@@ -51,11 +51,11 @@ function CategoryFilter({
   total: number;
 }) {
   return (
-    <div className="flex flex-wrap gap-2 mb-10">
+    <div className="flex flex-nowrap overflow-x-auto pb-3 -mx-4 px-4 sm:mx-0 sm:px-0 sm:flex-wrap gap-2 mb-10 scrollbar-none">
       <a
         href="/fleet"
         id="filter-all"
-        className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
+        className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 shrink-0 whitespace-nowrap ${
           !activeSlug
             ? "bg-[#c9a84c] text-[#0a0f1e] shadow-lg shadow-[#c9a84c]/20"
             : "border border-white/15 text-white/60 hover:text-white hover:border-white/30 bg-white/[0.03]"
@@ -71,7 +71,7 @@ function CategoryFilter({
           key={cat.id}
           href={`/fleet?category=${cat.slug}`}
           id={`filter-${cat.slug}`}
-          className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
+          className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 shrink-0 whitespace-nowrap ${
             activeSlug === cat.slug
               ? "bg-[#c9a84c] text-[#0a0f1e] shadow-lg shadow-[#c9a84c]/20"
               : "border border-white/15 text-white/60 hover:text-white hover:border-white/30 bg-white/[0.03]"
@@ -118,7 +118,7 @@ async function FleetGrid({ categorySlug }: { categorySlug?: string }) {
       />
 
       {/* Results header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6">
         <p className="text-white/40 text-sm">
           Showing{" "}
           <span className="text-white font-semibold">{filtered.length}</span>{" "}
@@ -127,7 +127,7 @@ async function FleetGrid({ categorySlug }: { categorySlug?: string }) {
             <> in <span className="text-[#c9a84c]">{activeCategory.name}</span></>
           )}
         </p>
-        <p className="text-white/25 text-xs">Prices in INR · inclusive of GST</p>
+        <p className="text-white/25 text-xs sm:text-right">Prices in INR · inclusive of GST</p>
       </div>
 
       {filtered.length === 0 ? (
@@ -168,7 +168,7 @@ export default async function FleetPage({ searchParams }: FleetPageProps) {
   return (
     <div className="min-h-screen bg-[#0a0f1e]">
       {/* Page header */}
-      <div className="relative pt-32 pb-16 px-4 sm:px-6 overflow-hidden bg-[#060b18]">
+      <div className="relative pt-32 pb-16 px-4 sm:px-6 lg:px-8 overflow-hidden bg-[#060b18]">
         <div
           className="absolute inset-0 opacity-[0.03]"
           style={{
@@ -181,10 +181,10 @@ export default async function FleetPage({ searchParams }: FleetPageProps) {
 
         <div className="relative z-10 max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-            <div>
+            <div className="flex-1 max-w-xl">
               <p className="text-[#c9a84c] text-xs font-semibold tracking-[0.2em] uppercase mb-3">Available Now</p>
               <h1 className="text-4xl sm:text-5xl font-black text-white mb-3">Our Fleet</h1>
-              <p className="text-white/40 text-base max-w-md leading-relaxed">
+              <p className="text-white/40 text-base leading-relaxed">
                 Inspection-verified, fully insured. Delivered to your door or airport.
               </p>
             </div>

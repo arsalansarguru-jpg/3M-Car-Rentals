@@ -14,25 +14,25 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         disabled={disabled || isLoading}
         className={clsx(
-          "inline-flex items-center justify-center font-semibold transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-blue disabled:opacity-50 disabled:cursor-not-allowed select-none active:scale-[0.98]",
+          "inline-flex items-center justify-center font-bold transition-all focus:outline-none focus:ring-2 focus:ring-[#c9a84c]/30 disabled:opacity-50 disabled:cursor-not-allowed select-none active:scale-[0.98]",
           
           // Custom UXS Radius
           "rounded-button",
           
           // Variant mappings matching UXS specifications
           {
-            "bg-accent-gold text-primary-900 hover:bg-[#c89b2c] focus:ring-accent-gold": variant === "primary",
-            "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50": variant === "secondary",
-            "bg-transparent border border-primary-900 text-primary-900 hover:bg-primary-900/5": variant === "outline",
-            "bg-error text-white hover:bg-[#c51f1f] focus:ring-error": variant === "destructive",
-            "bg-transparent text-gray-600 hover:bg-gray-100": variant === "ghost",
+            "bg-gradient-to-r from-[#c9a84c] to-[#e8c96d] text-[#0a0f1e] hover:shadow-lg hover:shadow-[#c9a84c]/20 hover:-translate-y-0.5": variant === "primary",
+            "bg-white/5 border border-white/10 text-white/80 hover:bg-white/10 hover:text-white": variant === "secondary",
+            "bg-transparent border border-white/15 text-white/70 hover:bg-white/5 hover:text-white hover:border-white/30": variant === "outline",
+            "bg-red-500/10 border border-red-500/30 text-red-400 hover:bg-red-500/20": variant === "destructive",
+            "bg-transparent text-white/50 hover:bg-white/5 hover:text-white": variant === "ghost",
           },
 
           // Size mappings matching UXS specifications
           {
             "h-9 px-4 text-sm": size === "sm",
-            "h-11 px-6 text-base": size === "md",
-            "h-12 px-8 text-lg": size === "lg",
+            "h-11 px-6 text-sm": size === "md",
+            "h-12 px-8 text-base": size === "lg",
           },
           className
         )}

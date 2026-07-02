@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const NAV_LINKS = [
   { label: "Fleet", href: "/fleet" },
@@ -13,6 +14,7 @@ const NAV_LINKS = [
 export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -47,17 +49,26 @@ export default function Header() {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-8" aria-label="Main navigation">
-            {NAV_LINKS.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="text-white/80 hover:text-white text-sm font-medium tracking-wide transition-colors duration-200 relative group"
-                id={`nav-${link.label.toLowerCase().replace(/\s+/g, "-")}`}
-              >
-                {link.label}
-                <span className="absolute -bottom-0.5 left-0 w-0 h-px bg-[#c9a84c] group-hover:w-full transition-all duration-300" />
-              </Link>
-            ))}
+            {NAV_LINKS.map((link) => {
+              const isActive = pathname === link.href || (link.href !== "/" && pathname.startsWith(link.href));
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={`text-sm font-medium tracking-wide transition-colors duration-200 relative group ${
+                    isActive ? "text-[#c9a84c]" : "text-white/80 hover:text-white"
+                  }`}
+                  id={`nav-${link.label.toLowerCase().replace(/\s+/g, "-")}`}
+                >
+                  {link.label}
+                  <span
+                    className={`absolute -bottom-0.5 left-0 h-px bg-[#c9a84c] transition-all duration-300 ${
+                      isActive ? "w-full" : "w-0 group-hover:w-full"
+                    }`}
+                  />
+                </Link>
+              );
+            })}
           </nav>
 
           {/* Desktop CTA */}
@@ -113,16 +124,21 @@ export default function Header() {
         id="mobile-menu"
       >
         <nav className="flex flex-col px-6 py-4 gap-4">
-          {NAV_LINKS.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              onClick={() => setMobileOpen(false)}
-              className="text-white/80 hover:text-white text-base font-medium py-1.5 border-b border-white/5 transition-colors duration-200"
-            >
-              {link.label}
-            </Link>
-          ))}
+          {NAV_LINKS.map((link) => {
+            const isActive = pathname === link.href || (link.href !== "/" && pathname.startsWith(link.href));
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                onClick={() => setMobileOpen(false)}
+                className={`text-base font-medium py-1.5 border-b border-white/5 transition-colors duration-200 ${
+                  isActive ? "text-[#c9a84c]" : "text-white/80 hover:text-white"
+                }`}
+              >
+                {link.label}
+              </Link>
+            );
+          })}
           <div className="flex gap-3 pt-2">
             <Link
               href="/auth/login"

@@ -6,6 +6,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { registerSchema, type RegisterInput } from "@/types/auth";
 import { supabase } from "@/lib/supabase";
+import { Input } from "@/components/ui/Input";
+import { Button } from "@/components/ui/Button";
 
 export default function RegisterPage() {
   const [authError, setAuthError] = React.useState<string | null>(null);
@@ -131,89 +133,83 @@ export default function RegisterPage() {
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
               {/* First + Last Name row */}
               <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label htmlFor="firstName" className="block text-sm font-medium text-white/70 mb-2">First Name</label>
-                  <input
-                    id="firstName"
-                    type="text"
-                    autoComplete="given-name"
-                    placeholder="John"
-                    {...register("firstName")}
-                    className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/25 text-sm focus:outline-none focus:border-[#c9a84c]/60 transition-all duration-200"
-                  />
-                  {errors.firstName && <p className="mt-1.5 text-xs text-red-400">{errors.firstName.message}</p>}
-                </div>
-                <div>
-                  <label htmlFor="lastName" className="block text-sm font-medium text-white/70 mb-2">Last Name</label>
-                  <input
-                    id="lastName"
-                    type="text"
-                    autoComplete="family-name"
-                    placeholder="Doe"
-                    {...register("lastName")}
-                    className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/25 text-sm focus:outline-none focus:border-[#c9a84c]/60 transition-all duration-200"
-                  />
-                  {errors.lastName && <p className="mt-1.5 text-xs text-red-400">{errors.lastName.message}</p>}
-                </div>
+                <Input
+                  id="firstName"
+                  type="text"
+                  label="First Name"
+                  autoComplete="given-name"
+                  placeholder="John"
+                  error={errors.firstName?.message}
+                  {...register("firstName")}
+                />
+                <Input
+                  id="lastName"
+                  type="text"
+                  label="Last Name"
+                  autoComplete="family-name"
+                  placeholder="Doe"
+                  error={errors.lastName?.message}
+                  {...register("lastName")}
+                />
               </div>
 
               {/* Email */}
-              <div>
-                <label htmlFor="reg-email" className="block text-sm font-medium text-white/70 mb-2">Email address</label>
-                <input
-                  id="reg-email"
-                  type="email"
-                  autoComplete="email"
-                  placeholder="you@example.com"
-                  {...register("email")}
-                  className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/25 text-sm focus:outline-none focus:border-[#c9a84c]/60 transition-all duration-200"
-                />
-                {errors.email && <p className="mt-1.5 text-xs text-red-400">{errors.email.message}</p>}
-              </div>
+              <Input
+                id="reg-email"
+                type="email"
+                label="Email address"
+                autoComplete="email"
+                placeholder="you@example.com"
+                error={errors.email?.message}
+                {...register("email")}
+              />
 
               {/* Phone */}
-              <div>
-                <label htmlFor="phone" className="block text-sm font-medium text-white/70 mb-2">Phone Number</label>
-                <input
-                  id="phone"
-                  type="tel"
-                  autoComplete="tel"
-                  placeholder="+91 98765 43210"
-                  {...register("phone")}
-                  className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/25 text-sm focus:outline-none focus:border-[#c9a84c]/60 transition-all duration-200"
-                />
-                {errors.phone && <p className="mt-1.5 text-xs text-red-400">{errors.phone.message}</p>}
-              </div>
+              <Input
+                id="phone"
+                type="tel"
+                label="Phone Number"
+                autoComplete="tel"
+                placeholder="+91 98765 43210"
+                error={errors.phone?.message}
+                {...register("phone")}
+              />
 
               {/* Password */}
-              <div>
-                <label htmlFor="reg-password" className="block text-sm font-medium text-white/70 mb-2">Password</label>
-                <div className="relative">
-                  <input
-                    id="reg-password"
-                    type={showPassword ? "text" : "password"}
-                    autoComplete="new-password"
-                    placeholder="Min. 12 chars, uppercase, number, symbol"
-                    {...register("password")}
-                    className="w-full px-4 py-3 pr-11 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/25 text-sm focus:outline-none focus:border-[#c9a84c]/60 transition-all duration-200"
-                  />
-                  <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60 transition-colors" aria-label="Toggle password visibility">
-                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+              <Input
+                id="reg-password"
+                type={showPassword ? "text" : "password"}
+                label="Password"
+                autoComplete="new-password"
+                placeholder="Min. 12 chars, uppercase, number, symbol"
+                error={errors.password?.message}
+                {...register("password")}
+                rightElement={
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="text-white/30 hover:text-white/60 transition-colors cursor-pointer"
+                    aria-label="Toggle password visibility"
+                  >
+                    {showPassword ? (
+                      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" /></svg>
+                    ) : (
+                      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                    )}
                   </button>
-                </div>
-                {errors.password && <p className="mt-1.5 text-xs text-red-400">{errors.password.message}</p>}
-              </div>
+                }
+              />
 
-              <button
+              <Button
                 id="register-submit-btn"
                 type="submit"
-                disabled={isLoading}
-                className="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#c9a84c] to-[#e8c96d] text-[#0a0f1e] font-bold text-sm hover:shadow-xl hover:shadow-[#c9a84c]/25 hover:-translate-y-0.5 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                variant="primary"
+                size="md"
+                isLoading={isLoading}
+                className="w-full"
               >
-                {isLoading ? (
-                  <><svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>Creating account…</>
-                ) : "Create Free Account"}
-              </button>
+                Create Free Account
+              </Button>
 
               <p className="text-center text-xs text-white/30 leading-relaxed">
                 By registering, you agree to our{" "}

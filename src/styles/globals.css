@@ -1,8 +1,31 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: 'Turbo Strike';
+  src: local('Turbo Strike'), local('Turbo Striker'), local('Turbo Strike Race'),
+       url('/fonts/TurboStrike.woff2') format('woff2'),
+       url('/fonts/TurboStrike.woff') format('woff'),
+       url('/fonts/TurboStrike.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Nitro Nova';
+  src: local('Nitro Nova'), local('NitroNova'),
+       url('/fonts/NitroNova.woff2') format('woff2'),
+       url('/fonts/NitroNova.woff') format('woff'),
+       url('/fonts/NitroNova.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 @theme {
   /* Typography Configuration */
-  --font-sans: var(--font-urbanist), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-sans: "Turbo Strike", "Nitro Nova", var(--font-syncopate), var(--font-urbanist), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-display: var(--font-sans);
 
   /* Brand Colors */
   --color-primary-900: #0F172A;
@@ -40,16 +63,6 @@
   --color-bg-header: #0F172A;
   --color-bg-footer: #1E293B;
 
-  /* Spacing Constraints */
-  --spacing-xs: 0.25rem;
-  --spacing-sm: 0.5rem;
-  --spacing-md: 1rem;
-  --spacing-lg: 1.5rem;
-  --spacing-xl: 2rem;
-  --spacing-xxl: 3rem;
-  --spacing-xxxl: 4rem;
-  --spacing-hero: 6rem;
-
   /* Custom Border Radius Constraints */
   --radius-button: 10px;
   --radius-input: 10px;
@@ -69,6 +82,10 @@ body {
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
 }
 
 /* Typography — font-size and weight only, NO color (controlled by Tailwind) */
@@ -137,4 +154,12 @@ p {
   font-weight: 600;
   line-height: 1rem; /* 16px */
   text-transform: uppercase;
+}
+
+@utility scrollbar-none {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
