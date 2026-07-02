@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabase";
 
 const NAV_LINKS = [
   { label: "Fleet", href: "/fleet" },
@@ -14,13 +15,55 @@ const NAV_LINKS = [
 export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [isSignedIn, setIsSignedIn] = useState(false);
+  const [dashboardHref, setDashboardHref] = useState("/dashboard/client");
   const pathname = usePathname();
+  const router = useRouter();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  // ── Auth state ────────────────────────────────────────────────────────────
+  useEffect(() => {
+    async function syncSession() {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        setIsSignedIn(true);
+        const { data: userRow } = await supabase
+          .from("users")
+          .select("role:roles(name)")
+          .eq("auth_user_id", session.user.id)
+          .maybeSingle();
+        const roleName = (userRow?.role as any)?.name ?? "customer";
+        const isAdmin = ["admin", "super_admin", "manager", "staff"].includes(roleName);
+        setDashboardHref(isAdmin ? "/dashboard/admin" : "/dashboard/client");
+      } else {
+        setIsSignedIn(false);
+      }
+    }
+
+    syncSession();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.user) {
+        setIsSignedIn(true);
+      } else {
+        setIsSignedIn(false);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    setIsSignedIn(false);
+    router.push("/");
+    router.refresh();
+  };
 
   return (
     <header
@@ -71,22 +114,43 @@ export default function Header() {
             })}
           </nav>
 
-          {/* Desktop CTA */}
+          {/* Desktop CTA — auth-aware */}
           <div className="hidden md:flex items-center gap-3">
-            <Link
-              href="/auth/login"
-              className="text-white/80 hover:text-white text-sm font-medium transition-colors duration-200"
-              id="header-login-link"
-            >
-              Sign In
-            </Link>
-            <Link
-              href="/fleet"
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#c9a84c] to-[#e8c96d] text-[#0a0f1e] text-sm font-bold rounded-lg hover:shadow-lg hover:shadow-[#c9a84c]/30 hover:-translate-y-0.5 transition-all duration-200"
-              id="header-book-now-btn"
-            >
-              Book Now
-            </Link>
+            {isSignedIn ? (
+              <>
+                <Link
+                  href={dashboardHref}
+                  className="text-white/80 hover:text-white text-sm font-medium transition-colors duration-200"
+                  id="header-dashboard-link"
+                >
+                  My Dashboard
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  className="inline-flex items-center gap-2 px-5 py-2.5 border border-white/20 text-white/80 text-sm font-semibold rounded-lg hover:bg-white/5 hover:border-white/40 transition-all duration-200 cursor-pointer"
+                  id="header-logout-btn"
+                >
+                  Log Out
+                </button>
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/auth/login"
+                  className="text-white/80 hover:text-white text-sm font-medium transition-colors duration-200"
+                  id="header-login-link"
+                >
+                  Sign In
+                </Link>
+                <Link
+                  href="/fleet"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#c9a84c] to-[#e8c96d] text-[#0a0f1e] text-sm font-bold rounded-lg hover:shadow-lg hover:shadow-[#c9a84c]/30 hover:-translate-y-0.5 transition-all duration-200"
+                  id="header-book-now-btn"
+                >
+                  Book Now
+                </Link>
+              </>
+            )}
           </div>
 
           {/* Mobile hamburger */}
@@ -97,21 +161,9 @@ export default function Header() {
             aria-label="Toggle mobile menu"
             id="mobile-menu-toggle"
           >
-            <span
-              className={`block w-6 h-0.5 bg-white transition-all duration-300 ${
-                mobileOpen ? "rotate-45 translate-y-2" : ""
-              }`}
-            />
-            <span
-              className={`block w-6 h-0.5 bg-white transition-all duration-300 ${
-                mobileOpen ? "opacity-0" : ""
-              }`}
-            />
-            <span
-              className={`block w-6 h-0.5 bg-white transition-all duration-300 ${
-                mobileOpen ? "-rotate-45 -translate-y-2" : ""
-              }`}
-            />
+            <span className={`block w-6 h-0.5 bg-white transition-all duration-300 ${mobileOpen ? "rotate-45 translate-y-2" : ""}`} />
+            <span className={`block w-6 h-0.5 bg-white transition-all duration-300 ${mobileOpen ? "opacity-0" : ""}`} />
+            <span className={`block w-6 h-0.5 bg-white transition-all duration-300 ${mobileOpen ? "-rotate-45 -translate-y-2" : ""}`} />
           </button>
         </div>
       </div>
@@ -140,20 +192,42 @@ export default function Header() {
             );
           })}
           <div className="flex gap-3 pt-2">
-            <Link
-              href="/auth/login"
-              onClick={() => setMobileOpen(false)}
-              className="flex-1 text-center py-2.5 border border-white/20 text-white text-sm font-medium rounded-lg hover:border-white/40 transition-colors duration-200"
-            >
-              Sign In
-            </Link>
-            <Link
-              href="/fleet"
-              onClick={() => setMobileOpen(false)}
-              className="flex-1 text-center py-2.5 bg-gradient-to-r from-[#c9a84c] to-[#e8c96d] text-[#0a0f1e] text-sm font-bold rounded-lg"
-            >
-              Book Now
-            </Link>
+            {isSignedIn ? (
+              <>
+                <Link
+                  href={dashboardHref}
+                  onClick={() => setMobileOpen(false)}
+                  className="flex-1 text-center py-2.5 bg-gradient-to-r from-[#c9a84c] to-[#e8c96d] text-[#0a0f1e] text-sm font-bold rounded-lg"
+                  id="mobile-dashboard-link"
+                >
+                  My Dashboard
+                </Link>
+                <button
+                  onClick={() => { setMobileOpen(false); handleLogout(); }}
+                  className="flex-1 text-center py-2.5 border border-white/20 text-white text-sm font-medium rounded-lg hover:border-white/40 transition-colors duration-200 cursor-pointer"
+                  id="mobile-logout-btn"
+                >
+                  Log Out
+                </button>
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/auth/login"
+                  onClick={() => setMobileOpen(false)}
+                  className="flex-1 text-center py-2.5 border border-white/20 text-white text-sm font-medium rounded-lg hover:border-white/40 transition-colors duration-200"
+                >
+                  Sign In
+                </Link>
+                <Link
+                  href="/fleet"
+                  onClick={() => setMobileOpen(false)}
+                  className="flex-1 text-center py-2.5 bg-gradient-to-r from-[#c9a84c] to-[#e8c96d] text-[#0a0f1e] text-sm font-bold rounded-lg"
+                >
+                  Book Now
+                </Link>
+              </>
+            )}
           </div>
         </nav>
       </div>

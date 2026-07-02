@@ -16,10 +16,12 @@ function LoginForm() {
   const [authError, setAuthError] = React.useState<string | null>(null);
   const [isLoading, setIsLoading] = React.useState(false);
   const [showPassword, setShowPassword] = React.useState(false);
-  let redirectDestination = searchParams.get("redirect") || "/";
-  if (redirectDestination === "/dashboard" || redirectDestination.startsWith("/dashboard")) {
-    redirectDestination = "/";
-  }
+  const rawRedirect = searchParams.get("redirect") || "";
+  // Only block the bare /dashboard root (no page there); specific sub-routes are fine
+  const redirectDestination =
+    rawRedirect && rawRedirect !== "/dashboard"
+      ? rawRedirect
+      : "/dashboard/client"; // sensible default after login
 
   const { register, handleSubmit, formState: { errors } } = useForm<LoginInput>({
     resolver: zodResolver(loginSchema),
@@ -30,13 +32,21 @@ function LoginForm() {
     setIsLoading(true);
     setAuthError(null);
     try {
-      const { error: signInError } = await supabase.auth.signInWithPassword({
+      const { data: authData, error: signInError } = await supabase.auth.signInWithPassword({
         email: data.email,
         password: data.password,
       });
       if (signInError) {
-        setAuthError(signInError.message);
+        if (signInError.message === "Failed to fetch" || signInError.message.includes("fetch")) {
+          setAuthError(
+            "Unable to connect to the server. Please ensure the Supabase environment variables are configured in your Vercel project settings."
+          );
+        } else {
+          setAuthError(signInError.message);
+        }
       } else {
+        // Session is established — redirect to the intended destination.
+        // redirectDestination is already set correctly at the top of the component.
         router.push(redirectDestination);
         router.refresh();
       }

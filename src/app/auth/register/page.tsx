@@ -31,12 +31,27 @@ export default function RegisterPage() {
         options: { data: { full_name: `${data.firstName} ${data.lastName}`, phone: data.phone } },
       });
       if (error) {
-        setAuthError(error.message);
+        // "Failed to fetch" means the Supabase project URL is unreachable —
+        // most likely the env vars are missing in the deployment environment.
+        if (error.message === "Failed to fetch" || error.message.includes("fetch")) {
+          setAuthError(
+            "Unable to connect to the server. If you are on a deployed environment, please ensure the Supabase environment variables (NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY) are configured in your Vercel project settings."
+          );
+        } else {
+          setAuthError(error.message);
+        }
       } else {
         setSuccessMsg("Account created! Check your email to verify your address before signing in.");
       }
-    } catch {
-      setAuthError("An unexpected error occurred. Please try again.");
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "";
+      if (message === "Failed to fetch" || message.includes("fetch")) {
+        setAuthError(
+          "Unable to connect to the server. Please ensure Supabase environment variables are set in your Vercel project settings."
+        );
+      } else {
+        setAuthError("An unexpected error occurred. Please try again.");
+      }
     } finally {
       setIsLoading(false);
     }
