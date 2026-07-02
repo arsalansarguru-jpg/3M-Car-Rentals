@@ -24,6 +24,7 @@ export default function DashboardLayout({
   const [profile, setProfile] = React.useState<Profile | null>(null);
   const [sessionLoading, setSessionLoading] = React.useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
+  const [isAuthorized, setIsAuthorized] = React.useState(true);
 
   React.useEffect(() => {
     let active = true;
@@ -39,7 +40,8 @@ export default function DashboardLayout({
 
         if (!session) {
           if (active) {
-            router.push(`/auth/login?redirect=${encodeURIComponent(pathname)}`);
+            setIsAuthorized(false);
+            setSessionLoading(false);
           }
           return;
         }
@@ -62,11 +64,15 @@ export default function DashboardLayout({
               role: { name: "customer" },
             });
           }
+          setIsAuthorized(true);
           setSessionLoading(false);
         }
       } catch (err) {
-        console.error("Profile fetch failed", err);
-        if (active) setSessionLoading(false);
+        console.error("Dashboard auth check failed:", err);
+        if (active) {
+          setIsAuthorized(false);
+          setSessionLoading(false);
+        }
       }
     }
 
@@ -78,7 +84,8 @@ export default function DashboardLayout({
         if (!active) return;
         
         if (event === "SIGNED_OUT" || (event === "TOKEN_REFRESHED" && !session)) {
-          router.push("/auth/login");
+          setIsAuthorized(false);
+          setSessionLoading(false);
         } else if (event === "SIGNED_IN" && session) {
           // If a sign-in happens while this layout is mounted, re-initialize
           initializeSession();
@@ -104,6 +111,38 @@ export default function DashboardLayout({
         <div className="flex flex-col items-center gap-4">
           <div className="w-10 h-10 border-4 border-[#c9a84c]/20 border-t-[#c9a84c] rounded-full animate-spin" />
           <p className="text-white/40 text-xs font-semibold tracking-widest uppercase">Checking Credentials...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthorized) {
+    return (
+      <div className="min-h-screen bg-[#060b18] flex items-center justify-center p-6 text-center">
+        <div className="max-w-md w-full bg-white/[0.02] border border-white/[0.08] rounded-3xl p-8 shadow-2xl">
+          <div className="w-16 h-16 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center mx-auto mb-6">
+            <svg className="w-8 h-8 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
+          </div>
+          <h2 className="text-2xl font-black text-white mb-3">Access Denied</h2>
+          <p className="text-white/50 text-sm mb-8">
+            You must be signed in to access the dashboard. If you just signed in, your session may have expired.
+          </p>
+          <div className="flex flex-col gap-3">
+            <Link
+              href={`/auth/login?redirect=${encodeURIComponent(pathname)}`}
+              className="w-full inline-flex items-center justify-center px-6 py-3 rounded-xl font-bold bg-[#c9a84c] text-[#0a0f1e] hover:bg-[#e8c96d] transition-colors"
+            >
+              Sign In Now
+            </Link>
+            <Link
+              href="/"
+              className="w-full inline-flex items-center justify-center px-6 py-3 rounded-xl font-semibold bg-white/5 border border-white/10 text-white/70 hover:bg-white/10 hover:text-white transition-colors"
+            >
+              Return Home
+            </Link>
+          </div>
         </div>
       </div>
     );
