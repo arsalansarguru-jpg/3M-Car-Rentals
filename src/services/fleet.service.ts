@@ -8,7 +8,10 @@ import type { VehicleCategory, VehicleWithCategory } from "@/types/database";
 function getServerSupabase() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (!url || !key) throw new Error("Missing Supabase environment variables.");
+  if (!url || !key) {
+    console.warn("[getServerSupabase] Warning: Missing Supabase environment variables. Returning null.");
+    return null;
+  }
   return createClient(url, key);
 }
 
@@ -19,6 +22,10 @@ function getServerSupabase() {
 // -----------------------------------------------------------------------------
 export async function getAvailableVehicles(): Promise<VehicleWithCategory[]> {
   const supabase = getServerSupabase();
+  if (!supabase) {
+    console.warn("[getAvailableVehicles] Warning: Supabase client not initialized. Returning empty array.");
+    return [];
+  }
 
   const { data, error } = await supabase
     .from("vehicles")
@@ -44,6 +51,10 @@ export async function getAvailableVehicles(): Promise<VehicleWithCategory[]> {
 // -----------------------------------------------------------------------------
 export async function getVehicleCategories(): Promise<VehicleCategory[]> {
   const supabase = getServerSupabase();
+  if (!supabase) {
+    console.warn("[getVehicleCategories] Warning: Supabase client not initialized. Returning empty array.");
+    return [];
+  }
 
   const { data, error } = await supabase
     .from("vehicle_categories")
@@ -66,6 +77,10 @@ export async function getVehicleById(
   id: string
 ): Promise<VehicleWithCategory | null> {
   const supabase = getServerSupabase();
+  if (!supabase) {
+    console.warn("[getVehicleById] Warning: Supabase client not initialized. Returning null.");
+    return null;
+  }
 
   const { data, error } = await supabase
     .from("vehicles")
