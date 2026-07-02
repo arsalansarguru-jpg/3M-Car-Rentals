@@ -94,10 +94,10 @@ export default function VehicleCard({ vehicle }: VehicleCardProps) {
 
         {/* Feature badges */}
         <div className="flex flex-wrap gap-2">
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-white/60 text-xs font-medium capitalize">
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-white/60 text-xs font-medium">
             ⛽ {vehicle.fuel_type}
           </span>
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-white/60 text-xs font-medium capitalize">
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-white/60 text-xs font-medium">
             ⚙️ {vehicle.transmission}
           </span>
           <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-white/60 text-xs font-medium">

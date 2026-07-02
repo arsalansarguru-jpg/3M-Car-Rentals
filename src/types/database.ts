@@ -4,11 +4,11 @@
 // Used across services, components, and pages for full type safety.
 // =============================================================================
 
-export type FuelType = "petrol" | "diesel" | "electric" | "hybrid" | "cng";
-export type TransmissionType = "manual" | "automatic";
-export type AvailabilityStatus = "available" | "booked" | "maintenance" | "retired";
-export type BookingStatus = "pending" | "confirmed" | "active" | "completed" | "cancelled" | "no_show";
-export type PaymentStatus = "pending" | "partial" | "paid" | "refunded" | "failed";
+export type FuelType = "Petrol" | "Diesel" | "Electric" | "Hybrid";
+export type TransmissionType = "Automatic" | "Manual";
+export type AvailabilityStatus = "available" | "limited" | "reserved" | "maintenance" | "coming_soon";
+export type BookingStatus = "pending" | "confirmed" | "ready_for_pickup" | "active" | "completed" | "cancelled" | "refunded";
+export type PaymentStatus = "unpaid" | "partially_paid" | "paid" | "refunded";
 
 // -----------------------------------------------------------------------------
 // Vehicle Category
