@@ -18,8 +18,6 @@ export interface VehicleCategory {
   name: string;
   slug: string;
   description: string | null;
-  base_hourly_rate: number;
-  base_daily_rate: number;
   created_at: string;
 }
 

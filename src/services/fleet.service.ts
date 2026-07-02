@@ -48,7 +48,7 @@ export async function getVehicleCategories(): Promise<VehicleCategory[]> {
   const { data, error } = await supabase
     .from("vehicle_categories")
     .select("*")
-    .order("base_daily_rate", { ascending: true });
+    .order("name", { ascending: true });
 
   if (error) {
     console.error("[fleet.service] getVehicleCategories error:", error.message);

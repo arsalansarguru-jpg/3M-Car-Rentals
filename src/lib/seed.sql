@@ -7,13 +7,13 @@
 -- -----------------------------------------------------------------------------
 -- 1. Vehicle Categories
 -- -----------------------------------------------------------------------------
-INSERT INTO public.vehicle_categories (id, name, slug, description, base_hourly_rate, base_daily_rate, created_at)
+INSERT INTO public.vehicle_categories (id, name, slug, description, created_at)
 VALUES
-  ('a1b2c3d4-0001-0001-0001-000000000001', 'Hatchback',   'hatchback',   'Compact and fuel-efficient city cars, perfect for exploring Goa''s streets.', 150.00,  1200.00, now()),
-  ('a1b2c3d4-0001-0001-0001-000000000002', 'Sedan',        'sedan',        'Comfortable saloons offering extra legroom for longer journeys.',             200.00,  1800.00, now()),
-  ('a1b2c3d4-0001-0001-0001-000000000003', 'SUV',          'suv',          'Spacious family SUVs ideal for beach trips and countryside drives.',          280.00,  2800.00, now()),
-  ('a1b2c3d4-0001-0001-0001-000000000004', 'Luxury',       'luxury',       'Premium European luxury saloons for a first-class Goa experience.',          600.00,  6000.00, now()),
-  ('a1b2c3d4-0001-0001-0001-000000000005', 'Premium SUV',  'premium-suv',  'Top-of-the-line SUVs combining performance with unmatched prestige.',        1000.00, 10000.00, now())
+  ('a1b2c3d4-0001-0001-0001-000000000001', 'Hatchback',   'hatchback',   'Compact and fuel-efficient city cars, perfect for exploring Goa''s streets.', now()),
+  ('a1b2c3d4-0001-0001-0001-000000000002', 'Sedan',        'sedan',        'Comfortable saloons offering extra legroom for longer journeys.',             now()),
+  ('a1b2c3d4-0001-0001-0001-000000000003', 'SUV',          'suv',          'Spacious family SUVs ideal for beach trips and countryside drives.',          now()),
+  ('a1b2c3d4-0001-0001-0001-000000000004', 'Luxury',       'luxury',       'Premium European luxury saloons for a first-class Goa experience.',           now()),
+  ('a1b2c3d4-0001-0001-0001-000000000005', 'Premium SUV',  'premium-suv',  'Top-of-the-line SUVs combining performance with unmatched prestige.',         now())
 ON CONFLICT (id) DO NOTHING;
 
 -- -----------------------------------------------------------------------------
