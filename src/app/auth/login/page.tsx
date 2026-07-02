@@ -1,146 +1,192 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter, useSearchParams } from "next/navigation";
 import { loginSchema, type LoginInput } from "@/types/auth";
 import { supabase } from "@/lib/supabase";
-import { Input } from "@/components/ui/Input";
-import { Button } from "@/components/ui/Button";
 
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [authError, setAuthError] = React.useState<string | null>(null);
-  const [isLoading, setIsLoading] = React.useState<boolean>(false);
-
-  // Retrieve origin redirect path from query strings (defaults to client dashboard)
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [showPassword, setShowPassword] = React.useState(false);
   const redirectDestination = searchParams.get("redirect") || "/dashboard";
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<LoginInput>({
+  const { register, handleSubmit, formState: { errors } } = useForm<LoginInput>({
     resolver: zodResolver(loginSchema),
-    defaultValues: {
-      email: "",
-      password: "",
-    },
+    defaultValues: { email: "", password: "" },
   });
 
   const onSubmit = async (data: LoginInput) => {
     setIsLoading(true);
     setAuthError(null);
-
     try {
-      // Connect to the Supabase Auth live server
       const { error: signInError } = await supabase.auth.signInWithPassword({
         email: data.email,
         password: data.password,
       });
-
       if (signInError) {
         setAuthError(signInError.message);
       } else {
-        // Successful login, navigate to destination
         router.push(redirectDestination);
         router.refresh();
       }
-    } catch (err) {
-      setAuthError("An unexpected error occurred. Please try again later.");
+    } catch {
+      setAuthError("An unexpected error occurred. Please try again.");
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-bg-secondary px-4 py-12 sm:px-6 lg:px-8">
-      <div className="w-full max-w-md space-y-8 bg-white p-8 rounded-card border border-gray-200 shadow-sm">
-        {/* Luxury Brand Header */}
-        <div className="text-center">
-          <span className="text-overline text-accent-gold tracking-widest bg-primary-700/10 px-3 py-1 rounded-badge">
-            Secure Entry
-          </span>
-          <h2 className="mt-4 text-3xl font-bold tracking-tight text-primary-900">
-            Welcome Back
-          </h2>
-          <p className="mt-2 text-sm text-gray-500 text-small-body">
-            Log in to manage your premium bookings and luxury fleet access.
-          </p>
+    <div className="min-h-screen flex bg-[#060b18]">
+      {/* ── Left brand panel ── */}
+      <div
+        className="hidden lg:flex lg:w-1/2 xl:w-3/5 relative flex-col justify-between p-12 overflow-hidden"
+        style={{ backgroundImage: "url('/auth-bg.jpg')", backgroundSize: "cover", backgroundPosition: "center" }}
+      >
+        {/* Dark overlay */}
+        <div className="absolute inset-0 bg-gradient-to-r from-[#060b18]/90 via-[#060b18]/60 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#060b18]/80 via-transparent to-transparent" />
+
+        {/* Logo */}
+        <div className="relative z-10 flex items-center gap-3">
+          <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-[#c9a84c] to-[#e8c96d] shadow-lg">
+            <span className="text-[#0a0f1e] font-black text-base">3M</span>
+          </div>
+          <div>
+            <p className="text-white font-bold text-xl leading-none">Car Rentals</p>
+            <p className="text-[#c9a84c] text-[11px] tracking-[0.2em] uppercase font-medium">Goa&apos;s Premium Fleet</p>
+          </div>
         </div>
 
-        {/* Global error state message */}
-        {authError && (
-          <div className="p-4 rounded-button bg-red-50 border border-red-200 text-sm text-error font-medium">
-            {authError}
+        {/* Bottom copy */}
+        <div className="relative z-10">
+          <blockquote className="text-white/90 text-2xl font-bold leading-snug mb-4 max-w-md">
+            &ldquo;Every journey deserves a vehicle that matches your ambition.&rdquo;
+          </blockquote>
+          <p className="text-white/50 text-sm">Trusted by 500+ premium travellers in Goa</p>
+          <div className="flex gap-6 mt-6">
+            {["500+ Bookings", "30+ Vehicles", "5★ Rating"].map((s) => (
+              <div key={s} className="flex flex-col">
+                <span className="text-[#c9a84c] font-black text-lg">{s.split(" ")[0]}</span>
+                <span className="text-white/40 text-xs">{s.split(" ").slice(1).join(" ")}</span>
+              </div>
+            ))}
           </div>
-        )}
+        </div>
+      </div>
 
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
-          <div className="space-y-4">
-            <Input
-              id="email"
-              label="Email Address"
-              type="email"
-              placeholder="name@domain.com"
-              autoComplete="email"
-              error={errors.email?.message}
-              {...register("email")}
-            />
+      {/* ── Right form panel ── */}
+      <div className="flex-1 flex flex-col items-center justify-center px-6 py-12 lg:px-16 xl:px-24">
+        {/* Mobile logo */}
+        <div className="flex lg:hidden items-center gap-2 mb-10">
+          <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#c9a84c] to-[#e8c96d] flex items-center justify-center">
+            <span className="text-[#0a0f1e] font-black text-sm">3M</span>
+          </div>
+          <span className="text-white font-bold text-lg">Car Rentals</span>
+        </div>
 
-            <Input
-              id="password"
-              label="Password"
-              type="password"
-              placeholder="••••••••••••"
-              autoComplete="current-password"
-              error={errors.password?.message}
-              {...register("password")}
-            />
+        <div className="w-full max-w-md">
+          <div className="mb-8">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#c9a84c]/10 border border-[#c9a84c]/20 text-[#c9a84c] text-xs font-semibold tracking-widest uppercase mb-4">
+              Secure Portal
+            </span>
+            <h1 className="text-3xl font-black text-white mt-3">Welcome back</h1>
+            <p className="text-white/50 mt-2 text-sm">Sign in to manage your bookings and fleet access.</p>
           </div>
 
-          <div className="flex items-center justify-between text-sm">
-            <div className="flex items-center">
+          {authError && (
+            <div className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-sm flex items-start gap-3">
+              <svg className="w-4 h-4 mt-0.5 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+              </svg>
+              {authError}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+            {/* Email */}
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-white/70 mb-2">Email address</label>
               <input
-                id="remember-me"
-                name="remember-me"
-                type="checkbox"
-                className="h-4 w-4 rounded border-gray-300 text-accent-blue focus:ring-accent-blue"
+                id="email"
+                type="email"
+                autoComplete="email"
+                placeholder="you@example.com"
+                {...register("email")}
+                className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/25 text-sm focus:outline-none focus:border-[#c9a84c]/60 focus:bg-white/8 transition-all duration-200"
               />
-              <label
-                htmlFor="remember-me"
-                className="ml-2 block text-sm text-gray-700 select-none cursor-pointer"
-              >
-                Remember me
-              </label>
+              {errors.email && <p className="mt-1.5 text-xs text-red-400">{errors.email.message}</p>}
             </div>
 
-            <div className="text-sm">
-              <a
-                href="/auth/forgot-password"
-                className="font-semibold text-accent-blue hover:text-[#1d4ed8]"
-              >
-                Forgot your password?
-              </a>
+            {/* Password */}
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <label htmlFor="password" className="block text-sm font-medium text-white/70">Password</label>
+                <Link href="/auth/forgot-password" className="text-xs text-[#c9a84c] hover:text-white transition-colors">Forgot password?</Link>
+              </div>
+              <div className="relative">
+                <input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  autoComplete="current-password"
+                  placeholder="••••••••"
+                  {...register("password")}
+                  className="w-full px-4 py-3 pr-11 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/25 text-sm focus:outline-none focus:border-[#c9a84c]/60 focus:bg-white/8 transition-all duration-200"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60 transition-colors"
+                  aria-label="Toggle password visibility"
+                >
+                  {showPassword ? (
+                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" /></svg>
+                  ) : (
+                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                  )}
+                </button>
+              </div>
+              {errors.password && <p className="mt-1.5 text-xs text-red-400">{errors.password.message}</p>}
             </div>
-          </div>
 
-          <Button type="submit" className="w-full mt-6" isLoading={isLoading}>
-            Sign In to Dashboard
-          </Button>
-
-          <p className="mt-4 text-center text-sm text-gray-500">
-            Don&apos;t have an account?{" "}
-            <a
-              href="/auth/register"
-              className="font-semibold text-accent-blue hover:text-[#1d4ed8]"
+            {/* Submit */}
+            <button
+              id="login-submit-btn"
+              type="submit"
+              disabled={isLoading}
+              className="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#c9a84c] to-[#e8c96d] text-[#0a0f1e] font-bold text-sm hover:shadow-xl hover:shadow-[#c9a84c]/25 hover:-translate-y-0.5 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed disabled:translate-y-0 flex items-center justify-center gap-2"
             >
-              Register here
-            </a>
+              {isLoading ? (
+                <>
+                  <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                  </svg>
+                  Signing in…
+                </>
+              ) : "Sign In to Dashboard"}
+            </button>
+          </form>
+
+          <p className="mt-6 text-center text-sm text-white/40">
+            Don&apos;t have an account?{" "}
+            <Link href="/auth/register" className="text-[#c9a84c] font-semibold hover:text-white transition-colors">
+              Create one free
+            </Link>
           </p>
-        </form>
+
+          <div className="mt-8 pt-8 border-t border-white/10 flex items-center justify-center gap-6 text-white/25 text-xs">
+            <Link href="/privacy" className="hover:text-white/50 transition-colors">Privacy Policy</Link>
+            <Link href="/terms" className="hover:text-white/50 transition-colors">Terms of Service</Link>
+            <Link href="/" className="hover:text-white/50 transition-colors">← Back to Home</Link>
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -149,8 +195,8 @@ function LoginForm() {
 export default function LoginPage() {
   return (
     <React.Suspense fallback={
-      <div className="flex min-h-screen items-center justify-center bg-bg-secondary text-primary-900 font-semibold">
-        Loading...
+      <div className="min-h-screen bg-[#060b18] flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-[#c9a84c]/30 border-t-[#c9a84c] rounded-full animate-spin" />
       </div>
     }>
       <LoginForm />
