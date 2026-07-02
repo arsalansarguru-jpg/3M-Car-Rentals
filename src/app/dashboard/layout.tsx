@@ -28,55 +28,60 @@ export default function DashboardLayout({
   React.useEffect(() => {
     let active = true;
 
-    // onAuthStateChange with INITIAL_SESSION is race-condition-proof.
-    // Supabase guarantees this event fires only after the client has fully
-    // restored the session from localStorage — unlike getSession() which
-    // can return null on first render before the token has loaded.
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        if (!active) return;
+    async function initializeSession() {
+      try {
+        // Explicitly get the session (safely waits for localStorage if needed)
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (error) {
+          console.error("Session error:", error);
+        }
 
-        if (event === "SIGNED_OUT") {
-          router.push("/auth/login");
+        if (!session) {
+          if (active) {
+            router.push(`/auth/login?redirect=${encodeURIComponent(pathname)}`);
+          }
           return;
         }
 
-        // INITIAL_SESSION fires once on mount after localStorage is restored.
-        // SIGNED_IN fires after a fresh login. TOKEN_REFRESHED fires on token renewal.
-        if (
-          event === "INITIAL_SESSION" ||
-          event === "SIGNED_IN" ||
-          event === "TOKEN_REFRESHED"
-        ) {
-          if (!session) {
-            router.push(`/auth/login?redirect=${encodeURIComponent(pathname)}`);
-            return;
-          }
+        // Session exists — fetch user profile
+        const { data: userData } = await supabase
+          .from("users")
+          .select("first_name, last_name, email, role:roles(name)")
+          .eq("auth_user_id", session.user.id)
+          .maybeSingle();
 
-          try {
-            const { data: userData } = await supabase
-              .from("users")
-              .select("first_name, last_name, email, role:roles(name)")
-              .eq("auth_user_id", session.user.id)
-              .maybeSingle();
-
-            if (active) {
-              if (userData) {
-                setProfile(userData as any);
-              } else {
-                setProfile({
-                  first_name: session.user.email?.split("@")[0] || "User",
-                  last_name: "",
-                  email: session.user.email || "",
-                  role: { name: "customer" },
-                });
-              }
-              setSessionLoading(false);
-            }
-          } catch (err) {
-            console.error("Profile fetch failed", err);
-            if (active) setSessionLoading(false);
+        if (active) {
+          if (userData) {
+            setProfile(userData as any);
+          } else {
+            setProfile({
+              first_name: session.user.email?.split("@")[0] || "User",
+              last_name: "",
+              email: session.user.email || "",
+              role: { name: "customer" },
+            });
           }
+          setSessionLoading(false);
+        }
+      } catch (err) {
+        console.error("Profile fetch failed", err);
+        if (active) setSessionLoading(false);
+      }
+    }
+
+    initializeSession();
+
+    // Listen for subsequent auth state changes (e.g., logout in another tab)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        if (!active) return;
+        
+        if (event === "SIGNED_OUT" || (event === "TOKEN_REFRESHED" && !session)) {
+          router.push("/auth/login");
+        } else if (event === "SIGNED_IN" && session) {
+          // If a sign-in happens while this layout is mounted, re-initialize
+          initializeSession();
         }
       }
     );
@@ -85,9 +90,8 @@ export default function DashboardLayout({
       active = false;
       subscription.unsubscribe();
     };
-  // pathname is captured in closure intentionally — only run once on mount
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, []); // Run once on mount
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
