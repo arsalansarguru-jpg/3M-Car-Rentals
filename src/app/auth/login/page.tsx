@@ -48,7 +48,6 @@ function LoginForm() {
         // Session is established — redirect to the intended destination.
         // redirectDestination is already set correctly at the top of the component.
         router.push(redirectDestination);
-        router.refresh();
       }
     } catch {
       setAuthError("An unexpected error occurred. Please try again.");

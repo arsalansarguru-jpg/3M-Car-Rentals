@@ -28,49 +28,55 @@ export default function DashboardLayout({
   React.useEffect(() => {
     let active = true;
 
-    async function checkAuth() {
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (!session) {
-          router.push(`/auth/login?redirect=${encodeURIComponent(pathname)}`);
+    // onAuthStateChange with INITIAL_SESSION is race-condition-proof.
+    // Supabase guarantees this event fires only after the client has fully
+    // restored the session from localStorage — unlike getSession() which
+    // can return null on first render before the token has loaded.
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        if (!active) return;
+
+        if (event === "SIGNED_OUT") {
+          router.push("/auth/login");
           return;
         }
 
-        const { data: userData } = await supabase
-          .from("users")
-          .select("first_name, last_name, email, role:roles(name)")
-          .eq("auth_user_id", session.user.id)
-          .maybeSingle();
-
-        if (active) {
-          if (userData) {
-            setProfile(userData as any);
-          } else {
-            // Fallback profile if user record doesn't exist yet
-            setProfile({
-              first_name: session.user.email?.split("@")[0] || "User",
-              last_name: "",
-              email: session.user.email || "",
-              role: { name: "customer" },
-            });
+        // INITIAL_SESSION fires once on mount after localStorage is restored.
+        // SIGNED_IN fires after a fresh login. TOKEN_REFRESHED fires on token renewal.
+        if (
+          event === "INITIAL_SESSION" ||
+          event === "SIGNED_IN" ||
+          event === "TOKEN_REFRESHED"
+        ) {
+          if (!session) {
+            router.push(`/auth/login?redirect=${encodeURIComponent(pathname)}`);
+            return;
           }
-          setSessionLoading(false);
-        }
-      } catch (err) {
-        console.error("Auth check failed", err);
-        if (active) {
-          setSessionLoading(false);
-        }
-      }
-    }
 
-    checkAuth();
+          try {
+            const { data: userData } = await supabase
+              .from("users")
+              .select("first_name, last_name, email, role:roles(name)")
+              .eq("auth_user_id", session.user.id)
+              .maybeSingle();
 
-    // Subscribe to auth state changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        if (event === "SIGNED_OUT") {
-          router.push("/auth/login");
+            if (active) {
+              if (userData) {
+                setProfile(userData as any);
+              } else {
+                setProfile({
+                  first_name: session.user.email?.split("@")[0] || "User",
+                  last_name: "",
+                  email: session.user.email || "",
+                  role: { name: "customer" },
+                });
+              }
+              setSessionLoading(false);
+            }
+          } catch (err) {
+            console.error("Profile fetch failed", err);
+            if (active) setSessionLoading(false);
+          }
         }
       }
     );
@@ -79,7 +85,9 @@ export default function DashboardLayout({
       active = false;
       subscription.unsubscribe();
     };
-  }, [router, pathname]);
+  // pathname is captured in closure intentionally — only run once on mount
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
