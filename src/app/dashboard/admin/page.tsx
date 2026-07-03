@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
-import AddVehicleModal, { VehicleCategory } from "./AddVehicleModal";
+import VehicleModal, { VehicleCategory } from "./VehicleModal";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface RecentBooking {
@@ -27,6 +27,15 @@ interface FleetVehicle {
   availability_status: string;
   daily_rate: number;
   category: { name: string; slug: string } | null;
+  registration_number: string;
+  variant: string | null;
+  category_id: string;
+  fuel_type: string;
+  transmission: string;
+  seating_capacity: number;
+  luggage_capacity: number | null;
+  hourly_rate: number;
+  security_deposit: number;
 }
 
 interface PendingLicense {
@@ -185,10 +194,18 @@ function RecentBookingsTable({ bookings, onStatusChange, updatingId }: {
 }
 
 // ─── Section: Fleet Status ─────────────────────────────────────────────────────
-function FleetStatusPanel({ vehicles, onStatusChange, updatingId }: {
+function FleetStatusPanel({
+  vehicles,
+  onStatusChange,
+  updatingId,
+  onEditClick,
+  onRemoveClick,
+}: {
   vehicles: FleetVehicle[];
   onStatusChange: (id: string, status: string) => void;
   updatingId: string | null;
+  onEditClick: (v: FleetVehicle) => void;
+  onRemoveClick: (id: string) => void;
 }) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
@@ -225,11 +242,18 @@ function FleetStatusPanel({ vehicles, onStatusChange, updatingId }: {
                 </select>
               </div>
               <div className="grid grid-cols-2 gap-2 mt-2 pt-3 border-t border-white/[0.04]">
-                <button className="py-1.5 rounded-lg text-xs font-semibold bg-white/5 border border-white/10 text-white hover:bg-white/10 hover:text-[#c9a84c] transition-all cursor-pointer">
+                <button
+                  onClick={() => onEditClick(v)}
+                  className="py-1.5 rounded-lg text-xs font-semibold bg-white/5 border border-white/10 text-white hover:bg-white/10 hover:text-[#c9a84c] transition-all cursor-pointer"
+                >
                   Edit Details
                 </button>
-                <button className="py-1.5 rounded-lg text-xs font-semibold bg-red-500/5 border border-red-500/10 text-red-400 hover:bg-red-500/20 transition-all cursor-pointer">
-                  Remove
+                <button
+                  onClick={() => onRemoveClick(v.id)}
+                  disabled={updatingId === v.id}
+                  className="py-1.5 rounded-lg text-xs font-semibold bg-red-500/5 border border-red-500/10 text-red-400 hover:bg-red-500/20 disabled:opacity-50 transition-all cursor-pointer"
+                >
+                  {updatingId === v.id ? "Removing..." : "Remove"}
                 </button>
               </div>
             </div>
@@ -309,6 +333,7 @@ export default function AdminDashboardPage() {
   const [licenses, setLicenses] = React.useState<PendingLicense[]>([]);
   const [categories, setCategories] = React.useState<VehicleCategory[]>([]);
   const [isAddModalOpen, setIsAddModalOpen] = React.useState(false);
+  const [editingVehicle, setEditingVehicle] = React.useState<FleetVehicle | null>(null);
   const [loading, setLoading] = React.useState(true);
   const [updatingBookingId, setUpdatingBookingId] = React.useState<string | null>(null);
   const [updatingFleetId, setUpdatingFleetId] = React.useState<string | null>(null);
@@ -330,7 +355,7 @@ export default function AdminDashboardPage() {
             .limit(20),
           supabase
             .from("vehicles")
-            .select(`id, brand, model, year, availability_status, daily_rate, category:vehicle_categories (name, slug)`)
+            .select(`*, category:vehicle_categories (name, slug)`)
             .order("brand", { ascending: true }),
           supabase
             .from("driver_licenses")
@@ -373,6 +398,25 @@ export default function AdminDashboardPage() {
     await supabase.from("vehicles").update({ availability_status: newStatus }).eq("id", id);
     setFleet((prev) => prev.map((v) => v.id === id ? { ...v, availability_status: newStatus } : v));
     setUpdatingFleetId(null);
+  };
+
+  const handleRemoveVehicle = async (id: string) => {
+    if (!window.confirm("Are you sure you want to remove this vehicle from the fleet?")) {
+      return;
+    }
+    setUpdatingFleetId(id);
+    try {
+      const { error } = await supabase.from("vehicles").delete().eq("id", id);
+      if (error) {
+        alert("Failed to delete vehicle: " + error.message);
+      } else {
+        setFleet((prev) => prev.filter((v) => v.id !== id));
+      }
+    } catch (err: any) {
+      alert("Error deleting vehicle: " + err.message);
+    } finally {
+      setUpdatingFleetId(null);
+    }
   };
 
   const handleLicenseAction = async (id: string, action: "approved" | "rejected") => {
@@ -446,6 +490,8 @@ export default function AdminDashboardPage() {
               vehicles={fleet}
               onStatusChange={handleFleetStatusChange}
               updatingId={updatingFleetId}
+              onEditClick={(v) => setEditingVehicle(v)}
+              onRemoveClick={handleRemoveVehicle}
             />
           </section>
 
@@ -471,12 +517,24 @@ export default function AdminDashboardPage() {
         </>
       )}
 
-      <AddVehicleModal
-        isOpen={isAddModalOpen}
-        onClose={() => setIsAddModalOpen(false)}
+      <VehicleModal
+        isOpen={isAddModalOpen || !!editingVehicle}
+        onClose={() => {
+          setIsAddModalOpen(false);
+          setEditingVehicle(null);
+        }}
         categories={categories}
-        onAdded={(newVehicle) => {
-          setFleet((prev) => [...prev, newVehicle].sort((a, b) => a.brand.localeCompare(b.brand)));
+        vehicle={editingVehicle || undefined}
+        onSaved={(savedVehicle) => {
+          if (editingVehicle) {
+            setFleet((prev) =>
+              prev.map((v) => (v.id === savedVehicle.id ? savedVehicle : v)).sort((a, b) => a.brand.localeCompare(b.brand))
+            );
+          } else {
+            setFleet((prev) =>
+              [...prev, savedVehicle].sort((a, b) => a.brand.localeCompare(b.brand))
+            );
+          }
         }}
       />
     </div>

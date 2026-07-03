@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 
 export interface VehicleCategory {
@@ -9,14 +9,15 @@ export interface VehicleCategory {
   slug: string;
 }
 
-interface AddVehicleModalProps {
+interface VehicleModalProps {
   isOpen: boolean;
   onClose: () => void;
   categories: VehicleCategory[];
-  onAdded: (newVehicle: any) => void;
+  vehicle?: any; // If provided, we are in Edit mode
+  onSaved: (savedVehicle: any) => void;
 }
 
-export default function AddVehicleModal({ isOpen, onClose, categories, onAdded }: AddVehicleModalProps) {
+export default function VehicleModal({ isOpen, onClose, categories, vehicle, onSaved }: VehicleModalProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -36,6 +37,45 @@ export default function AddVehicleModal({ isOpen, onClose, categories, onAdded }
     security_deposit: 0,
   });
 
+  useEffect(() => {
+    if (isOpen) {
+      if (vehicle) {
+        setFormData({
+          registration_number: vehicle.registration_number || "",
+          brand: vehicle.brand || "",
+          model: vehicle.model || "",
+          variant: vehicle.variant || "",
+          year: vehicle.year || new Date().getFullYear(),
+          category_id: vehicle.category_id || "",
+          fuel_type: vehicle.fuel_type || "Petrol",
+          transmission: vehicle.transmission || "Automatic",
+          seating_capacity: vehicle.seating_capacity || 5,
+          luggage_capacity: vehicle.luggage_capacity ?? 2,
+          hourly_rate: Number(vehicle.hourly_rate) || 0,
+          daily_rate: Number(vehicle.daily_rate) || 0,
+          security_deposit: Number(vehicle.security_deposit) || 0,
+        });
+      } else {
+        setFormData({
+          registration_number: "",
+          brand: "",
+          model: "",
+          variant: "",
+          year: new Date().getFullYear(),
+          category_id: "",
+          fuel_type: "Petrol",
+          transmission: "Automatic",
+          seating_capacity: 5,
+          luggage_capacity: 2,
+          hourly_rate: 0,
+          daily_rate: 0,
+          security_deposit: 0,
+        });
+      }
+      setError(null);
+    }
+  }, [vehicle, isOpen]);
+
   if (!isOpen) return null;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -54,48 +94,76 @@ export default function AddVehicleModal({ isOpen, onClose, categories, onAdded }
     setLoading(true);
     setError(null);
 
-    try {
-      const { data, error: insertError } = await supabase
-        .from("vehicles")
-        .insert([
-          {
-            registration_number: formData.registration_number,
-            brand: formData.brand,
-            model: formData.model,
-            variant: formData.variant || null,
-            year: formData.year,
-            category_id: formData.category_id,
-            fuel_type: formData.fuel_type,
-            transmission: formData.transmission,
-            seating_capacity: formData.seating_capacity,
-            luggage_capacity: formData.luggage_capacity || null,
-            hourly_rate: formData.hourly_rate,
-            daily_rate: formData.daily_rate,
-            security_deposit: formData.security_deposit,
-            availability_status: "available",
-          }
-        ])
-        .select(`id, brand, model, year, availability_status, daily_rate, category:vehicle_categories (name, slug)`)
-        .single();
+    const payload = {
+      registration_number: formData.registration_number,
+      brand: formData.brand,
+      model: formData.model,
+      variant: formData.variant || null,
+      year: formData.year,
+      category_id: formData.category_id,
+      fuel_type: formData.fuel_type,
+      transmission: formData.transmission,
+      seating_capacity: formData.seating_capacity,
+      luggage_capacity: formData.luggage_capacity || null,
+      hourly_rate: formData.hourly_rate,
+      daily_rate: formData.daily_rate,
+      security_deposit: formData.security_deposit,
+      availability_status: vehicle?.availability_status || "available",
+    };
 
-      if (insertError) {
-        throw new Error(insertError.message);
+    try {
+      let data, dbError;
+      if (vehicle) {
+        // Edit mode
+        const res = await supabase
+          .from("vehicles")
+          .update(payload)
+          .eq("id", vehicle.id)
+          .select(`
+            id, registration_number, brand, model, variant, year, category_id,
+            fuel_type, transmission, seating_capacity, luggage_capacity,
+            hourly_rate, daily_rate, security_deposit, availability_status,
+            category:vehicle_categories (name, slug)
+          `)
+          .single();
+        data = res.data;
+        dbError = res.error;
+      } else {
+        // Add mode
+        const res = await supabase
+          .from("vehicles")
+          .insert([payload])
+          .select(`
+            id, registration_number, brand, model, variant, year, category_id,
+            fuel_type, transmission, seating_capacity, luggage_capacity,
+            hourly_rate, daily_rate, security_deposit, availability_status,
+            category:vehicle_categories (name, slug)
+          `)
+          .single();
+        data = res.data;
+        dbError = res.error;
       }
 
-      onAdded(data);
+      if (dbError) {
+        throw new Error(dbError.message);
+      }
+
+      onSaved(data);
       onClose();
     } catch (err: any) {
-      setError(err.message || "Failed to add vehicle");
+      setError(err.message || "Failed to save vehicle");
     } finally {
       setLoading(false);
     }
   };
 
+  const isEditMode = !!vehicle;
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
       <div className="bg-[#0a0f1e] border border-white/[0.08] rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
         <div className="flex items-center justify-between p-6 border-b border-white/[0.08]">
-          <h2 className="text-xl font-black text-white">Add New Vehicle</h2>
+          <h2 className="text-xl font-black text-white">{isEditMode ? "Edit Vehicle" : "Add New Vehicle"}</h2>
           <button
             onClick={onClose}
             className="text-white/40 hover:text-white transition-colors cursor-pointer"
@@ -113,7 +181,7 @@ export default function AddVehicleModal({ isOpen, onClose, categories, onAdded }
             </div>
           )}
 
-          <form id="add-vehicle-form" onSubmit={handleSubmit} className="space-y-6">
+          <form id="vehicle-form" onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               {/* Basic Info */}
               <div className="space-y-1">
@@ -209,12 +277,12 @@ export default function AddVehicleModal({ isOpen, onClose, categories, onAdded }
             Cancel
           </button>
           <button
-            form="add-vehicle-form"
+            form="vehicle-form"
             type="submit"
             disabled={loading}
             className="px-6 py-2.5 rounded-xl text-sm font-black bg-[#c9a84c] text-[#0a0f1e] hover:bg-[#e8c96d] disabled:opacity-50 transition-colors cursor-pointer"
           >
-            {loading ? "Adding..." : "Add Vehicle"}
+            {loading ? (isEditMode ? "Saving..." : "Adding...") : (isEditMode ? "Save Changes" : "Add Vehicle")}
           </button>
         </div>
       </div>

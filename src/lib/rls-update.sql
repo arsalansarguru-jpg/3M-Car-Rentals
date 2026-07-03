@@ -1,5 +1,10 @@
 -- Run this script in the Supabase SQL Editor to allow admin users to insert, update, and delete vehicles
 
+-- Drop existing policies if they exist to prevent conflicts
+DROP POLICY IF EXISTS "Allow insert to vehicles for admin staff" ON public.vehicles;
+DROP POLICY IF EXISTS "Allow update to vehicles for admin staff" ON public.vehicles;
+DROP POLICY IF EXISTS "Allow delete to vehicles for admin staff" ON public.vehicles;
+
 -- Allow users with an admin or staff role to insert into the vehicles table
 CREATE POLICY "Allow insert to vehicles for admin staff" ON public.vehicles FOR INSERT WITH CHECK (
     EXISTS (
@@ -26,3 +31,4 @@ CREATE POLICY "Allow delete to vehicles for admin staff" ON public.vehicles FOR 
         WHERE u.auth_user_id = auth.uid() AND r.name IN ('admin', 'super_admin', 'manager', 'staff')
     )
 );
+
