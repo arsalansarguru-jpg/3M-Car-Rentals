@@ -154,20 +154,25 @@ function RecentBookingsTable({ bookings, onStatusChange, updatingId }: {
                   </span>
                 </td>
                 <td className="py-4 px-4">
-                  <select
-                    id={`status-select-${b.id}`}
-                    disabled={isUpdating}
-                    value={b.booking_status}
-                    onChange={(e) => onStatusChange(b.id, e.target.value)}
-                    className="bg-white/[0.05] border border-white/10 text-white/70 text-xs rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-[#c9a84c]/50 disabled:opacity-50 cursor-pointer"
-                  >
-                    {Object.entries(BOOKING_STATUS_CONFIG).map(([val, cfg]) => (
-                      <option key={val} value={val} className="bg-[#0a0f1e]">{cfg.label}</option>
-                    ))}
-                  </select>
-                  {isUpdating && (
-                    <span className="ml-2 text-white/30 text-xs">Saving…</span>
-                  )}
+                  <div className="flex items-center gap-2">
+                    <select
+                      id={`status-select-${b.id}`}
+                      disabled={isUpdating}
+                      value={b.booking_status}
+                      onChange={(e) => onStatusChange(b.id, e.target.value)}
+                      className="bg-white/[0.05] border border-white/10 text-white/70 text-xs rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-[#c9a84c]/50 disabled:opacity-50 cursor-pointer"
+                    >
+                      {Object.entries(BOOKING_STATUS_CONFIG).map(([val, cfg]) => (
+                        <option key={val} value={val} className="bg-[#0a0f1e]">{cfg.label}</option>
+                      ))}
+                    </select>
+                    <button className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-white/5 border border-white/10 text-white hover:bg-white/10 hover:text-[#c9a84c] transition-all cursor-pointer">
+                      View Details
+                    </button>
+                    {isUpdating && (
+                      <span className="ml-1 text-white/30 text-xs">Saving…</span>
+                    )}
+                  </div>
                 </td>
               </tr>
             );
@@ -203,19 +208,29 @@ function FleetStatusPanel({ vehicles, onStatusChange, updatingId }: {
                 {ac.label}
               </span>
             </div>
-            <div className="flex items-center justify-between">
-              <p className="text-white/50 text-xs font-semibold">{formatINR(v.daily_rate)}/day</p>
-              <select
-                id={`fleet-status-${v.id}`}
-                value={v.availability_status}
-                disabled={updatingId === v.id}
-                onChange={(e) => onStatusChange(v.id, e.target.value)}
-                className="bg-white/[0.05] border border-white/10 text-white/60 text-[11px] rounded-lg px-2 py-1 focus:outline-none focus:border-[#c9a84c]/40 disabled:opacity-50 cursor-pointer"
-              >
-                {AVAILABILITY_OPTIONS.map((s) => (
-                  <option key={s} value={s} className="bg-[#0a0f1e]">{AVAILABILITY_CONFIG[s].label}</option>
-                ))}
-              </select>
+            <div className="flex flex-col gap-3">
+              <div className="flex items-center justify-between">
+                <p className="text-white/50 text-xs font-semibold">{formatINR(v.daily_rate)}/day</p>
+                <select
+                  id={`fleet-status-${v.id}`}
+                  value={v.availability_status}
+                  disabled={updatingId === v.id}
+                  onChange={(e) => onStatusChange(v.id, e.target.value)}
+                  className="bg-white/[0.05] border border-white/10 text-white/60 text-[11px] rounded-lg px-2 py-1 focus:outline-none focus:border-[#c9a84c]/40 disabled:opacity-50 cursor-pointer"
+                >
+                  {AVAILABILITY_OPTIONS.map((s) => (
+                    <option key={s} value={s} className="bg-[#0a0f1e]">{AVAILABILITY_CONFIG[s].label}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="grid grid-cols-2 gap-2 mt-2 pt-3 border-t border-white/[0.04]">
+                <button className="py-1.5 rounded-lg text-xs font-semibold bg-white/5 border border-white/10 text-white hover:bg-white/10 hover:text-[#c9a84c] transition-all cursor-pointer">
+                  Edit Details
+                </button>
+                <button className="py-1.5 rounded-lg text-xs font-semibold bg-red-500/5 border border-red-500/10 text-red-400 hover:bg-red-500/20 transition-all cursor-pointer">
+                  Remove
+                </button>
+              </div>
             </div>
           </div>
         );
@@ -405,7 +420,12 @@ export default function AdminDashboardPage() {
           {/* ── Fleet Status ── */}
           <section className="mb-10">
             <div className="flex items-center justify-between mb-5">
-              <h2 className="text-white font-black text-xl">Fleet Status</h2>
+              <div className="flex items-center gap-4">
+                <h2 className="text-white font-black text-xl">Fleet Status</h2>
+                <button className="px-3 py-1.5 rounded-lg text-xs font-bold bg-[#c9a84c]/10 border border-[#c9a84c]/30 text-[#c9a84c] hover:bg-[#c9a84c]/20 transition-all cursor-pointer">
+                  + Add Vehicle
+                </button>
+              </div>
               <div className="flex gap-2 text-xs text-white/30">
                 <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-emerald-400 inline-block" />Available</span>
                 <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-red-400 inline-block" />Maintenance</span>

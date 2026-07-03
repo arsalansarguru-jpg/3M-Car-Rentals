@@ -137,22 +137,36 @@ function BookingCard({
         </div>
 
         {/* ── Footer: Amount + Action ── */}
-        <div className="flex items-center justify-between gap-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mt-4 pt-4 border-t border-white/[0.04]">
           <div>
             <p className="text-white/30 text-[10px] uppercase tracking-wider font-semibold">Total</p>
             <p className="text-white font-black text-xl">{formatINR(booking.total_amount)}</p>
             <p className="text-white/25 text-xs">+ {formatINR(booking.deposit_amount)} refundable deposit</p>
           </div>
-          {canCancel && (
-            <button
-              id={`cancel-booking-${booking.id}`}
-              onClick={() => onCancel(booking.id)}
-              disabled={cancelling === booking.id}
-              className="px-5 py-2.5 rounded-xl text-sm font-semibold text-red-400 border border-red-500/20 bg-red-500/5 hover:bg-red-500/10 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 cursor-pointer"
-            >
-              {cancelling === booking.id ? "Cancelling…" : "Cancel"}
+          <div className="flex flex-wrap gap-2 shrink-0">
+            <button className="px-4 py-2 rounded-xl text-sm font-semibold border border-white/10 bg-white/5 text-white hover:bg-white/10 transition-colors cursor-pointer">
+              View Details
             </button>
-          )}
+            {booking.payment_status === "paid" ? (
+              <button className="px-4 py-2 rounded-xl text-sm font-semibold border border-[#c9a84c]/30 bg-[#c9a84c]/10 text-[#c9a84c] hover:bg-[#c9a84c]/20 transition-colors cursor-pointer">
+                Download Receipt
+              </button>
+            ) : (
+              <button className="px-4 py-2 rounded-xl text-sm font-semibold border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 transition-colors cursor-pointer">
+                Pay Now
+              </button>
+            )}
+            {canCancel && (
+              <button
+                id={`cancel-booking-${booking.id}`}
+                onClick={() => onCancel(booking.id)}
+                disabled={cancelling === booking.id}
+                className="px-4 py-2 rounded-xl text-sm font-semibold text-red-400 border border-red-500/20 bg-red-500/5 hover:bg-red-500/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
+              >
+                {cancelling === booking.id ? "Cancelling…" : "Cancel"}
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </div>
@@ -268,10 +282,16 @@ export default function ClientDashboardPage() {
   return (
     <div>
       {/* ── Page Header ── */}
-      <div className="mb-10">
-        <p className="text-[#c9a84c] text-xs font-semibold uppercase tracking-[0.2em] mb-2">My Dashboard</p>
-        <h1 className="text-white font-black text-3xl sm:text-4xl">My Bookings</h1>
-        <p className="text-white/40 text-sm mt-2">View and manage all your vehicle reservations.</p>
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10">
+        <div>
+          <p className="text-[#c9a84c] text-xs font-semibold uppercase tracking-[0.2em] mb-2">My Dashboard</p>
+          <h1 className="text-white font-black text-3xl sm:text-4xl">My Bookings</h1>
+          <p className="text-white/40 text-sm mt-2">View and manage all your vehicle reservations.</p>
+        </div>
+        <button className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold border border-white/10 bg-white/5 text-white hover:bg-white/10 transition-colors cursor-pointer">
+          <svg className="w-4 h-4 text-[#c9a84c]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+          Update Profile
+        </button>
       </div>
 
       {/* ── Stats strip ── */}
