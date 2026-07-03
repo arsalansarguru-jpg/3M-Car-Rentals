@@ -3,6 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
+import AddVehicleModal, { VehicleCategory } from "./AddVehicleModal";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface RecentBooking {
@@ -306,6 +307,8 @@ export default function AdminDashboardPage() {
   const [bookings, setBookings] = React.useState<RecentBooking[]>([]);
   const [fleet, setFleet] = React.useState<FleetVehicle[]>([]);
   const [licenses, setLicenses] = React.useState<PendingLicense[]>([]);
+  const [categories, setCategories] = React.useState<VehicleCategory[]>([]);
+  const [isAddModalOpen, setIsAddModalOpen] = React.useState(false);
   const [loading, setLoading] = React.useState(true);
   const [updatingBookingId, setUpdatingBookingId] = React.useState<string | null>(null);
   const [updatingFleetId, setUpdatingFleetId] = React.useState<string | null>(null);
@@ -314,7 +317,7 @@ export default function AdminDashboardPage() {
   React.useEffect(() => {
     async function fetchAll() {
       try {
-        const [bookingsRes, fleetRes, licenseRes] = await Promise.all([
+        const [bookingsRes, fleetRes, licenseRes, categoriesRes] = await Promise.all([
           supabase
             .from("bookings")
             .select(`
@@ -334,11 +337,16 @@ export default function AdminDashboardPage() {
             .select(`id, license_number, issuing_country, expiry_date, created_at, user:users (first_name, last_name, email)`)
             .eq("verified_status", "pending")
             .order("created_at", { ascending: true }),
+          supabase
+            .from("vehicle_categories")
+            .select("id, name, slug")
+            .order("name", { ascending: true }),
         ]);
 
         setBookings((bookingsRes.data as unknown as RecentBooking[]) ?? []);
         setFleet((fleetRes.data as unknown as FleetVehicle[]) ?? []);
         setLicenses((licenseRes.data as unknown as PendingLicense[]) ?? []);
+        setCategories((categoriesRes.data as unknown as VehicleCategory[]) ?? []);
       } finally {
         setLoading(false);
       }
@@ -422,7 +430,10 @@ export default function AdminDashboardPage() {
             <div className="flex items-center justify-between mb-5">
               <div className="flex items-center gap-4">
                 <h2 className="text-white font-black text-xl">Fleet Status</h2>
-                <button className="px-3 py-1.5 rounded-lg text-xs font-bold bg-[#c9a84c]/10 border border-[#c9a84c]/30 text-[#c9a84c] hover:bg-[#c9a84c]/20 transition-all cursor-pointer">
+                <button 
+                  onClick={() => setIsAddModalOpen(true)}
+                  className="px-3 py-1.5 rounded-lg text-xs font-bold bg-[#c9a84c]/10 border border-[#c9a84c]/30 text-[#c9a84c] hover:bg-[#c9a84c]/20 transition-all cursor-pointer"
+                >
                   + Add Vehicle
                 </button>
               </div>
@@ -459,6 +470,15 @@ export default function AdminDashboardPage() {
           </section>
         </>
       )}
+
+      <AddVehicleModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        categories={categories}
+        onAdded={(newVehicle) => {
+          setFleet((prev) => [...prev, newVehicle].sort((a, b) => a.brand.localeCompare(b.brand)));
+        }}
+      />
     </div>
   );
 }
