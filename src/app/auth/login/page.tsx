@@ -21,7 +21,7 @@ function LoginForm() {
   const redirectDestination =
     rawRedirect && rawRedirect !== "/dashboard"
       ? rawRedirect
-      : "/dashboard/client"; // sensible default after login
+      : "/dashboard"; // sensible default after login
 
   const { register, handleSubmit, formState: { errors } } = useForm<LoginInput>({
     resolver: zodResolver(loginSchema),

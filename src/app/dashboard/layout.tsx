@@ -100,57 +100,78 @@ export default function DashboardLayout({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Run once on mount
 
+  React.useEffect(() => {
+    if (sessionLoading) return;
+    if (!isAuthorized) return;
+
+    const currentRole = profile?.role?.name || "customer";
+    const userIsAdmin = ["admin", "super_admin", "manager", "staff"].includes(currentRole);
+
+    if (pathname.startsWith("/dashboard/admin") && !userIsAdmin) {
+      router.replace("/dashboard/client");
+    } else if (pathname.startsWith("/dashboard/client") && userIsAdmin) {
+      router.replace("/dashboard/admin");
+    }
+  }, [pathname, profile, sessionLoading, isAuthorized, router]);
+
   const handleLogout = async () => {
     await supabase.auth.signOut();
     router.push("/auth/login");
   };
 
-  if (sessionLoading) {
+  const role = profile?.role?.name || "customer";
+  const isAdmin = ["admin", "super_admin", "manager", "staff"].includes(role);
+  const fullName = `${profile?.first_name} ${profile?.last_name}`.trim();
+
+  const isCorrectPage =
+    (pathname.startsWith("/dashboard/admin") && isAdmin) ||
+    (pathname.startsWith("/dashboard/client") && !isAdmin) ||
+    (!pathname.startsWith("/dashboard/admin") && !pathname.startsWith("/dashboard/client"));
+
+  if (sessionLoading || !isAuthorized || !isCorrectPage) {
+    if (!isAuthorized) {
+      return (
+        <div className="min-h-screen bg-[#060b18] flex items-center justify-center p-6 text-center">
+          <div className="max-w-md w-full bg-white/[0.02] border border-white/[0.08] rounded-3xl p-8 shadow-2xl">
+            <div className="w-16 h-16 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center mx-auto mb-6">
+              <svg className="w-8 h-8 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              </svg>
+            </div>
+            <h2 className="text-2xl font-black text-white mb-3">Access Denied</h2>
+            <p className="text-white/50 text-sm mb-8">
+              You must be signed in to access the dashboard. If you just signed in, your session may have expired.
+            </p>
+            <div className="flex flex-col gap-3">
+              <Link
+                href={`/auth/login?redirect=${encodeURIComponent(pathname)}`}
+                className="w-full inline-flex items-center justify-center px-6 py-3 rounded-xl font-bold bg-[#c9a84c] text-[#0a0f1e] hover:bg-[#e8c96d] transition-colors"
+              >
+                Sign In Now
+              </Link>
+              <Link
+                href="/"
+                className="w-full inline-flex items-center justify-center px-6 py-3 rounded-xl font-semibold bg-white/5 border border-white/10 text-white/70 hover:bg-white/10 hover:text-white transition-colors"
+              >
+                Return Home
+              </Link>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div className="min-h-screen bg-[#060b18] flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
           <div className="w-10 h-10 border-4 border-[#c9a84c]/20 border-t-[#c9a84c] rounded-full animate-spin" />
-          <p className="text-white/40 text-xs font-semibold tracking-widest uppercase">Checking Credentials...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!isAuthorized) {
-    return (
-      <div className="min-h-screen bg-[#060b18] flex items-center justify-center p-6 text-center">
-        <div className="max-w-md w-full bg-white/[0.02] border border-white/[0.08] rounded-3xl p-8 shadow-2xl">
-          <div className="w-16 h-16 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center mx-auto mb-6">
-            <svg className="w-8 h-8 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-            </svg>
-          </div>
-          <h2 className="text-2xl font-black text-white mb-3">Access Denied</h2>
-          <p className="text-white/50 text-sm mb-8">
-            You must be signed in to access the dashboard. If you just signed in, your session may have expired.
+          <p className="text-white/40 text-xs font-semibold tracking-widest uppercase">
+            {!isCorrectPage && isAuthorized ? "Redirecting..." : "Checking Credentials..."}
           </p>
-          <div className="flex flex-col gap-3">
-            <Link
-              href={`/auth/login?redirect=${encodeURIComponent(pathname)}`}
-              className="w-full inline-flex items-center justify-center px-6 py-3 rounded-xl font-bold bg-[#c9a84c] text-[#0a0f1e] hover:bg-[#e8c96d] transition-colors"
-            >
-              Sign In Now
-            </Link>
-            <Link
-              href="/"
-              className="w-full inline-flex items-center justify-center px-6 py-3 rounded-xl font-semibold bg-white/5 border border-white/10 text-white/70 hover:bg-white/10 hover:text-white transition-colors"
-            >
-              Return Home
-            </Link>
-          </div>
         </div>
       </div>
     );
   }
-
-  const role = profile?.role?.name || "customer";
-  const isAdmin = ["admin", "super_admin", "manager", "staff"].includes(role);
-  const fullName = `${profile?.first_name} ${profile?.last_name}`.trim();
 
   const navigationItems = isAdmin
     ? [

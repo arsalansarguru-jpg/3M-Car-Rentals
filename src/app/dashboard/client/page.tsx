@@ -219,7 +219,10 @@ export default function ClientDashboardPage() {
           .eq("auth_user_id", session.user.id)
           .maybeSingle();
 
-        if (!userRow) return;
+        if (!userRow) {
+          setLoading(false);
+          return;
+        }
 
         const { data, error: fetchError } = await supabase
           .from("bookings")

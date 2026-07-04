@@ -16,7 +16,7 @@ export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [isSignedIn, setIsSignedIn] = useState(false);
-  const [dashboardHref, setDashboardHref] = useState("/dashboard/client");
+  const [dashboardHref, setDashboardHref] = useState("/dashboard");
   const pathname = usePathname();
   const router = useRouter();
 
@@ -50,8 +50,10 @@ export default function Header() {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session?.user) {
         setIsSignedIn(true);
+        syncSession();
       } else {
         setIsSignedIn(false);
+        setDashboardHref("/dashboard");
       }
     });
 
