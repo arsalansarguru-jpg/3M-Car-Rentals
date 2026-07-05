@@ -129,8 +129,8 @@ export async function calculateOptimalPrice(vehicleId: string): Promise<PricingR
   const avgRating = (reviews && ratingsCount > 0) ? reviews.reduce((sum, r: { rating: number }) => sum + r.rating, 0) / ratingsCount : 4.0;
 
   const categoryStr = Array.isArray(vehicle.category)
-    ? (vehicle.category as any)[0]?.name || ""
-    : (vehicle.category as any)?.name || "";
+    ? (vehicle.category as unknown as { name: string }[])[0]?.name || ""
+    : (vehicle.category as unknown as { name: string })?.name || "";
   const isLuxury = categoryStr.toLowerCase().includes("luxury") || categoryStr.toLowerCase().includes("premium");
   const baseViews = isLuxury ? 45 : 25;
   const viewBoost = bookingsThisWeek * 8 + ratingsCount * 3;

@@ -73,8 +73,8 @@ export async function GET() {
         brand: v.brand,
         model: v.model,
         category: Array.isArray(v.category) 
-          ? (v.category as any)[0]?.name || "Regular" 
-          : (v.category as any)?.name || "Regular",
+          ? (v.category as unknown as { name: string }[])[0]?.name || "Regular" 
+          : (v.category as unknown as { name: string })?.name || "Regular",
         currentPrice: Number(v.daily_rate),
         suggestedPrice: pendingSuggestion ? Number(pendingSuggestion.final_price) : Number(v.daily_rate),
         difference: pendingSuggestion ? Number(pendingSuggestion.final_price) - Number(v.daily_rate) : 0,

@@ -104,7 +104,7 @@ export default function DashboardLayout({
     if (!isAuthorized) return;
 
     const currentRole = profile?.role?.name || "customer";
-    const userIsAdmin = ["admin", "super_admin", "manager", "staff", "revenue_manager"].includes(currentRole);
+    const userIsAdmin = ["admin", "super_admin", "manager", "staff", "revenue_manager", "finance_manager", "operations_manager", "branch_manager", "viewer"].includes(currentRole);
 
     if (pathname.startsWith("/dashboard/admin") && !userIsAdmin) {
       router.replace("/dashboard/client");
@@ -119,7 +119,7 @@ export default function DashboardLayout({
   };
 
   const role = profile?.role?.name || "customer";
-  const isAdmin = ["admin", "super_admin", "manager", "staff", "revenue_manager"].includes(role);
+  const isAdmin = ["admin", "super_admin", "manager", "staff", "revenue_manager", "finance_manager", "operations_manager", "branch_manager", "viewer"].includes(role);
   const fullName = `${profile?.first_name} ${profile?.last_name}`.trim();
 
   const isCorrectPage =
@@ -176,6 +176,7 @@ export default function DashboardLayout({
     ? [
         { name: "Overview", href: "/dashboard/admin", icon: "📊" },
         { name: "Dynamic Pricing", href: "/dashboard/admin/pricing", icon: "💰" },
+        { name: "Revenue Intelligence", href: "/dashboard/admin/revenue", icon: "💎" },
         { name: "Verify Licenses", href: "/dashboard/admin#licensing", icon: "🪪" },
         { name: "Browse Fleet", href: "/fleet", icon: "🏎️" },
         { name: "Back to Site", href: "/", icon: "🏠" },
