@@ -423,7 +423,6 @@ export default function AdminDashboardPage() {
       }
     }
     fetchAll();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // ── Derived KPIs ──
