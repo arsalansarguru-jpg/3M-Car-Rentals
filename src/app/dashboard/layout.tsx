@@ -177,6 +177,7 @@ export default function DashboardLayout({
         { name: "Overview", href: "/dashboard/admin", icon: "📊" },
         { name: "Dynamic Pricing", href: "/dashboard/admin/pricing", icon: "💰" },
         { name: "Revenue Intelligence", href: "/dashboard/admin/revenue", icon: "💎" },
+        { name: "Fleet Health Center", href: "/dashboard/admin/fleet-health", icon: "🔧" },
         { name: "Verify Licenses", href: "/dashboard/admin#licensing", icon: "🪪" },
         { name: "Browse Fleet", href: "/fleet", icon: "🏎️" },
         { name: "Back to Site", href: "/", icon: "🏠" },

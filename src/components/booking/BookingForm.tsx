@@ -120,6 +120,28 @@ export default function BookingForm({ vehicle }: BookingFormProps) {
         return;
       }
 
+      // ── Compliance Check (Safety Safeguard) ──
+      const { data: healthRow } = await supabase
+        .from("vehicle_health")
+        .select("insurance_expiry, puc_expiry, rc_expiry")
+        .eq("vehicle_id", vehicle.id)
+        .maybeSingle();
+
+      if (healthRow) {
+        const checkNow = new Date();
+        const insExpired = new Date(healthRow.insurance_expiry) < checkNow;
+        const pucExpired = new Date(healthRow.puc_expiry) < checkNow;
+        const rcExpired = new Date(healthRow.rc_expiry) < checkNow;
+
+        if (insExpired || pucExpired || rcExpired) {
+          setError(
+            "This vehicle is temporarily unavailable due to scheduled compliance inspection. Please select another vehicle."
+          );
+          setSubmitting(false);
+          return;
+        }
+      }
+
       const bookingRef = genRef();
 
       const { error: insertError } = await supabase.from("bookings").insert({
