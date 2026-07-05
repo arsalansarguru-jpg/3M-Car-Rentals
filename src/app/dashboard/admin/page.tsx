@@ -1,10 +1,49 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import type { Vehicle, VehicleCategory, AvailabilityStatus } from "@/types/database";
 import VehicleModal from "./VehicleModal";
 import BookingDetailModal, { RecentBooking } from "./BookingDetailModal";
+import {
+  AnalyticsSeriesArea,
+  AnalyticsDailyBars,
+  AnalyticsHorizontalBars,
+  AnimatedCounter,
+} from "./AdminCharts";
+
+// ─── Stats Types ──────────────────────────────────────────────────────────────
+interface AllBookingStatsItem {
+  created_at: string;
+  total_amount: number;
+  booking_status: string;
+  payment_status: string;
+  deposit_amount: number;
+  pickup_datetime: string;
+  return_datetime: string;
+  vehicle: { brand: string; model: string } | null;
+}
+
+interface ReviewRatingItem {
+  rating: number;
+}
+
+// ─── Date Helpers ─────────────────────────────────────────────────────────────
+function isToday(iso: string) {
+  const d = new Date(iso);
+  const today = new Date();
+  return d.getDate() === today.getDate() &&
+         d.getMonth() === today.getMonth() &&
+         d.getFullYear() === today.getFullYear();
+}
+
+function isThisMonth(iso: string) {
+  const d = new Date(iso);
+  const today = new Date();
+  return d.getMonth() === today.getMonth() &&
+         d.getFullYear() === today.getFullYear();
+}
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -57,19 +96,27 @@ const AVAILABILITY_CONFIG: Record<string, { label: string; color: string; bg: st
 const AVAILABILITY_OPTIONS = ["available", "limited", "reserved", "maintenance", "coming_soon"] as const;
 
 // ─── Section: KPI Stats ───────────────────────────────────────────────────────
-function KpiCard({ icon, label, value, sub, accent }: {
+function KpiCard({ icon, label, value, numericValue, formatter, sub, accent }: {
   icon: string;
   label: string;
-  value: string | number;
+  value?: string | number;
+  numericValue?: number;
+  formatter?: (n: number) => string;
   sub?: string;
   accent?: boolean;
 }) {
   return (
-    <div className={`rounded-2xl p-6 border ${accent ? "bg-[#c9a84c]/5 border-[#c9a84c]/20" : "bg-white/[0.02] border-white/[0.08]"}`}>
-      <p className="text-2xl mb-3">{icon}</p>
-      <p className={`font-black text-3xl ${accent ? "text-[#c9a84c]" : "text-white"}`}>{value}</p>
-      <p className="text-white/50 text-sm font-medium mt-1">{label}</p>
-      {sub && <p className="text-white/25 text-xs mt-0.5">{sub}</p>}
+    <div className={`rounded-2xl p-5 border transition-all duration-300 hover:scale-[1.02] ${accent ? "bg-[#c9a84c]/5 border-[#c9a84c]/20" : "bg-white/[0.02] border-white/[0.08]"}`}>
+      <p className="text-xl mb-2">{icon}</p>
+      <p className={`font-black text-2xl tracking-tight leading-none ${accent ? "text-[#c9a84c]" : "text-white"}`}>
+        {numericValue !== undefined ? (
+          <AnimatedCounter value={numericValue} formatter={formatter} />
+        ) : (
+          value
+        )}
+      </p>
+      <p className="text-white/40 text-[11px] font-semibold uppercase tracking-wider mt-2.5">{label}</p>
+      {sub && <p className="text-white/20 text-[10px] mt-0.5">{sub}</p>}
     </div>
   );
 }
@@ -322,10 +369,13 @@ export default function AdminDashboardPage() {
   const [searchQuery, setSearchQuery] = React.useState("");
   const [statusFilter, setStatusFilter] = React.useState("all");
 
+  const [allBookings, setAllBookings] = React.useState<AllBookingStatsItem[]>([]);
+  const [reviews, setReviews] = React.useState<ReviewRatingItem[]>([]);
+
   React.useEffect(() => {
     async function fetchAll() {
       try {
-        const [bookingsRes, fleetRes, licenseRes, categoriesRes] = await Promise.all([
+        const [bookingsRes, fleetRes, licenseRes, categoriesRes, allBookingsRes, reviewsRes] = await Promise.all([
           supabase
             .from("bookings")
             .select(`
@@ -350,33 +400,113 @@ export default function AdminDashboardPage() {
             .from("vehicle_categories")
             .select("id, name, slug")
             .order("name", { ascending: true }),
+          supabase
+            .from("bookings")
+            .select(`
+              created_at, total_amount, booking_status, payment_status, deposit_amount, return_datetime, pickup_datetime,
+              vehicle:vehicles (brand, model)
+            `)
+            .order("created_at", { ascending: true }),
+          supabase
+            .from("reviews")
+            .select("rating"),
         ]);
 
         setBookings((bookingsRes.data as unknown as RecentBooking[]) ?? []);
         setFleet((fleetRes.data as unknown as FleetVehicle[]) ?? []);
         setLicenses((licenseRes.data as unknown as PendingLicense[]) ?? []);
         setCategories((categoriesRes.data as unknown as VehicleCategory[]) ?? []);
+        setAllBookings((allBookingsRes.data as unknown as AllBookingStatsItem[]) ?? []);
+        setReviews((reviewsRes.data as unknown as ReviewRatingItem[]) ?? []);
       } finally {
         setLoading(false);
       }
     }
     fetchAll();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // ── Derived KPIs ──
   const totalVehicles = fleet.length;
   const availableVehicles = fleet.filter((v) => v.availability_status === "available").length;
-  const pendingBookings = bookings.filter((b) => b.booking_status === "pending").length;
+  const vehiclesMaintenance = fleet.filter((v) => v.availability_status === "maintenance").length;
 
-  const totalRevenue = bookings
-    .filter((b) => b.payment_status === "paid" || b.payment_status === "partially_paid")
+  const totalBookings = allBookings.length;
+  const activeRentals = allBookings.filter((b) => b.booking_status === "active").length;
+  const pendingKyc = licenses.length;
+  const avgRating = reviews.length ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length : 5.0;
+
+  const revenueToday = allBookings
+    .filter((b) => (b.payment_status === "paid" || b.payment_status === "partially_paid") && isToday(b.created_at))
     .reduce((sum, b) => sum + Number(b.total_amount), 0);
 
-  const activeRentals = bookings.filter((b) => b.booking_status === "active").length;
+  const revenueMonth = allBookings
+    .filter((b) => (b.payment_status === "paid" || b.payment_status === "partially_paid") && isThisMonth(b.created_at))
+    .reduce((sum, b) => sum + Number(b.total_amount), 0);
 
-  const depositPool = bookings
-    .filter((b) => ["confirmed", "ready_for_pickup", "active"].includes(b.booking_status))
-    .reduce((sum, b) => sum + Number(b.deposit_amount), 0);
+  const pendingRefunds = allBookings.filter((b) => b.booking_status === "refunded" || b.payment_status === "refunded").length;
+  const pendingRefundsRupees = allBookings
+    .filter((b) => b.booking_status === "refunded" || b.payment_status === "refunded")
+    .reduce((sum, b) => sum + Number(b.total_amount), 0);
+
+  const lateReturns = allBookings.filter((b) => b.booking_status === "active" && new Date(b.return_datetime) < new Date()).length;
+
+  // ── Derived Charts Data (7 Days) ──
+  const last7Days = React.useMemo(() => {
+    const list = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      list.push(d.toISOString().split("T")[0]);
+    }
+    return list;
+  }, []);
+
+  const bookingVolumeSeries = React.useMemo(() => {
+    return last7Days.map((date) => {
+      const count = allBookings.filter((b) => b.created_at.startsWith(date)).length;
+      return { date, value: count };
+    });
+  }, [allBookings, last7Days]);
+
+  const revenueSeries = React.useMemo(() => {
+    return last7Days.map((date) => {
+      const sum = allBookings
+        .filter((b) => b.created_at.startsWith(date) && (b.payment_status === "paid" || b.payment_status === "partially_paid"))
+        .reduce((sum, b) => sum + Number(b.total_amount), 0);
+      return { date, value: sum };
+    });
+  }, [allBookings, last7Days]);
+
+  const utilizationSeries = React.useMemo(() => {
+    const totalCount = fleet.length || 1;
+    return last7Days.map((date) => {
+      const dateStart = new Date(date + "T00:00:00Z").getTime();
+      const dateEnd = new Date(date + "T23:59:59Z").getTime();
+      const activeCount = allBookings.filter((b) => {
+        if (b.booking_status === "cancelled" || b.booking_status === "pending") return false;
+        const pickup = new Date(b.pickup_datetime).getTime();
+        const returnTime = new Date(b.return_datetime).getTime();
+        return pickup <= dateEnd && returnTime >= dateStart;
+      }).length;
+      const pct = Math.round((activeCount / totalCount) * 100);
+      return { date, value: Math.min(100, pct) };
+    });
+  }, [allBookings, fleet, last7Days]);
+
+  const topVehicles = React.useMemo(() => {
+    const counts: Record<string, number> = {};
+    allBookings.forEach((b) => {
+      if (b.vehicle) {
+        const key = `${b.vehicle.brand} ${b.vehicle.model}`;
+        counts[key] = (counts[key] || 0) + 1;
+      }
+    });
+    return Object.entries(counts)
+      .map(([label, value]) => ({ label, value }))
+      .sort((a, b) => b.value - a.value)
+      .slice(0, 5);
+  }, [allBookings]);
 
   // ── Filtering Logic ──
   const filteredBookings = React.useMemo(() => {
@@ -474,13 +604,53 @@ export default function AdminDashboardPage() {
       ) : (
         <>
           {/* ── KPI Strip ── */}
-          <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-10">
-            <KpiCard icon="💰" label="Total Revenue"    value={formatINR(totalRevenue)} accent />
-            <KpiCard icon="🏎️" label="Active Rentals"   value={activeRentals} />
-            <KpiCard icon="✅" label="Available Fleet"  value={availableVehicles} sub={`of ${totalVehicles} total`} />
-            <KpiCard icon="🛡️" label="Deposits Pool"    value={formatINR(depositPool)} />
-            <KpiCard icon="⏳" label="Pending Approval" value={pendingBookings} />
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-10">
+            <KpiCard icon="📊" label="Total Bookings"   numericValue={totalBookings} />
+            <KpiCard icon="🏎️" label="Active Rentals"   numericValue={activeRentals} />
+            <KpiCard icon="💰" label="Revenue Today"    numericValue={revenueToday} formatter={formatINR} accent />
+            <KpiCard icon="📈" label="Revenue Month"    numericValue={revenueMonth} formatter={formatINR} />
+            <KpiCard icon="🪪" label="Pending KYC"     numericValue={pendingKyc} accent={pendingKyc > 0} sub={pendingKyc > 0 ? "License reviews" : "Up to date"} />
+            <KpiCard icon="✅" label="Available Fleet"  numericValue={availableVehicles} sub={`of ${totalVehicles} total`} />
+            <KpiCard icon="🔧" label="In Maintenance"   numericValue={vehiclesMaintenance} accent={vehiclesMaintenance > 0} />
+            <KpiCard icon="⏳" label="Late Returns"     numericValue={lateReturns} accent={lateReturns > 0} />
+            <KpiCard icon="↩️" label="Pending Refunds"   numericValue={pendingRefunds} sub={formatINR(pendingRefundsRupees)} />
+            <KpiCard icon="⭐️" label="Average Rating"   value={`${avgRating.toFixed(1)} / 5.0`} />
           </div>
+
+          {/* ── Analytics Charts ── */}
+          <section className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-10">
+            <div className="rounded-2xl bg-white/[0.02] border border-white/[0.08] p-5 space-y-4">
+              <div>
+                <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-white/40">Bookings</p>
+                <h3 className="font-display text-base font-semibold text-white">Booking volume · 7 days</h3>
+              </div>
+              <AnalyticsDailyBars points={bookingVolumeSeries} color="#c9a84c" />
+            </div>
+
+            <div className="rounded-2xl bg-white/[0.02] border border-white/[0.08] p-5 space-y-4">
+              <div>
+                <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-white/40">Revenue</p>
+                <h3 className="font-display text-base font-semibold text-white">Revenue analytics · 7 days</h3>
+              </div>
+              <AnalyticsSeriesArea points={revenueSeries} valueFormatter={formatINR} />
+            </div>
+
+            <div className="rounded-2xl bg-white/[0.02] border border-white/[0.08] p-5 space-y-4">
+              <div>
+                <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-white/40">Fleet</p>
+                <h3 className="font-display text-base font-semibold text-white">Vehicle utilization</h3>
+              </div>
+              <AnalyticsSeriesArea points={utilizationSeries} accent="emerald" valueFormatter={(n) => `${n}%`} />
+            </div>
+
+            <div className="rounded-2xl bg-white/[0.02] border border-white/[0.08] p-5 space-y-4">
+              <div>
+                <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-white/40">Demand</p>
+                <h3 className="font-display text-base font-semibold text-white">Most popular vehicles</h3>
+              </div>
+              <AnalyticsHorizontalBars rows={topVehicles} valueLabel={(n) => `${n} booking${n > 1 ? "s" : ""}`} />
+            </div>
+          </section>
 
           {/* ── Recent Bookings ── */}
           <section className="mb-10">
@@ -606,6 +776,22 @@ export default function AdminDashboardPage() {
         onPaymentStatusChange={handlePaymentStatusChange}
         updatingPayment={updatingPayment}
       />
+
+      {/* ── Operations Quick Command Links ── */}
+      <div className="flex flex-wrap gap-2 border-t border-white/[0.06] pt-8 mt-10">
+        <a href="/dashboard/admin#licensing" className="inline-flex items-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.03] px-3.5 py-2.5 text-xs font-semibold text-white/80 transition-colors hover:border-[#c9a84c]/30 hover:bg-[#c9a84c]/10">
+          🛡️ Review Driver Licenses (KYC)
+        </a>
+        <a href="/dashboard/admin#fleet" className="inline-flex items-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.03] px-3.5 py-2.5 text-xs font-semibold text-white/80 transition-colors hover:border-[#c9a84c]/30 hover:bg-[#c9a84c]/10">
+          🏎️ Fleet Utilization & CRUD
+        </a>
+        <Link href="/fleet" className="inline-flex items-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.03] px-3.5 py-2.5 text-xs font-semibold text-white/80 transition-colors hover:border-[#c9a84c]/30 hover:bg-[#c9a84c]/10">
+          🔍 Public Fleet Browser
+        </Link>
+        <Link href="/" className="inline-flex items-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.03] px-3.5 py-2.5 text-xs font-semibold text-white/80 transition-colors hover:border-[#c9a84c]/30 hover:bg-[#c9a84c]/10">
+          🏠 Return to Homepage
+        </Link>
+      </div>
     </div>
   );
 }
