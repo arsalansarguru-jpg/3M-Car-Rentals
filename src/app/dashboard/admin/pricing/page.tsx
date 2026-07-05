@@ -397,7 +397,7 @@ export default function DynamicPricingDashboard() {
       </header>
 
       {/* ── KPI Strip ── */}
-      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         <KpiCard title="Total Revenue" value={formatINR(totalRevenue)} icon="💰" />
         <KpiCard title="Avg Daily Rate" value={formatINR(adr)} icon="📈" />
         <KpiCard title="Occupancy" value={`${utilization.toFixed(0)}%`} icon="🏎️" />
@@ -725,10 +725,18 @@ export default function DynamicPricingDashboard() {
 
 function KpiCard({ title, value, icon, accent }: { title: string; value: string | number; icon: string; accent?: boolean }) {
   return (
-    <div className={`rounded-xl p-4 border transition-all duration-300 hover:scale-[1.015] ${accent ? "bg-[#c9a84c]/5 border-[#c9a84c]/20" : "bg-white/[0.01] border-white/[0.06]"}`}>
-      <span className="text-lg">{icon}</span>
-      <h4 className="text-white/40 text-[9px] font-bold uppercase tracking-wider mt-1">{title}</h4>
-      <p className="text-white text-lg font-black mt-0.5 leading-none tracking-tight">{value}</p>
+    <div className={`rounded-2xl p-5 border flex items-center justify-between gap-4 transition-all duration-300 hover:scale-[1.02] ${
+      accent 
+        ? "bg-gradient-to-br from-[#c9a84c]/10 to-transparent border-[#c9a84c]/25 shadow-lg shadow-[#c9a84c]/5" 
+        : "bg-white/[0.02] border-white/[0.08]"
+    }`}>
+      <div className="space-y-1.5 min-w-0">
+        <h4 className="text-white/40 text-[10px] font-black uppercase tracking-widest truncate">{title}</h4>
+        <p className="text-white text-xl font-black tracking-tight truncate">{value}</p>
+      </div>
+      <div className="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-lg shrink-0">
+        {icon}
+      </div>
     </div>
   );
 }
