@@ -55,7 +55,7 @@ export default function DashboardLayout({
 
         if (active) {
           if (userData) {
-            setProfile(userData as any);
+            setProfile(userData as unknown as Profile);
           } else {
             setProfile({
               first_name: session.user.email?.split("@")[0] || "User",
@@ -97,7 +97,6 @@ export default function DashboardLayout({
       active = false;
       subscription.unsubscribe();
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Run once on mount
 
   React.useEffect(() => {

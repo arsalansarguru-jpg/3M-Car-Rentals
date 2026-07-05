@@ -21,7 +21,7 @@ export default function DashboardRedirect() {
         .eq("auth_user_id", session.user.id)
         .maybeSingle();
 
-      const role = (userData as any)?.role?.name || "customer";
+      const role = (userData as unknown as { role: { name: string } | null })?.role?.name || "customer";
       const isAdmin = ["admin", "super_admin", "manager", "staff"].includes(role);
 
       if (isAdmin) {

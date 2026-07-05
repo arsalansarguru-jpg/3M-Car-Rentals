@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import Link from "next/link";
 import { getAvailableVehicles, getVehicleCategories } from "@/services/fleet.service";
 import VehicleCard from "@/components/fleet/VehicleCard";
 import type { VehicleCategory } from "@/types/database";
@@ -52,7 +53,7 @@ function CategoryFilter({
 }) {
   return (
     <div className="flex flex-nowrap overflow-x-auto pb-3 -mx-4 px-4 sm:mx-0 sm:px-0 sm:flex-wrap gap-2 mb-10 scrollbar-none">
-      <a
+      <Link
         href="/fleet"
         id="filter-all"
         className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 shrink-0 whitespace-nowrap ${
@@ -65,9 +66,9 @@ function CategoryFilter({
         <span className={`text-xs px-2 py-0.5 rounded-full ${!activeSlug ? "bg-[#0a0f1e]/20" : "bg-white/10"}`}>
           {total}
         </span>
-      </a>
+      </Link>
       {categories.map((cat) => (
-        <a
+        <Link
           key={cat.id}
           href={`/fleet?category=${cat.slug}`}
           id={`filter-${cat.slug}`}
@@ -81,7 +82,7 @@ function CategoryFilter({
           <span className={`text-xs px-2 py-0.5 rounded-full ${activeSlug === cat.slug ? "bg-[#0a0f1e]/20" : "bg-white/10"}`}>
             {counts[cat.slug] ?? 0}
           </span>
-        </a>
+        </Link>
       ))}
     </div>
   );
@@ -139,12 +140,12 @@ async function FleetGrid({ categorySlug }: { categorySlug?: string }) {
           </div>
           <p className="text-white/50 text-lg font-semibold">No vehicles available</p>
           <p className="text-white/30 text-sm max-w-xs">There are no vehicles in this category right now. Try a different filter or check back later.</p>
-          <a
+          <Link
             href="/fleet"
             className="mt-2 inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-white/5 border border-white/15 text-white text-sm font-medium hover:bg-white/10 transition-colors duration-200"
           >
             ← View all vehicles
-          </a>
+          </Link>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

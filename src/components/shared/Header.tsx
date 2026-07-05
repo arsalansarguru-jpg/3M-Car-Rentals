@@ -37,7 +37,7 @@ export default function Header() {
           .select("role:roles(name)")
           .eq("auth_user_id", session.user.id)
           .maybeSingle();
-        const roleName = (userRow?.role as any)?.name ?? "customer";
+        const roleName = (userRow?.role as unknown as { name: string } | null)?.name ?? "customer";
         const isAdmin = ["admin", "super_admin", "manager", "staff"].includes(roleName);
         setDashboardHref(isAdmin ? "/dashboard/admin" : "/dashboard/client");
       } else {

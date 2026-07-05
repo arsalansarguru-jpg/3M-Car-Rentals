@@ -1,80 +1,55 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { supabase } from "@/lib/supabase";
-
-export interface VehicleCategory {
-  id: string;
-  name: string;
-  slug: string;
-}
+import type { Vehicle, VehicleCategory } from "@/types/database";
 
 interface VehicleModalProps {
   isOpen: boolean;
   onClose: () => void;
   categories: VehicleCategory[];
-  vehicle?: any; // If provided, we are in Edit mode
-  onSaved: (savedVehicle: any) => void;
+  vehicle?: Vehicle; // If provided, we are in Edit mode
+  onSaved: (savedVehicle: Vehicle) => void;
 }
 
 export default function VehicleModal({ isOpen, onClose, categories, vehicle, onSaved }: VehicleModalProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const [formData, setFormData] = useState({
-    registration_number: "",
-    brand: "",
-    model: "",
-    variant: "",
-    year: new Date().getFullYear(),
-    category_id: "",
-    fuel_type: "Petrol",
-    transmission: "Automatic",
-    seating_capacity: 5,
-    luggage_capacity: 2,
-    hourly_rate: 0,
-    daily_rate: 0,
-    security_deposit: 0,
-  });
-
-  useEffect(() => {
-    if (isOpen) {
-      if (vehicle) {
-        setFormData({
-          registration_number: vehicle.registration_number || "",
-          brand: vehicle.brand || "",
-          model: vehicle.model || "",
-          variant: vehicle.variant || "",
-          year: vehicle.year || new Date().getFullYear(),
-          category_id: vehicle.category_id || "",
-          fuel_type: vehicle.fuel_type || "Petrol",
-          transmission: vehicle.transmission || "Automatic",
-          seating_capacity: vehicle.seating_capacity || 5,
-          luggage_capacity: vehicle.luggage_capacity ?? 2,
-          hourly_rate: Number(vehicle.hourly_rate) || 0,
-          daily_rate: Number(vehicle.daily_rate) || 0,
-          security_deposit: Number(vehicle.security_deposit) || 0,
-        });
-      } else {
-        setFormData({
-          registration_number: "",
-          brand: "",
-          model: "",
-          variant: "",
-          year: new Date().getFullYear(),
-          category_id: "",
-          fuel_type: "Petrol",
-          transmission: "Automatic",
-          seating_capacity: 5,
-          luggage_capacity: 2,
-          hourly_rate: 0,
-          daily_rate: 0,
-          security_deposit: 0,
-        });
-      }
-      setError(null);
+  const [formData, setFormData] = useState(() => {
+    if (vehicle) {
+      return {
+        registration_number: vehicle.registration_number || "",
+        brand: vehicle.brand || "",
+        model: vehicle.model || "",
+        variant: vehicle.variant || "",
+        year: vehicle.year || new Date().getFullYear(),
+        category_id: vehicle.category_id || "",
+        fuel_type: vehicle.fuel_type || "Petrol",
+        transmission: vehicle.transmission || "Automatic",
+        seating_capacity: vehicle.seating_capacity || 5,
+        luggage_capacity: vehicle.luggage_capacity ?? 2,
+        hourly_rate: Number(vehicle.hourly_rate) || 0,
+        daily_rate: Number(vehicle.daily_rate) || 0,
+        security_deposit: Number(vehicle.security_deposit) || 0,
+      };
     }
-  }, [vehicle, isOpen]);
+    return {
+      registration_number: "",
+      brand: "",
+      model: "",
+      variant: "",
+      year: new Date().getFullYear(),
+      category_id: "",
+      fuel_type: "Petrol",
+      transmission: "Automatic",
+      seating_capacity: 5,
+      luggage_capacity: 2,
+      hourly_rate: 0,
+      daily_rate: 0,
+      security_deposit: 0,
+    };
+  });
 
   if (!isOpen) return null;
 
@@ -148,10 +123,14 @@ export default function VehicleModal({ isOpen, onClose, categories, vehicle, onS
         throw new Error(dbError.message);
       }
 
-      onSaved(data);
+      if (!data) {
+        throw new Error("No data returned from database");
+      }
+      onSaved(data as unknown as Vehicle);
       onClose();
-    } catch (err: any) {
-      setError(err.message || "Failed to save vehicle");
+    } catch (err) {
+      const errMsg = err instanceof Error ? err.message : "Failed to save vehicle";
+      setError(errMsg);
     } finally {
       setLoading(false);
     }

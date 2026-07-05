@@ -37,13 +37,6 @@ function formatINR(n: number) {
   }).format(n);
 }
 
-function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString("en-IN", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  });
-}
 
 function formatDateTime(iso: string) {
   return new Date(iso).toLocaleString("en-IN", {
