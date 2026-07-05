@@ -278,3 +278,99 @@ export function AnalyticsHorizontalBars({
     </ul>
   );
 }
+
+export interface PieItem {
+  label: string;
+  value: number;
+  color: string;
+}
+
+function computePieOffsets(items: PieItem[], total: number, circumference: number) {
+  let offsetAccumulator = 0;
+  return items.map((item) => {
+    const pct = (item.value / total) * 100;
+    const strokeDashoffset = circumference - (pct / 100) * circumference;
+    const dashoffset = offsetAccumulator;
+    offsetAccumulator += (pct / 100) * circumference;
+    return {
+      ...item,
+      pct,
+      strokeDashoffset,
+      dashoffset,
+    };
+  });
+}
+
+export function AnalyticsDonutPie({
+  items,
+  valueLabel = (n: number) => String(n),
+}: {
+  items: PieItem[];
+  valueLabel?: (n: number) => string;
+}) {
+  const total = items.reduce((sum, item) => sum + item.value, 0);
+  if (total === 0 || items.length === 0) {
+    return <p className="text-sm text-white/40">No distribution data available.</p>;
+  }
+
+  const radius = 50;
+  const strokeWidth = 12;
+  const circumference = 2 * Math.PI * radius;
+  const center = radius + strokeWidth;
+  const size = center * 2;
+
+  const itemsWithOffsets = computePieOffsets(items, total, circumference);
+
+  return (
+    <div className="flex flex-col sm:flex-row items-center gap-6 p-2">
+      <div className="relative shrink-0" style={{ width: size, height: size }}>
+        <svg width={size} height={size} className="-rotate-90 overflow-visible">
+          {itemsWithOffsets.map((item, idx) => {
+            return (
+              <motion.circle
+                key={item.label + idx}
+                cx={center}
+                cy={center}
+                r={radius}
+                fill="transparent"
+                stroke={item.color}
+                strokeWidth={strokeWidth}
+                strokeDasharray={circumference}
+                initial={{ strokeDashoffset: circumference }}
+                animate={{ strokeDashoffset: item.strokeDashoffset }}
+                transition={{ duration: 0.8, delay: idx * 0.08, ease }}
+                style={{
+                  transformOrigin: "center",
+                  strokeDashoffset: item.dashoffset,
+                  transform: `rotate(${(item.dashoffset / circumference) * 360}deg)`,
+                }}
+              />
+            );
+          })}
+        </svg>
+        <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+          <span className="text-[9px] text-white/30 font-black uppercase tracking-widest leading-none">Total</span>
+          <span className="text-sm font-black text-white mt-0.5 font-mono">{valueLabel(total)}</span>
+        </div>
+      </div>
+
+      <ul className="flex-1 space-y-2 text-xs w-full">
+        {items.map((item, idx) => {
+          const pct = Math.round((item.value / total) * 100);
+          return (
+            <li key={item.label + idx} className="flex items-center justify-between gap-4 py-0.5">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <span className="w-2 h-2 rounded shrink-0" style={{ backgroundColor: item.color }} />
+                <span className="truncate font-semibold text-white/70">{item.label}</span>
+              </div>
+              <span className="shrink-0 font-mono text-white/40 font-bold">
+                {valueLabel(item.value)} ({pct}%)
+              </span>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  );
+}
+

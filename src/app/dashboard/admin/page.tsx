@@ -10,6 +10,7 @@ import {
   AnalyticsSeriesArea,
   AnalyticsDailyBars,
   AnalyticsHorizontalBars,
+  AnalyticsDonutPie,
   AnimatedCounter,
 } from "./AdminCharts";
 
@@ -106,17 +107,25 @@ function KpiCard({ icon, label, value, numericValue, formatter, sub, accent }: {
   accent?: boolean;
 }) {
   return (
-    <div className={`rounded-2xl p-5 border transition-all duration-300 hover:scale-[1.02] ${accent ? "bg-[#c9a84c]/5 border-[#c9a84c]/20" : "bg-white/[0.02] border-white/[0.08]"}`}>
-      <p className="text-xl mb-2">{icon}</p>
-      <p className={`font-black text-2xl tracking-tight leading-none ${accent ? "text-[#c9a84c]" : "text-white"}`}>
-        {numericValue !== undefined ? (
-          <AnimatedCounter value={numericValue} formatter={formatter} />
-        ) : (
-          value
-        )}
-      </p>
-      <p className="text-white/40 text-[11px] font-semibold uppercase tracking-wider mt-2.5">{label}</p>
-      {sub && <p className="text-white/20 text-[10px] mt-0.5">{sub}</p>}
+    <div className={`rounded-xl p-4 border flex items-center justify-between gap-3 transition-all duration-300 hover:scale-[1.02] ${
+      accent 
+        ? "bg-gradient-to-br from-[#c9a84c]/10 to-transparent border-[#c9a84c]/25 shadow-lg shadow-[#c9a84c]/5" 
+        : "bg-white/[0.02] border-white/[0.08]"
+    }`}>
+      <div className="space-y-1 min-w-0">
+        <h4 className="text-white/40 text-[9px] font-black uppercase tracking-wider leading-tight">{label}</h4>
+        <div className={`font-black text-base md:text-lg tracking-tight leading-none ${accent ? "text-[#c9a84c]" : "text-white"}`}>
+          {numericValue !== undefined ? (
+            <AnimatedCounter value={numericValue} formatter={formatter} />
+          ) : (
+            value
+          )}
+        </div>
+        {sub && <p className="text-white/20 text-[9px] mt-0.5 leading-tight">{sub}</p>}
+      </div>
+      <div className="w-8 h-8 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-sm shrink-0">
+        {icon}
+      </div>
     </div>
   );
 }
@@ -507,6 +516,47 @@ export default function AdminDashboardPage() {
       .slice(0, 5);
   }, [allBookings]);
 
+  // ── Derived Booking Status Pie Chart Data ──
+  const bookingStatusPieData = React.useMemo(() => {
+    const counts: Record<string, number> = {
+      pending: 0,
+      confirmed: 0,
+      active: 0,
+      completed: 0,
+      cancelled: 0,
+    };
+    allBookings.forEach((b) => {
+      const status = b.booking_status;
+      if (status in counts) {
+        counts[status]++;
+      }
+    });
+    return [
+      { label: "Pending", value: counts.pending, color: "#f59e0b" },
+      { label: "Confirmed", value: counts.confirmed, color: "#3b82f6" },
+      { label: "Active", value: counts.active, color: "#c9a84c" },
+      { label: "Completed", value: counts.completed, color: "#10b981" },
+      { label: "Cancelled", value: counts.cancelled, color: "#ef4444" },
+    ].filter(item => item.value > 0);
+  }, [allBookings]);
+
+  // ── Derived Vehicle Category Pie Chart Data ──
+  const vehicleCategoryPieData = React.useMemo(() => {
+    const counts: Record<string, number> = {};
+    fleet.forEach((v) => {
+      const cat = Array.isArray(v.category) 
+        ? (v.category as unknown as { name: string }[])[0]?.name 
+        : (v.category as unknown as { name: string })?.name || "Regular";
+      counts[cat] = (counts[cat] || 0) + 1;
+    });
+    const colors = ["#c9a84c", "#3b82f6", "#10b981", "#ec4899", "#8b5cf6"];
+    return Object.entries(counts).map(([label, value], i) => ({
+      label,
+      value,
+      color: colors[i % colors.length],
+    }));
+  }, [fleet]);
+
   // ── Filtering Logic ──
   const filteredBookings = React.useMemo(() => {
     return bookings.filter((b) => {
@@ -617,7 +667,7 @@ export default function AdminDashboardPage() {
           </div>
 
           {/* ── Analytics Charts ── */}
-          <section className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-10">
+          <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-10">
             <div className="rounded-2xl bg-white/[0.02] border border-white/[0.08] p-5 space-y-4">
               <div>
                 <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-white/40">Bookings</p>
@@ -648,6 +698,22 @@ export default function AdminDashboardPage() {
                 <h3 className="font-display text-base font-semibold text-white">Most popular vehicles</h3>
               </div>
               <AnalyticsHorizontalBars rows={topVehicles} valueLabel={(n) => `${n} booking${n > 1 ? "s" : ""}`} />
+            </div>
+
+            <div className="rounded-2xl bg-white/[0.02] border border-white/[0.08] p-5 space-y-4">
+              <div>
+                <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-white/40">Bookings</p>
+                <h3 className="font-display text-base font-semibold text-white">Booking status distribution</h3>
+              </div>
+              <AnalyticsDonutPie items={bookingStatusPieData} valueLabel={(n) => `${n} booking${n !== 1 ? "s" : ""}`} />
+            </div>
+
+            <div className="rounded-2xl bg-white/[0.02] border border-white/[0.08] p-5 space-y-4">
+              <div>
+                <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-white/40">Fleet</p>
+                <h3 className="font-display text-base font-semibold text-white">Fleet category distribution</h3>
+              </div>
+              <AnalyticsDonutPie items={vehicleCategoryPieData} valueLabel={(n) => `${n} vehicle${n !== 1 ? "s" : ""}`} />
             </div>
           </section>
 

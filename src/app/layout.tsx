@@ -1,17 +1,11 @@
 import type { Metadata } from "next";
-import { Urbanist, Syncopate } from "next/font/google";
+import { Inter } from "next/font/google";
 import "../styles/globals.css";
 
-const urbanist = Urbanist({
-  variable: "--font-urbanist",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700", "800"],
-});
-
-const syncopate = Syncopate({
-  variable: "--font-syncopate",
-  subsets: ["latin"],
-  weight: ["400", "700"],
+  weight: ["400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
@@ -27,7 +21,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${urbanist.variable} ${syncopate.variable} h-full antialiased`}
+      className={`${inter.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-[#0a0f1e] text-gray-200">{children}</body>
     </html>
