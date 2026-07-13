@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 150 40" fill="none">
+  <!-- Minimalist Hex Shield Icon -->
+  <path d="M16 4L28 11V25L16 32L4 25V11L16 4Z" stroke="#C9A84C" stroke-width="1.5" stroke-linejoin="round"/>
+  <path d="M16 8L24 13V23L16 28L8 23V13L16 8Z" fill="#C9A84C" fill-opacity="0.15" stroke="#C9A84C" stroke-width="0.5"/>
+  <circle cx="16" cy="18" r="1.5" fill="#C9A84C"/>
+  
+  <!-- "3M" serif brand name -->
+  <text x="38" y="27" font-family="Cormorant Garamond, Georgia, serif" font-size="22" font-weight="600" fill="#FFFFFF" letter-spacing="0.04em">3M</text>
+  
+  <!-- "CAR RENTALS" subtitle -->
+  <text x="74" y="24" font-family="Source Sans 3, sans-serif" font-size="8.5" font-weight="400" fill="rgba(232, 220, 200, 0.55)" letter-spacing="0.22em">CAR RENTALS</text>
+</svg>
