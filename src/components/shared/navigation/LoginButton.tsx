@@ -15,7 +15,7 @@ export default function LoginButton({ className, onClick }: LoginButtonProps) {
     if (onClick) {
       onClick();
     }
-    router.push("/auth/login");
+    router.push("/login");
   };
 
   return (

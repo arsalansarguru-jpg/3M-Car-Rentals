@@ -1,18 +1,19 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { loginSchema, type LoginInput } from "@/types/auth";
 import { supabase } from "@/lib/supabase";
-import { Input } from "@/components/ui/Input";
+import { Mail, Lock, Phone, ArrowRight, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/Button";
-import { ShieldCheck, Mail, Lock, Sparkles, ArrowRight, Phone } from "lucide-react";
+import { Input } from "@/components/ui/Input";
 
-export default function CustomerLoginPage() {
+function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [authError, setAuthError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [loginMethod, setLoginMethod] = useState<"email" | "otp">("email");
@@ -21,25 +22,74 @@ export default function CustomerLoginPage() {
   const [otpCode, setOtpCode] = useState("");
   const [otpLoading, setOtpLoading] = useState(false);
   const [otpSuccess, setOtpSuccess] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
+
+  const rawRedirect = searchParams.get("redirect") || "";
+  const redirectDestination =
+    rawRedirect && rawRedirect !== "/dashboard"
+      ? rawRedirect
+      : "/dashboard";
 
   const { register, handleSubmit, formState: { errors } } = useForm<LoginInput>({
     resolver: zodResolver(loginSchema),
     defaultValues: { email: "", password: "" },
   });
 
+  // Client-side session check to prevent authenticated users from viewing login page
+  useEffect(() => {
+    async function checkUser() {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        // Retrieve roles from database for role-based redirection
+        const { data: userData } = await supabase
+          .from("users")
+          .select("role:roles(name)")
+          .eq("auth_user_id", user.id)
+          .maybeSingle();
+
+        const roleName = (userData as any)?.role?.name || "customer";
+        const isAdmin = ["admin", "super_admin", "manager", "staff"].includes(roleName);
+        router.push(isAdmin ? "/admin" : redirectDestination);
+      }
+    }
+    checkUser();
+  }, [router, redirectDestination]);
+
+  const handleRoleRedirect = async (userId: string) => {
+    try {
+      const { data: userData } = await supabase
+        .from("users")
+        .select("role:roles(name)")
+        .eq("auth_user_id", userId)
+        .maybeSingle();
+
+      const roleName = (userData as any)?.role?.name || "customer";
+      const isAdmin = ["admin", "super_admin", "manager", "staff"].includes(roleName);
+
+      if (isAdmin) {
+        router.push("/admin");
+      } else {
+        router.push(redirectDestination);
+      }
+      router.refresh();
+    } catch {
+      router.push(redirectDestination);
+      router.refresh();
+    }
+  };
+
   const onSubmit = async (data: LoginInput) => {
     setIsLoading(true);
     setAuthError(null);
     try {
-      const { error: signInError } = await supabase.auth.signInWithPassword({
+      const { data: authData, error: signInError } = await supabase.auth.signInWithPassword({
         email: data.email,
         password: data.password,
       });
       if (signInError) {
         setAuthError(signInError.message);
-      } else {
-        router.push("/dashboard");
-        router.refresh();
+      } else if (authData.user) {
+        await handleRoleRedirect(authData.user.id);
       }
     } catch {
       setAuthError("An unexpected error occurred. Please try again.");
@@ -54,7 +104,7 @@ export default function CustomerLoginPage() {
       const { error: oauthError } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${window.location.origin}/dashboard`,
+          redirectTo: `${window.location.origin}${redirectDestination}`,
         },
       });
       if (oauthError) {
@@ -100,16 +150,15 @@ export default function CustomerLoginPage() {
     setAuthError(null);
     setOtpLoading(true);
     try {
-      const { error: verifyError } = await supabase.auth.verifyOtp({
+      const { data: authData, error: verifyError } = await supabase.auth.verifyOtp({
         phone: phone,
         token: otpCode,
         type: "sms",
       });
       if (verifyError) {
         setAuthError(verifyError.message);
-      } else {
-        router.push("/dashboard");
-        router.refresh();
+      } else if (authData.user) {
+        await handleRoleRedirect(authData.user.id);
       }
     } catch {
       setAuthError("Failed to verify OTP. Please try again.");
@@ -119,189 +168,320 @@ export default function CustomerLoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#090a0f] flex items-center justify-center relative overflow-hidden font-sans">
-      {/* Glow Effects */}
-      <div className="absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-blue-500/10 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-1/4 right-1/4 translate-x-1/2 translate-y-1/2 w-[500px] h-[500px] bg-indigo-500/10 rounded-full blur-[120px] pointer-events-none" />
+    <div className="min-h-screen flex bg-[#0a0b0d] overflow-x-hidden">
+      
+      {/* ── Left Side: Luxury Hero Section (60% Desktop) ── */}
+      <div
+        className="hidden lg:flex lg:w-[60%] relative flex-col justify-between p-12 xl:p-16 overflow-hidden select-none"
+        style={{
+          backgroundImage: "url('/auth-bg.jpg')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      >
+        {/* Dark Gradient Overlay for premium cinematic contrast */}
+        <div className="absolute inset-0 bg-gradient-to-r from-[#0a0b0d]/95 via-[#0a0b0d]/60 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0a0b0d]/90 via-transparent to-[#0a0b0d]/40" />
 
-      {/* Main Glass Box */}
-      <div className="w-full max-w-md mx-4 p-8 rounded-[30px] bg-white/[0.02] border border-white/10 backdrop-blur-2xl shadow-2xl relative z-10">
+        {/* Top Header Logo */}
+        <div className="relative z-10 flex items-center gap-3">
+          <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-[#3B82F6] to-[#60A5FA] shadow-lg">
+            <span className="text-[#0f1115] text-base font-extrabold" style={{ fontFamily: "var(--font-heading)" }}>3M</span>
+          </div>
+          <div>
+            <p className="text-white leading-none font-semibold text-lg" style={{ fontFamily: "var(--font-heading)" }}>Car Rentals</p>
+            <p className="text-[#3B82F6] text-[10px] tracking-[0.18em] uppercase font-bold mt-1" style={{ fontFamily: "var(--font-body)" }}>Goa's Premium Fleet</p>
+          </div>
+        </div>
+
+        {/* Cinematic Headline & Statement */}
+        <div className="relative z-10 max-w-xl">
+          <h2
+            className="text-white font-extrabold tracking-tight leading-none mb-4 break-words text-[34px] md:text-[46px] lg:text-[56px]"
+            style={{ fontFamily: "var(--font-heading)" }}
+          >
+            Goa's Most Exclusive Self-Drive Luxury Fleet
+          </h2>
+          <blockquote
+            className="mb-8 max-w-md text-white/80 italic text-base leading-relaxed border-l-2 border-accent-gold pl-4"
+            style={{ fontFamily: "var(--font-heading)" }}
+          >
+            "Every journey deserves a vehicle that matches your ambition."
+          </blockquote>
+
+          {/* Highlights Grid */}
+          <div className="flex gap-8 lg:gap-12 mt-8">
+            {[
+              { count: "500+", label: "Bookings Completed" },
+              { count: "30+", label: "Luxury Vehicles" },
+              { count: "5★", label: "Customer Rating" }
+            ].map((stat, i) => (
+              <div key={i} className="flex flex-col">
+                <span className="text-[#3B82F6] font-bold text-xl lg:text-2xl leading-none" style={{ fontFamily: "var(--font-heading)" }}>{stat.count}</span>
+                <span className="text-white/40 text-xs font-semibold uppercase tracking-wider mt-2" style={{ fontFamily: "var(--font-body)" }}>{stat.label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Footer info on Left Side */}
+        <div className="relative z-10 text-white/20 text-[10px] uppercase tracking-wider" style={{ fontFamily: "var(--font-body)" }}>
+          © 2026 3M Car Rentals. All rights reserved.
+        </div>
+      </div>
+
+      {/* ── Right Side: Authentication Card (40% Desktop) ── */}
+      <div className="flex-1 lg:w-[40%] flex flex-col items-center justify-center p-6 md:p-12 lg:p-16 relative z-10">
         
-        {/* Brand Header */}
-        <div className="flex flex-col items-center mb-8 text-center">
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#3B82F6] to-[#60A5FA] flex items-center justify-center shadow-[0_0_25px_rgba(59,130,246,0.3)] mb-4">
-            <span className="text-[#0f1115] text-lg font-extrabold tracking-tight" style={{ fontFamily: "var(--font-urbanist)" }}>3M</span>
+        {/* Glow behind card for the soft blue glow effect */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] h-[350px] bg-blue-500/5 rounded-full blur-[80px] pointer-events-none" />
+
+        {/* Brand header for mobile screen sizes */}
+        <div className="flex lg:hidden items-center gap-3 mb-8">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#3B82F6] to-[#60A5FA] flex items-center justify-center shadow-md">
+            <span className="text-[#0f1115] text-sm font-bold" style={{ fontFamily: "var(--font-heading)" }}>3M</span>
           </div>
-          <h1 className="text-white text-3xl font-extrabold tracking-tight mb-2" style={{ fontFamily: "var(--font-urbanist)" }}>
-            Welcome to 3M Experience
-          </h1>
-          <p className="text-white/40 text-sm leading-relaxed" style={{ fontFamily: "var(--font-manrope)" }}>
-            Access Goa&apos;s most exclusive self-drive luxury fleet.
-          </p>
+          <span className="text-white font-bold text-lg" style={{ fontFamily: "var(--font-heading)" }}>Car Rentals</span>
         </div>
 
-        {/* Toggle Login Option */}
-        <div className="flex bg-white/[0.04] p-1 rounded-xl mb-6 border border-white/5">
-          <button
-            onClick={() => { setLoginMethod("email"); setAuthError(null); }}
-            className={`flex-1 py-2 text-xs font-semibold rounded-lg transition-all ${loginMethod === "email" ? "bg-blue-600 text-white shadow-lg" : "text-white/40 hover:text-white"}`}
-          >
-            Password Login
-          </button>
-          <button
-            onClick={() => { setLoginMethod("otp"); setAuthError(null); }}
-            className={`flex-1 py-2 text-xs font-semibold rounded-lg transition-all ${loginMethod === "otp" ? "bg-blue-600 text-white shadow-lg" : "text-white/40 hover:text-white"}`}
-          >
-            OTP Login
-          </button>
-        </div>
-
-        {authError && (
-          <div className="bg-red-500/10 border border-red-500/20 text-red-400 text-xs px-4 py-3 rounded-xl mb-6">
-            {authError}
+        {/* Vertically Centered Glassmorphic Authentication Card */}
+        <div className="w-full max-w-[440px] p-8 md:p-10 rounded-[28px] bg-white/[0.02] border border-white/10 backdrop-blur-2xl shadow-[0_8px_32px_rgba(0,0,0,0.37)] hover:border-white/15 transition-colors duration-300">
+          
+          <div className="mb-6">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#3B82F6]/10 border border-[#3B82F6]/20 text-[#3B82F6] text-[10px] font-bold uppercase tracking-wider" style={{ fontFamily: "var(--font-body)" }}>
+              Secure Client Portal
+            </span>
+            <h1 className="text-white font-extrabold text-2xl mt-4 tracking-tight" style={{ fontFamily: "var(--font-heading)" }}>
+              Welcome back
+            </h1>
+            <p className="text-white/50 text-sm mt-2 leading-relaxed" style={{ fontFamily: "var(--font-body)" }}>
+              Sign in to manage bookings and customize your luxury experiences.
+            </p>
           </div>
-        )}
 
-        {/* Password Login Form */}
-        {loginMethod === "email" && (
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <div>
-              <label className="text-xs text-white/50 font-semibold tracking-wider uppercase mb-1.5 block">Email Address</label>
-              <div className="relative">
-                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
-                <input
-                  {...register("email")}
-                  type="email"
-                  placeholder="name@example.com"
-                  className="w-full bg-white/[0.03] border border-white/10 rounded-xl py-3 pl-11 pr-4 text-white placeholder:text-white/20 text-sm focus:outline-none focus:border-blue-500/50 transition-colors"
-                />
-              </div>
-              {errors.email && <p className="text-red-400 text-[10px] mt-1">{errors.email.message}</p>}
-            </div>
+          {/* ── Google Social Login button matching guidelines ── */}
+          <button
+            type="button"
+            onClick={handleGoogleLogin}
+            className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-xl border border-white/10 bg-white/[0.02] hover:bg-white/[0.06] text-white hover:text-white font-semibold text-sm transition-all cursor-pointer shadow-sm select-none"
+            style={{ fontFamily: "var(--font-body)" }}
+          >
+            {/* Google G logo */}
+            <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
+              <path fill="#ea4335" d="M12 5.04c1.66 0 3.2.57 4.38 1.69l3.27-3.27C17.67 1.54 14.98 1 12 1 7.35 1 3.37 3.63 1.39 7.54l3.82 2.96c.92-2.76 3.51-4.46 6.79-4.46z"/>
+              <path fill="#4285f4" d="M23 12.27c0-.82-.07-1.61-.21-2.38H12v4.51h6.18c-.27 1.39-1.04 2.56-2.2 3.33l3.4 2.64C21.35 18.47 23 15.61 23 12.27z"/>
+              <path fill="#fbbc05" d="M5.21 14.78c-.24-.72-.38-1.49-.38-2.28s.14-1.56.38-2.28L1.39 7.26C.5 9.07 0 11.08 0 13.2s.5 4.13 1.39 5.94l3.82-2.96z"/>
+              <path fill="#34a853" d="M12 23c3.24 0 5.97-1.08 7.96-2.91l-3.4-2.64c-.94.63-2.15 1-3.56 1-3.28 0-6.07-2.19-7.06-5.14L1.12 16.3C3.18 20.31 7.24 23 12 23z"/>
+            </svg>
+            <span>Continue with Google</span>
+          </button>
 
-            <div>
-              <div className="flex justify-between items-center mb-1.5">
-                <label className="text-xs text-white/50 font-semibold tracking-wider uppercase block">Password</label>
-                <Link href="/forgot-password" className="text-[11px] text-blue-400 hover:underline">Forgot password?</Link>
-              </div>
-              <div className="relative">
-                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
-                <input
-                  {...register("password")}
-                  type="password"
-                  placeholder="••••••••••••"
-                  className="w-full bg-white/[0.03] border border-white/10 rounded-xl py-3 pl-11 pr-4 text-white placeholder:text-white/20 text-sm focus:outline-none focus:border-blue-500/50 transition-colors"
-                />
-              </div>
-              {errors.password && <p className="text-red-400 text-[10px] mt-1">{errors.password.message}</p>}
-            </div>
+          {/* Separator */}
+          <div className="flex items-center gap-3 my-5">
+            <div className="flex-1 h-px bg-white/10" />
+            <span className="text-[10px] font-bold text-white/30 uppercase tracking-widest" style={{ fontFamily: "var(--font-body)" }}>or sign in with</span>
+            <div className="flex-1 h-px bg-white/10" />
+          </div>
 
-            <Button
-              type="submit"
-              variant="fleet"
-              disabled={isLoading}
-              className="w-full py-3.5 mt-2 flex items-center justify-center gap-2 rounded-xl text-sm tracking-wide uppercase font-bold"
+          {/* Toggle Login Option between Email and Mobile OTP */}
+          <div className="grid grid-cols-2 gap-2 bg-white/[0.02] border border-white/10 p-1 rounded-xl mb-5">
+            <button
+              type="button"
+              onClick={() => { setLoginMethod("email"); setAuthError(null); }}
+              className={`py-2 rounded-lg transition-all cursor-pointer font-bold text-xs ${loginMethod === "email" ? "bg-[#3B82F6] text-[#0f1115] shadow-md" : "text-white/40 hover:text-white/70"}`}
+              style={{ fontFamily: "var(--font-body)" }}
             >
-              Sign In <ArrowRight className="w-4 h-4" />
-            </Button>
-          </form>
-        )}
+              Email Login
+            </button>
+            <button
+              type="button"
+              onClick={() => { setLoginMethod("otp"); setAuthError(null); }}
+              className={`py-2 rounded-lg transition-all cursor-pointer font-bold text-xs ${loginMethod === "otp" ? "bg-[#3B82F6] text-[#0f1115] shadow-md" : "text-white/40 hover:text-white/70"}`}
+              style={{ fontFamily: "var(--font-body)" }}
+            >
+              Mobile OTP
+            </button>
+          </div>
 
-        {/* OTP Login Form */}
-        {loginMethod === "otp" && (
-          <div className="space-y-4">
-            {!otpSent ? (
-              <form onSubmit={handleSendOtp} className="space-y-4">
-                <div>
-                  <label className="text-xs text-white/50 font-semibold tracking-wider uppercase mb-1.5 block">Phone Number</label>
-                  <div className="relative">
-                    <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
-                    <input
-                      type="tel"
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
-                      placeholder="+91 XXXXX XXXXX"
-                      className="w-full bg-white/[0.03] border border-white/10 rounded-xl py-3 pl-11 pr-4 text-white placeholder:text-white/20 text-sm focus:outline-none focus:border-blue-500/50 transition-colors"
-                    />
-                  </div>
-                </div>
+          {authError && (
+            <div className="mb-5 p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-xs flex items-start gap-3 leading-snug">
+              <svg className="w-4 h-4 shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+              </svg>
+              <span>{authError}</span>
+            </div>
+          )}
 
-                <Button
-                  type="submit"
-                  variant="fleet"
-                  disabled={otpLoading}
-                  className="w-full py-3.5 flex items-center justify-center gap-2 rounded-xl text-sm tracking-wide uppercase font-bold"
-                >
-                  Send OTP Code
-                </Button>
-              </form>
-            ) : (
-              <form onSubmit={handleVerifyOtp} className="space-y-4">
-                {otpSuccess && (
-                  <div className="bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs px-4 py-3 rounded-xl">
-                    {otpSuccess}
-                  </div>
-                )}
-                <div>
-                  <label className="text-xs text-white/50 font-semibold tracking-wider uppercase mb-1.5 block">Verification Code</label>
+          {otpSuccess && (
+            <div className="mb-5 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs flex items-start gap-3">
+              <span>✓</span>
+              <span>{otpSuccess}</span>
+            </div>
+          )}
+
+          {/* Email/Password Form */}
+          {loginMethod === "email" ? (
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+              <div className="flex flex-col gap-1 w-full">
+                <label htmlFor="email" className="text-xs text-white/60 font-semibold uppercase tracking-wider" style={{ fontFamily: "var(--font-body)" }}>Email address</label>
+                <div className="relative">
+                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
                   <input
-                    type="text"
-                    value={otpCode}
-                    onChange={(e) => setOtpCode(e.target.value)}
-                    placeholder="Enter 6-digit OTP"
-                    className="w-full bg-white/[0.03] border border-white/10 rounded-xl py-3 px-4 text-white text-center tracking-[0.5em] text-lg font-bold placeholder:text-white/20 placeholder:tracking-normal focus:outline-none focus:border-blue-500/50 transition-colors"
+                    id="email"
+                    type="email"
+                    autoComplete="email"
+                    placeholder="you@example.com"
+                    className="w-full bg-white/[0.03] border border-white/10 rounded-xl py-2.5 pl-10 pr-4 text-white placeholder:text-white/20 text-xs focus:outline-none focus:border-blue-500/50 transition-colors"
+                    {...register("email")}
                   />
                 </div>
+                {errors.email && <p className="text-red-400 text-[10px] mt-1">{errors.email.message}</p>}
+              </div>
 
-                <Button
-                  type="submit"
-                  variant="fleet"
-                  disabled={otpLoading}
-                  className="w-full py-3.5 flex items-center justify-center gap-2 rounded-xl text-sm tracking-wide uppercase font-bold"
-                >
-                  Verify & Log In
-                </Button>
-                <button
-                  type="button"
-                  onClick={() => setOtpSent(false)}
-                  className="text-xs text-white/40 hover:text-white block w-full text-center hover:underline mt-2"
-                >
-                  Change phone number
-                </button>
-              </form>
-            )}
+              <div className="flex flex-col gap-1 w-full">
+                <div className="flex items-center justify-between">
+                  <label htmlFor="password" className="text-xs text-white/60 font-semibold uppercase tracking-wider" style={{ fontFamily: "var(--font-body)" }}>Password</label>
+                  <Link href="/forgot-password" className="text-[10px] text-[#3B82F6] hover:text-white transition-colors">Forgot password?</Link>
+                </div>
+                <div className="relative">
+                  <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+                  <input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    autoComplete="current-password"
+                    placeholder="••••••••"
+                    className="w-full bg-white/[0.03] border border-white/10 rounded-xl py-2.5 pl-10 pr-10 text-white placeholder:text-white/20 text-xs focus:outline-none focus:border-blue-500/50 transition-colors"
+                    {...register("password")}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60 transition-colors cursor-pointer"
+                    aria-label="Toggle password visibility"
+                  >
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+                {errors.password && <p className="text-red-400 text-[10px] mt-1">{errors.password.message}</p>}
+              </div>
+
+              <Button
+                id="login-submit-btn"
+                type="submit"
+                variant="primary"
+                size="md"
+                isLoading={isLoading}
+                className="w-full mt-2 min-h-[44px] text-xs font-bold tracking-widest uppercase rounded-[20px]"
+              >
+                Sign In <ArrowRight className="w-4 h-4 ml-1.5" />
+              </Button>
+            </form>
+          ) : (
+            <div className="space-y-4">
+              {!otpSent ? (
+                <form onSubmit={handleSendOtp} className="space-y-4">
+                  <div className="flex flex-col gap-1 w-full">
+                    <label htmlFor="phone" className="text-xs text-white/60 font-semibold uppercase tracking-wider" style={{ fontFamily: "var(--font-body)" }}>Mobile Phone Number</label>
+                    <div className="relative">
+                      <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+                      <input
+                        id="phone"
+                        type="tel"
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        placeholder="+919876543210"
+                        className="w-full bg-white/[0.03] border border-white/10 text-white rounded-xl py-2.5 pl-10 pr-4 focus:outline-none focus:border-blue-500/50 text-xs"
+                        required
+                      />
+                    </div>
+                    <p className="text-[9px] text-white/35 font-medium leading-normal mt-1">
+                      Include country code (e.g. +91 for India). SMS OTP login requires Supabase config.
+                    </p>
+                  </div>
+                  
+                  <Button
+                    type="submit"
+                    variant="primary"
+                    size="md"
+                    isLoading={otpLoading}
+                    className="w-full mt-2 min-h-[44px] text-xs font-bold tracking-widest uppercase rounded-[20px]"
+                  >
+                    Send OTP Verification
+                  </Button>
+                </form>
+              ) : (
+                <form onSubmit={handleVerifyOtp} className="space-y-4">
+                  <div className="flex flex-col gap-1 w-full">
+                    <label htmlFor="otpCode" className="text-xs text-white/60 font-semibold uppercase tracking-wider" style={{ fontFamily: "var(--font-body)" }}>Enter 6-digit OTP Code</label>
+                    <input
+                      id="otpCode"
+                      type="text"
+                      value={otpCode}
+                      onChange={(e) => setOtpCode(e.target.value)}
+                      placeholder="123456"
+                      className="w-full bg-white/[0.03] border border-white/10 text-white rounded-xl py-2.5 px-4 focus:outline-none focus:border-blue-500/50 text-xs font-mono tracking-widest text-center"
+                      required
+                    />
+                  </div>
+
+                  <Button
+                    type="submit"
+                    variant="primary"
+                    size="md"
+                    isLoading={otpLoading}
+                    className="w-full min-h-[44px] text-xs font-bold tracking-widest uppercase rounded-[20px]"
+                  >
+                    Confirm & Sign In
+                  </Button>
+
+                  <div className="text-center pt-2">
+                    <button
+                      type="button"
+                      onClick={() => { setOtpSent(false); setOtpSuccess(null); }}
+                      className="text-[11px] text-[#3B82F6] hover:text-white transition-colors cursor-pointer"
+                    >
+                      ← Change phone number
+                    </button>
+                  </div>
+                </form>
+              )}
+            </div>
+          )}
+
+          {/* Footer of the card */}
+          <div className="mt-8 text-center text-xs">
+            <p className="text-white/40">
+              Don't have an account?{" "}
+              <Link href="/signup" className="text-blue-400 hover:text-white hover:underline transition-colors font-bold" style={{ fontFamily: "var(--font-body)" }}>
+                Sign Up Now
+              </Link>
+            </p>
           </div>
-        )}
 
-        {/* Separator */}
-        <div className="relative my-6 text-center">
-          <hr className="border-white/10" />
-          <span className="bg-[#090a0f] text-[10px] text-white/30 uppercase tracking-widest px-3 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">Or continue with</span>
-        </div>
+          <div className="mt-6 pt-6 border-t border-white/5 flex items-center justify-center gap-4">
+            {["/privacy", "/terms", "/"].map((href, i) => (
+              <Link key={href} href={href} className="text-white/20 hover:text-white/50 transition-colors text-[10px]" style={{ fontFamily: "var(--font-body)" }}>
+                {["Privacy", "Terms", "Back to Home"][i]}
+              </Link>
+            ))}
+          </div>
 
-        {/* Google OAuth Login */}
-        <button
-          onClick={handleGoogleLogin}
-          className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-xl border border-white/10 bg-white/[0.02] hover:bg-white/[0.06] text-white font-semibold text-sm transition-all"
-        >
-          <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24">
-            <path fill="#ea4335" d="M12 5.04c1.66 0 3.2.57 4.38 1.69l3.27-3.27C17.67 1.54 14.98 1 12 1 7.35 1 3.37 3.63 1.39 7.54l3.82 2.96c.92-2.76 3.51-4.46 6.79-4.46z"/>
-            <path fill="#4285f4" d="M23 12.27c0-.82-.07-1.61-.21-2.38H12v4.51h6.18c-.27 1.39-1.04 2.56-2.2 3.33l3.4 2.64C21.35 18.47 23 15.61 23 12.27z"/>
-            <path fill="#fbbc05" d="M5.21 14.78c-.24-.72-.38-1.49-.38-2.28s.14-1.56.38-2.28L1.39 7.26C.5 9.07 0 11.08 0 13.2s.5 4.13 1.39 5.94l3.82-2.96z"/>
-            <path fill="#34a853" d="M12 23c3.24 0 5.97-1.08 7.96-2.91l-3.4-2.64c-.94.63-2.15 1-3.56 1-3.28 0-6.07-2.19-7.06-5.14L1.12 16.3C3.18 20.31 7.24 23 12 23z"/>
-          </svg>
-          Google Cloud Session
-        </button>
-
-        {/* Footer */}
-        <div className="mt-8 text-center text-xs">
-          <p className="text-white/40">
-            Don&apos;t have an account?{" "}
-            <Link href="/signup" className="text-blue-400 hover:underline font-semibold">Sign Up Now</Link>
-          </p>
         </div>
 
       </div>
+
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-[#0a0b0d] flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-[#3B82F6]/30 border-t-[#3B82F6] rounded-full animate-spin" />
+      </div>
+    }>
+      <LoginForm />
+    </Suspense>
   );
 }

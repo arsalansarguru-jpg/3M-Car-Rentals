@@ -1,70 +1,41 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
-import { registerSchema, type RegisterInput } from "@/types/auth";
 import { supabase } from "@/lib/supabase";
-import { Mail, Lock, User, Phone, ArrowRight, Eye, EyeOff } from "lucide-react";
+import { Mail, ArrowRight, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 
-export default function CustomerSignupPage() {
-  const router = useRouter();
+export default function ForgotPasswordPage() {
+  const [email, setEmail] = useState("");
   const [authError, setAuthError] = useState<string | null>(null);
-  const [authSuccess, setAuthSuccess] = useState<string | null>(null);
+  const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
 
-  const { register, handleSubmit, formState: { errors } } = useForm<RegisterInput>({
-    resolver: zodResolver(registerSchema),
-    defaultValues: { firstName: "", lastName: "", email: "", phone: "", password: "" },
-  });
-
-  // Client-side session check to prevent authenticated users from viewing signup page
-  useEffect(() => {
-    async function checkUser() {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        const { data: userData } = await supabase
-          .from("users")
-          .select("role:roles(name)")
-          .eq("auth_user_id", user.id)
-          .maybeSingle();
-
-        const roleName = (userData as any)?.role?.name || "customer";
-        const isAdmin = ["admin", "super_admin", "manager", "staff"].includes(roleName);
-        router.push(isAdmin ? "/admin" : "/dashboard");
-      }
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) {
+      setAuthError("Please enter a valid email address.");
+      return;
     }
-    checkUser();
-  }, [router]);
 
-  const onSubmit = async (data: RegisterInput) => {
     setIsLoading(true);
     setAuthError(null);
-    setAuthSuccess(null);
+    setSuccessMsg(null);
+
     try {
-      const { error: signUpError } = await supabase.auth.signUp({
-        email: data.email,
-        password: data.password,
-        options: {
-          data: {
-            first_name: data.firstName,
-            last_name: data.lastName,
-            phone: data.phone,
-          },
-        },
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/dashboard/profile`,
       });
 
-      if (signUpError) {
-        setAuthError(signUpError.message);
+      if (error) {
+        setAuthError(error.message);
       } else {
-        setAuthSuccess("Registration initiated successfully. Please check your email inbox to verify your account before logging in.");
+        setSuccessMsg("Password reset email sent successfully. Please check your inbox for instructions.");
+        setEmail("");
       }
     } catch {
-      setAuthError("An unexpected error occurred during signup. Please try again.");
+      setAuthError("An unexpected error occurred. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -103,7 +74,7 @@ export default function CustomerSignupPage() {
             className="text-white font-extrabold tracking-tight leading-none mb-4 break-words text-[34px] md:text-[46px] lg:text-[56px]"
             style={{ fontFamily: "var(--font-heading)" }}
           >
-            Your Premium Goa Driving Experience Starts Here
+            Access Security & Credentials Portal
           </h2>
           <blockquote
             className="mb-8 max-w-md text-white/80 italic text-base leading-relaxed border-l-2 border-accent-gold pl-4"
@@ -147,18 +118,18 @@ export default function CustomerSignupPage() {
           <span className="text-white font-bold text-lg" style={{ fontFamily: "var(--font-heading)" }}>Car Rentals</span>
         </div>
 
-        {/* Vertically Centered Glassmorphic Signup Card */}
-        <div className="w-full max-w-[460px] p-8 md:p-10 rounded-[28px] bg-white/[0.02] border border-white/10 backdrop-blur-2xl shadow-[0_8px_32px_rgba(0,0,0,0.37)] hover:border-white/15 transition-colors duration-300">
+        {/* Vertically Centered Glassmorphic Card */}
+        <div className="w-full max-w-[440px] p-8 md:p-10 rounded-[28px] bg-white/[0.02] border border-white/10 backdrop-blur-2xl shadow-[0_8px_32px_rgba(0,0,0,0.37)] hover:border-white/15 transition-colors duration-300">
           
           <div className="mb-6">
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#3B82F6]/10 border border-[#3B82F6]/20 text-[#3B82F6] text-[10px] font-bold uppercase tracking-wider" style={{ fontFamily: "var(--font-body)" }}>
-              Registration Portal
+              Security
             </span>
             <h1 className="text-white font-extrabold text-2xl mt-4 tracking-tight" style={{ fontFamily: "var(--font-heading)" }}>
-              Create your account
+              Reset password
             </h1>
             <p className="text-white/50 text-sm mt-2 leading-relaxed" style={{ fontFamily: "var(--font-body)" }}>
-              Join Goa's premier luxury self-drive platform.
+              Enter your email address and we'll send you a secure link to update your credentials.
             </p>
           </div>
 
@@ -171,14 +142,14 @@ export default function CustomerSignupPage() {
             </div>
           )}
 
-          {authSuccess ? (
+          {successMsg ? (
             <div className="mb-5 p-5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-sm flex flex-col gap-3">
               <div className="flex items-center gap-2 font-bold">
                 <span>✓</span>
-                <span>Success</span>
+                <span>Reset Email Sent</span>
               </div>
               <p className="text-xs leading-relaxed text-emerald-300/80">
-                {authSuccess}
+                {successMsg}
               </p>
               <Link
                 href="/login"
@@ -188,40 +159,7 @@ export default function CustomerSignupPage() {
               </Link>
             </div>
           ) : (
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-              
-              <div className="grid grid-cols-2 gap-4">
-                <div className="flex flex-col gap-1 w-full">
-                  <label htmlFor="firstName" className="text-[10px] md:text-xs text-white/60 font-semibold uppercase tracking-wider" style={{ fontFamily: "var(--font-body)" }}>First Name</label>
-                  <div className="relative">
-                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-white/30" />
-                    <input
-                      id="firstName"
-                      type="text"
-                      placeholder="John"
-                      className="w-full bg-white/[0.03] border border-white/10 rounded-xl py-2.5 pl-9 pr-2 text-white placeholder:text-white/20 text-xs focus:outline-none focus:border-blue-500/50 transition-colors"
-                      {...register("firstName")}
-                    />
-                  </div>
-                  {errors.firstName && <p className="text-red-400 text-[10px] mt-1">{errors.firstName.message}</p>}
-                </div>
-
-                <div className="flex flex-col gap-1 w-full">
-                  <label htmlFor="lastName" className="text-[10px] md:text-xs text-white/60 font-semibold uppercase tracking-wider" style={{ fontFamily: "var(--font-body)" }}>Last Name</label>
-                  <div className="relative">
-                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-white/30" />
-                    <input
-                      id="lastName"
-                      type="text"
-                      placeholder="Doe"
-                      className="w-full bg-white/[0.03] border border-white/10 rounded-xl py-2.5 pl-9 pr-2 text-white placeholder:text-white/20 text-xs focus:outline-none focus:border-blue-500/50 transition-colors"
-                      {...register("lastName")}
-                    />
-                  </div>
-                  {errors.lastName && <p className="text-red-400 text-[10px] mt-1">{errors.lastName.message}</p>}
-                </div>
-              </div>
-
+            <form onSubmit={handleSubmit} className="space-y-4">
               <div className="flex flex-col gap-1 w-full">
                 <label htmlFor="email" className="text-xs text-white/60 font-semibold uppercase tracking-wider" style={{ fontFamily: "var(--font-body)" }}>Email address</label>
                 <div className="relative">
@@ -229,50 +167,13 @@ export default function CustomerSignupPage() {
                   <input
                     id="email"
                     type="email"
-                    placeholder="john@example.com"
+                    placeholder="you@example.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     className="w-full bg-white/[0.03] border border-white/10 rounded-xl py-2.5 pl-10 pr-4 text-white placeholder:text-white/20 text-xs focus:outline-none focus:border-blue-500/50 transition-colors"
-                    {...register("email")}
+                    required
                   />
                 </div>
-                {errors.email && <p className="text-red-400 text-[10px] mt-1">{errors.email.message}</p>}
-              </div>
-
-              <div className="flex flex-col gap-1 w-full">
-                <label htmlFor="phone" className="text-xs text-white/60 font-semibold uppercase tracking-wider" style={{ fontFamily: "var(--font-body)" }}>Mobile Phone</label>
-                <div className="relative">
-                  <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
-                  <input
-                    id="phone"
-                    type="tel"
-                    placeholder="+919876543210"
-                    className="w-full bg-white/[0.03] border border-white/10 rounded-xl py-2.5 pl-10 pr-4 text-white placeholder:text-white/20 text-xs focus:outline-none focus:border-blue-500/50 transition-colors"
-                    {...register("phone")}
-                  />
-                </div>
-                {errors.phone && <p className="text-red-400 text-[10px] mt-1">{errors.phone.message}</p>}
-              </div>
-
-              <div className="flex flex-col gap-1 w-full">
-                <label htmlFor="password" className="text-xs text-white/60 font-semibold uppercase tracking-wider" style={{ fontFamily: "var(--font-body)" }}>Password</label>
-                <div className="relative">
-                  <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
-                  <input
-                    id="password"
-                    type={showPassword ? "text" : "password"}
-                    placeholder="Min. 12 characters"
-                    className="w-full bg-white/[0.03] border border-white/10 rounded-xl py-2.5 pl-10 pr-10 text-white placeholder:text-white/20 text-xs focus:outline-none focus:border-blue-500/50 transition-colors"
-                    {...register("password")}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60 transition-colors cursor-pointer"
-                    aria-label="Toggle password visibility"
-                  >
-                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                  </button>
-                </div>
-                {errors.password && <p className="text-red-400 text-[10px] mt-1">{errors.password.message}</p>}
               </div>
 
               <Button
@@ -282,19 +183,16 @@ export default function CustomerSignupPage() {
                 isLoading={isLoading}
                 className="w-full mt-2 min-h-[44px] text-xs font-bold tracking-widest uppercase rounded-[20px]"
               >
-                Create Account <ArrowRight className="w-4 h-4 ml-1.5" />
+                Send Reset Link <ArrowRight className="w-4 h-4 ml-1.5" />
               </Button>
             </form>
           )}
 
-          {/* Footer inside the card */}
+          {/* Footer of the card */}
           <div className="mt-6 text-center text-xs">
-            <p className="text-white/40">
-              Already have an account?{" "}
-              <Link href="/login" className="text-blue-400 hover:text-white hover:underline transition-colors font-bold" style={{ fontFamily: "var(--font-body)" }}>
-                Sign In Now
-              </Link>
-            </p>
+            <Link href="/login" className="inline-flex items-center gap-2 text-white/50 hover:text-white transition-colors" style={{ fontFamily: "var(--font-body)" }}>
+              <ArrowLeft className="w-3.5 h-3.5" /> Back to Login
+            </Link>
           </div>
 
           <div className="mt-6 pt-6 border-t border-white/5 flex items-center justify-center gap-4">

@@ -106,7 +106,7 @@ export default function FleetHealthPage() {
     try {
       const res = await fetch("/api/fleet-health/dashboard");
       if (res.status === 401) {
-        router.replace("/auth/login?redirect=/admin/fleet-health");
+        router.replace("/login?redirect=/admin/fleet-health");
         return;
       }
       const json = await res.json();

@@ -112,7 +112,7 @@ export default function MobileMenu({ isSignedIn, dashboardHref, onLogout }: Mobi
                 <div className="grid grid-cols-2 gap-4">
                   {/* Login Button inside drawer */}
                   <button
-                    onClick={() => { setIsOpen(false); router.push("/auth/login"); }}
+                    onClick={() => { setIsOpen(false); router.push("/login"); }}
                     className="btn-glass btn-glass-slate w-full min-h-[44px] text-xs font-semibold tracking-widest uppercase border border-white/10"
                     id="mobile-login-btn"
                   >

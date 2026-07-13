@@ -41,6 +41,16 @@ export async function middleware(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   const url = request.nextUrl.clone();
 
+  // Redirect legacy /auth/login -> /login and /auth/register -> /signup
+  if (url.pathname === "/auth/login") {
+    url.pathname = "/login";
+    return NextResponse.redirect(url);
+  }
+  if (url.pathname === "/auth/register") {
+    url.pathname = "/signup";
+    return NextResponse.redirect(url);
+  }
+
   // 1. Protecting Admin routes (/admin/*, excluding /admin/login)
   if (url.pathname.startsWith("/admin") && url.pathname !== "/admin/login") {
     if (!user) {
@@ -136,5 +146,7 @@ export const config = {
     "/dashboard/:path*",
     "/login",
     "/signup",
+    "/auth/login",
+    "/auth/register",
   ],
 };
