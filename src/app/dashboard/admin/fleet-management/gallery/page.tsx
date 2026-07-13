@@ -179,7 +179,7 @@ export default function VehicleGalleryPage() {
           </p>
         </div>
 
-        <Button variant="cyan" size="sm" onClick={handleSaveGallery} disabled={saving || !selectedVehicleId}>
+        <Button variant="fleet" size="sm" onClick={handleSaveGallery} disabled={saving || !selectedVehicleId}>
           <Check className="w-4 h-4 mr-2" /> {saving ? "Saving..." : "Save Gallery"}
         </Button>
       </div>
@@ -259,7 +259,7 @@ export default function VehicleGalleryPage() {
                     className="glass-input px-3.5 py-2.5 text-white text-sm focus:outline-none placeholder:text-white/20"
                   />
                 </div>
-                <Button variant="slate" type="submit" size="sm" className="mt-4 w-full">
+                <Button variant="secondary" type="submit" size="sm" className="mt-4 w-full">
                   <Plus className="w-4 h-4 mr-2" /> Add URL Image
                 </Button>
               </form>

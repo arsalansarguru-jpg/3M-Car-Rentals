@@ -360,7 +360,7 @@ function VehicleInventoryPageContent() {
           </p>
         </div>
 
-        <Button variant="cyan" size="sm" onClick={handleAddNew} className="gap-2">
+        <Button variant="fleet" size="sm" onClick={handleAddNew} className="gap-2">
           <Plus className="w-4 h-4" /> Add Vehicle
         </Button>
       </div>
@@ -410,13 +410,13 @@ function VehicleInventoryPageContent() {
             {selectedIds.length} {selectedIds.length === 1 ? "vehicle" : "vehicles"} selected
           </span>
           <div className="flex gap-2">
-            <Button variant="slate" size="sm" onClick={handleBulkPriceUpdate}>
+            <Button variant="secondary" size="sm" onClick={handleBulkPriceUpdate}>
               Update Rate
             </Button>
-            <Button variant="slate" size="sm" onClick={() => handleBulkFeature(true)}>
+            <Button variant="secondary" size="sm" onClick={() => handleBulkFeature(true)}>
               Feature
             </Button>
-            <Button variant="slate" size="sm" onClick={() => handleBulkFeature(false)}>
+            <Button variant="secondary" size="sm" onClick={() => handleBulkFeature(false)}>
               Unfeature
             </Button>
             <Button variant="destructive" size="sm" onClick={handleBulkDelete}>
@@ -945,7 +945,7 @@ function VehicleInventoryPageContent() {
               <Button variant="ghost" onClick={() => setIsFormOpen(false)} className="text-white/50">
                 Cancel
               </Button>
-              <Button variant="cyan" onClick={handleFormSubmit}>
+              <Button variant="fleet" onClick={handleFormSubmit}>
                 Save Vehicle
               </Button>
             </div>

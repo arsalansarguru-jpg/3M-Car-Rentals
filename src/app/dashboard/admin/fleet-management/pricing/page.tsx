@@ -165,7 +165,7 @@ export default function PricingPage() {
           </p>
         </div>
 
-        <Button variant="cyan" size="sm" onClick={handleSavePricing} disabled={saving || !selectedVehicleId}>
+        <Button variant="fleet" size="sm" onClick={handleSavePricing} disabled={saving || !selectedVehicleId}>
           <Check className="w-4 h-4 mr-2" /> {saving ? "Saving..." : "Save Rate Changes"}
         </Button>
       </div>

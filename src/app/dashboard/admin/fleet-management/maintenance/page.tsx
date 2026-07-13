@@ -133,7 +133,7 @@ export default function MaintenancePage() {
           </p>
         </div>
 
-        <Button variant="cyan" size="sm" onClick={handleSaveLogs} disabled={saving || !selectedVehicleId}>
+        <Button variant="fleet" size="sm" onClick={handleSaveLogs} disabled={saving || !selectedVehicleId}>
           <Check className="w-4 h-4 mr-2" /> {saving ? "Saving..." : "Save Maintenance Logs"}
         </Button>
       </div>
@@ -229,7 +229,7 @@ export default function MaintenancePage() {
                 />
               </div>
 
-              <Button variant="slate" type="submit" size="sm" className="w-full">
+              <Button variant="secondary" type="submit" size="sm" className="w-full">
                 Add Log Entry
               </Button>
             </form>

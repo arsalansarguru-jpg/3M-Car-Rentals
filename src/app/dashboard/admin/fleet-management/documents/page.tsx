@@ -163,10 +163,10 @@ export default function DocumentsPage() {
         </div>
 
         <div className="flex gap-2">
-          <Button variant="slate" size="sm" onClick={() => setIsFormOpen(true)} disabled={!selectedVehicleId}>
+          <Button variant="secondary" size="sm" onClick={() => setIsFormOpen(true)} disabled={!selectedVehicleId}>
             <Upload className="w-4 h-4 mr-2" /> Upload Document
           </Button>
-          <Button variant="cyan" size="sm" onClick={handleSaveDocuments} disabled={saving || !selectedVehicleId}>
+          <Button variant="fleet" size="sm" onClick={handleSaveDocuments} disabled={saving || !selectedVehicleId}>
             <Check className="w-4 h-4 mr-2" /> {saving ? "Saving..." : "Save Locker"}
           </Button>
         </div>
@@ -326,7 +326,7 @@ export default function DocumentsPage() {
                 <Button variant="ghost" type="button" onClick={() => setIsFormOpen(false)} className="text-white/50">
                   Cancel
                 </Button>
-                <Button variant="cyan" type="submit">
+                <Button variant="fleet" type="submit">
                   Record Document
                 </Button>
               </div>

@@ -111,11 +111,11 @@ export default function FleetOverviewPage() {
         </div>
 
         <div className="flex items-center gap-3">
-          <Button variant="slate" size="sm" onClick={fetchVehicles} className="gap-2">
+          <Button variant="secondary" size="sm" onClick={fetchVehicles} className="gap-2">
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} /> Refresh
           </Button>
           <Link href="/dashboard/admin/fleet-management/inventory?action=add">
-            <Button variant="cyan" size="sm" className="gap-2">
+            <Button variant="fleet" size="sm" className="gap-2">
               <Plus className="w-4 h-4" /> Add Vehicle
             </Button>
           </Link>

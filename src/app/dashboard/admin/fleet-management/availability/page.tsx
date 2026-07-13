@@ -185,7 +185,7 @@ export default function AvailabilityCalendarPage() {
           </p>
         </div>
 
-        <Button variant="cyan" size="sm" onClick={handleSaveCalendar} disabled={saving || !selectedVehicleId}>
+        <Button variant="fleet" size="sm" onClick={handleSaveCalendar} disabled={saving || !selectedVehicleId}>
           <Check className="w-4 h-4 mr-2" /> {saving ? "Saving..." : "Save Calendar Settings"}
         </Button>
       </div>
@@ -270,7 +270,7 @@ export default function AvailabilityCalendarPage() {
                 </select>
               </div>
 
-              <Button variant="slate" type="submit" size="sm" className="w-full">
+              <Button variant="secondary" type="submit" size="sm" className="w-full">
                 Apply Action
               </Button>
             </form>
