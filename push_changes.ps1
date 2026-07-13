@@ -7,6 +7,10 @@ $ErrorActionPreference = "Stop"
 
 Write-Host "Committing and pushing changes to GitHub..."
 
+if (Test-Path "move_admin_folders.ps1") {
+    Remove-Item "move_admin_folders.ps1" -Force
+}
+
 git add -A
 
 $changes = git status --porcelain
