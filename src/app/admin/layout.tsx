@@ -92,6 +92,7 @@ export default function AdminDashboardLayout({ children }: { children: React.Rea
     { name: "Overview", href: "/admin", icon: LayoutDashboard, color: "blue", activeText: "text-blue-400" },
     { name: "Smart Calendar", href: "/admin/bookings", icon: CalendarIcon, color: "blue", activeText: "text-blue-400" },
     { name: "Customer 360", href: "/admin/customers", icon: Users, color: "pink", activeText: "text-pink-400" },
+    { name: "KYC Approvals", href: "/admin/kyc", icon: ShieldCheck, color: "indigo", activeText: "text-indigo-400" },
     { name: "Dynamic Pricing", href: "/admin/pricing", icon: TrendingUp, color: "cyan", activeText: "text-cyan-400" },
     { name: "Revenue Intel", href: "/admin/revenue", icon: Wallet, color: "purple", activeText: "text-purple-400" },
     { name: "Fleet Health", href: "/admin/fleet-health", icon: Car, color: "cyan", activeText: "text-cyan-400" },
@@ -433,6 +434,7 @@ export default function AdminDashboardLayout({ children }: { children: React.Rea
                   {pathname === "/admin" ? "Executive Overview" :
                    pathname === "/admin/bookings" ? "Smart Calendar" :
                    pathname?.includes("/admin/customers") ? "Customer 360" :
+                   pathname?.includes("/admin/kyc") ? "KYC Approvals" :
                    pathname === "/admin/pricing" ? "Dynamic Pricing" :
                    pathname === "/admin/revenue" ? "Revenue Intel" :
                    pathname === "/admin/fleet-health" ? "Fleet Health" :
