@@ -1,16 +1,29 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Cormorant_Garamond, Source_Sans_3 } from "next/font/google";
 import "../styles/globals.css";
 
-const inter = Inter({
-  variable: "--font-inter",
+// ── Display: Cormorant Garamond — editorial serif for headlines ───────────────
+const cormorantGaramond = Cormorant_Garamond({
+  variable: "--font-heading",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["300", "400", "500", "600", "700"],
+  style: ["normal", "italic"],
+  display: "swap",
+});
+
+// ── Body: Source Sans 3 — refined sans-serif for body copy ───────────────────
+const sourceSans3 = Source_Sans_3({
+  variable: "--font-body",
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  style: ["normal", "italic"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "3M Car Rentals | Next-Gen Luxury Mobility",
-  description: "Experience premium car rentals and concierge service in Goa. Search, book, and drive luxury vehicles seamlessly.",
+  title: "3M Car Rentals — Luxury Self-Drive Experiences in Goa",
+  description:
+    "Curated luxury self-drive experiences in Goa. Premium vehicles delivered to your door. Airport pickup at GOX & GOI.",
 };
 
 export default function RootLayout({
@@ -21,9 +34,11 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} h-full antialiased`}
+      className={`${cormorantGaramond.variable} ${sourceSans3.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-[#0a0f1e] text-gray-200">{children}</body>
+      <body className="min-h-full flex flex-col bg-[#121210] text-[#D4C5B0]">
+        {children}
+      </body>
     </html>
   );
 }

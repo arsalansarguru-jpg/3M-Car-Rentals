@@ -266,7 +266,7 @@ export function AnalyticsHorizontalBars({
           </div>
           <div className="h-2 overflow-hidden rounded-full bg-white/[0.06]">
             <motion.div
-              className={cn("h-full rounded-full bg-gradient-to-r from-[#c9a84c] to-[#e8c96d]")}
+              className={cn("h-full rounded-full bg-gradient-to-r from-[#3B82F6] to-[#60A5FA]")}
               initial={{ width: 0 }}
               whileInView={{ width: `${Math.min(100, (r.value / max) * 100)}%` }}
               viewport={{ once: true }}

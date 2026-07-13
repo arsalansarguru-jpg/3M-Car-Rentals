@@ -6,9 +6,9 @@ export const metadata = {
 
 export default function NotFound() {
   return (
-    <div className="min-h-screen bg-[#0a0f1e] flex flex-col items-center justify-center px-6 text-center relative overflow-hidden">
+    <div className="min-h-screen bg-[#0f1115] flex flex-col items-center justify-center px-6 text-center relative overflow-hidden">
       {/* Ambient glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[300px] bg-[#c9a84c]/5 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[300px] bg-[#3B82F6]/5 rounded-full blur-[120px] pointer-events-none" />
 
       {/* Grid lines */}
       <div
@@ -22,8 +22,8 @@ export default function NotFound() {
 
       <div className="relative z-10 flex flex-col items-center max-w-lg">
         {/* Sad face in a vertical pill badge */}
-        <div className="w-14 h-24 rounded-full bg-[#c9a84c]/10 border border-[#c9a84c]/20 flex items-center justify-center mb-8 shadow-lg shadow-[#c9a84c]/5">
-          <svg className="w-8 h-8 text-[#c9a84c]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <div className="w-14 h-24 rounded-full bg-[#3B82F6]/10 border border-[#3B82F6]/20 flex items-center justify-center mb-8 shadow-lg shadow-[#3B82F6]/5">
+          <svg className="w-8 h-8 text-[#3B82F6]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -46,7 +46,7 @@ export default function NotFound() {
           <Link
             href="/"
             id="not-found-home-btn"
-            className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-gradient-to-r from-[#c9a84c] to-[#e8c96d] text-[#0a0f1e] font-bold text-sm hover:shadow-xl hover:shadow-[#c9a84c]/20 hover:-translate-y-0.5 transition-all duration-200"
+            className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-gradient-to-r from-[#3B82F6] to-[#60A5FA] text-[#0f1115] font-bold text-sm hover:shadow-xl hover:shadow-[#3B82F6]/20 hover:-translate-y-0.5 transition-all duration-200"
           >
             ← Back to Home
           </Link>

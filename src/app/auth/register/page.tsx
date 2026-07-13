@@ -58,22 +58,22 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex bg-[#060b18]">
+    <div className="min-h-screen flex bg-[#0a0b0d]">
       {/* ── Left brand panel ── */}
       <div
         className="hidden lg:flex lg:w-1/2 xl:w-3/5 relative flex-col justify-between p-12 overflow-hidden"
         style={{ backgroundImage: "url('/auth-bg.jpg')", backgroundSize: "cover", backgroundPosition: "center" }}
       >
-        <div className="absolute inset-0 bg-gradient-to-r from-[#060b18]/90 via-[#060b18]/60 to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#060b18]/80 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#0a0b0d]/90 via-[#0a0b0d]/60 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0a0b0d]/80 via-transparent to-transparent" />
 
         <div className="relative z-10 flex items-center gap-3">
-          <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-[#c9a84c] to-[#e8c96d] shadow-lg">
-            <span className="text-[#0a0f1e] font-black text-base">3M</span>
+          <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-[#3B82F6] to-[#60A5FA] shadow-lg">
+            <span className="text-[#0f1115] font-black text-base">3M</span>
           </div>
           <div>
             <p className="text-white font-bold text-xl leading-none">Car Rentals</p>
-            <p className="text-[#c9a84c] text-[11px] tracking-[0.2em] uppercase font-medium">Goa&apos;s Premium Fleet</p>
+            <p className="text-[#3B82F6] text-[11px] tracking-[0.2em] uppercase font-medium">Goa&apos;s Premium Fleet</p>
           </div>
         </div>
 
@@ -92,8 +92,8 @@ export default function RegisterPage() {
               "24/7 concierge support",
             ].map((perk) => (
               <div key={perk} className="flex items-center gap-2.5">
-                <div className="w-5 h-5 rounded-full bg-[#c9a84c]/20 border border-[#c9a84c]/40 flex items-center justify-center shrink-0">
-                  <svg className="w-3 h-3 text-[#c9a84c]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <div className="w-5 h-5 rounded-full bg-[#3B82F6]/20 border border-[#3B82F6]/40 flex items-center justify-center shrink-0">
+                  <svg className="w-3 h-3 text-[#3B82F6]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                   </svg>
                 </div>
@@ -107,15 +107,15 @@ export default function RegisterPage() {
       {/* ── Right form panel ── */}
       <div className="flex-1 flex flex-col items-center justify-center px-6 py-12 lg:px-16 xl:px-24 overflow-y-auto">
         <div className="flex lg:hidden items-center gap-2 mb-10">
-          <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#c9a84c] to-[#e8c96d] flex items-center justify-center">
-            <span className="text-[#0a0f1e] font-black text-sm">3M</span>
+          <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#3B82F6] to-[#60A5FA] flex items-center justify-center">
+            <span className="text-[#0f1115] font-black text-sm">3M</span>
           </div>
           <span className="text-white font-bold text-lg">Car Rentals</span>
         </div>
 
         <div className="w-full max-w-md">
           <div className="mb-8">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#c9a84c]/10 border border-[#c9a84c]/20 text-[#c9a84c] text-xs font-semibold tracking-widest uppercase mb-4">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#3B82F6]/10 border border-[#3B82F6]/20 text-[#3B82F6] text-xs font-semibold tracking-widest uppercase mb-4">
               Free Account
             </span>
             <h1 className="text-3xl font-black text-white mt-3">Create your account</h1>
@@ -140,7 +140,7 @@ export default function RegisterPage() {
               </div>
               <h3 className="text-white font-bold text-lg mb-2">Check your inbox!</h3>
               <p className="text-emerald-400/80 text-sm">{successMsg}</p>
-              <Link href="/auth/login" className="mt-5 inline-flex px-6 py-2.5 rounded-lg bg-[#c9a84c] text-[#0a0f1e] font-bold text-sm hover:bg-[#e8c96d] transition-colors">
+              <Link href="/auth/login" className="mt-5 inline-flex px-6 py-2.5 rounded-lg bg-[#3B82F6] text-[#0f1115] font-bold text-sm hover:bg-[#60A5FA] transition-colors">
                 Go to Sign In
               </Link>
             </div>
@@ -237,7 +237,7 @@ export default function RegisterPage() {
 
           <p className="mt-6 text-center text-sm text-white/40">
             Already have an account?{" "}
-            <Link href="/auth/login" className="text-[#c9a84c] font-semibold hover:text-white transition-colors">Sign in</Link>
+            <Link href="/auth/login" className="text-[#3B82F6] font-semibold hover:text-white transition-colors">Sign in</Link>
           </p>
 
           <div className="mt-8 pt-8 border-t border-white/10 flex items-center justify-center">

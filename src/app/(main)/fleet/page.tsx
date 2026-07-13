@@ -13,24 +13,24 @@ export const metadata = {
 // ─── Skeleton loader ──────────────────────────────────────────────────────────
 function VehicleGridSkeleton() {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
       {Array.from({ length: 6 }).map((_, i) => (
-        <div key={i} className="rounded-2xl border border-white/[0.08] bg-white/[0.02] overflow-hidden animate-pulse">
-          <div className="h-52 bg-white/[0.05]" />
-          <div className="p-5 flex flex-col gap-3">
-            <div className="h-2.5 w-1/4 rounded-full bg-white/10" />
-            <div className="h-5 w-2/3 rounded-full bg-white/10" />
+        <div key={i} className="border border-white/10 bg-white/[0.08] backdrop-blur-xl rounded-[20px] overflow-hidden animate-pulse">
+          <div className="h-56 bg-white/[0.03]" />
+          <div className="p-7 flex flex-col gap-4">
+            <div className="h-2.5 w-1/4 bg-white/5" />
+            <div className="h-6 w-2/3 bg-white/5" />
             <div className="flex gap-2">
               {[1, 2, 3].map((j) => (
-                <div key={j} className="h-6 w-16 rounded-lg bg-white/[0.05]" />
+                <div key={j} className="h-6 w-16 bg-white/[0.03]" />
               ))}
             </div>
-            <div className="flex justify-between items-end pt-3 border-t border-white/[0.06]">
-              <div className="space-y-1.5">
-                <div className="h-2 w-10 rounded-full bg-white/10" />
-                <div className="h-6 w-24 rounded-full bg-white/10" />
+            <div className="flex justify-between items-end pt-4 border-t border-white/[0.05]">
+              <div className="space-y-2">
+                <div className="h-2.5 w-10 bg-white/5" />
+                <div className="h-6 w-24 bg-white/5" />
               </div>
-              <div className="h-10 w-24 rounded-xl bg-white/10" />
+              <div className="h-11 w-24 bg-white/5" />
             </div>
           </div>
         </div>
@@ -52,18 +52,23 @@ function CategoryFilter({
   total: number;
 }) {
   return (
-    <div className="flex flex-nowrap overflow-x-auto pb-3 -mx-4 px-4 sm:mx-0 sm:px-0 sm:flex-wrap gap-2 mb-10 scrollbar-none">
+    <div className="flex flex-nowrap overflow-x-auto pb-4 -mx-4 px-4 sm:mx-0 sm:px-0 sm:flex-wrap gap-3 mb-12 scrollbar-none">
       <Link
         href="/fleet"
         id="filter-all"
-        className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 shrink-0 whitespace-nowrap ${
+        className={`inline-flex items-center gap-2.5 px-6 py-3 border rounded-[20px] transition-all duration-300 shrink-0 whitespace-nowrap text-xs font-semibold uppercase tracking-[0.1em] ${
           !activeSlug
-            ? "bg-[#c9a84c] text-[#0a0f1e] shadow-lg shadow-[#c9a84c]/20"
-            : "border border-white/15 text-white/60 hover:text-white hover:border-white/30 bg-white/[0.03]"
+            ? "bg-white/[0.12] border-blue-500/40 text-white shadow-[0_0_15px_rgba(59,130,246,0.15)]"
+            : "border-white/10 text-[#E8DCC8]/60 hover:text-white hover:border-white/20 bg-white/[0.04] backdrop-blur-md"
         }`}
+        style={{ fontFamily: "var(--font-body)" }}
       >
         All Vehicles
-        <span className={`text-xs px-2 py-0.5 rounded-full ${!activeSlug ? "bg-[#0a0f1e]/20" : "bg-white/10"}`}>
+        <span
+          className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
+            !activeSlug ? "bg-white/15 text-white" : "bg-white/5 text-white/40"
+          }`}
+        >
           {total}
         </span>
       </Link>
@@ -72,14 +77,19 @@ function CategoryFilter({
           key={cat.id}
           href={`/fleet?category=${cat.slug}`}
           id={`filter-${cat.slug}`}
-          className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 shrink-0 whitespace-nowrap ${
+          className={`inline-flex items-center gap-2.5 px-6 py-3 border rounded-[20px] transition-all duration-300 shrink-0 whitespace-nowrap text-xs font-semibold uppercase tracking-[0.1em] ${
             activeSlug === cat.slug
-              ? "bg-[#c9a84c] text-[#0a0f1e] shadow-lg shadow-[#c9a84c]/20"
-              : "border border-white/15 text-white/60 hover:text-white hover:border-white/30 bg-white/[0.03]"
+              ? "bg-white/[0.12] border-blue-500/40 text-white shadow-[0_0_15px_rgba(59,130,246,0.15)]"
+              : "border-white/10 text-[#E8DCC8]/60 hover:text-white hover:border-white/20 bg-white/[0.04] backdrop-blur-md"
           }`}
+          style={{ fontFamily: "var(--font-body)" }}
         >
           {cat.name}
-          <span className={`text-xs px-2 py-0.5 rounded-full ${activeSlug === cat.slug ? "bg-[#0a0f1e]/20" : "bg-white/10"}`}>
+          <span
+            className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
+              activeSlug === cat.slug ? "bg-white/15 text-white" : "bg-white/5 text-white/40"
+            }`}
+          >
             {counts[cat.slug] ?? 0}
           </span>
         </Link>
@@ -119,36 +129,45 @@ async function FleetGrid({ categorySlug }: { categorySlug?: string }) {
       />
 
       {/* Results header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6">
-        <p className="text-white/40 text-sm">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-8 border-b border-white/5 pb-4">
+        <p
+          style={{
+            fontFamily: "var(--font-body)",
+            fontSize: "0.9375rem",
+            fontWeight: 400,
+            color: "rgba(232, 220, 200, 0.4)",
+          }}
+        >
           Showing{" "}
-          <span className="text-white font-semibold">{filtered.length}</span>{" "}
+          <span style={{ fontWeight: 600, color: "#ffffff" }}>{filtered.length}</span>{" "}
           {filtered.length === 1 ? "vehicle" : "vehicles"}
           {activeCategory && (
-            <> in <span className="text-[#c9a84c]">{activeCategory.name}</span></>
+            <>
+              {" "}in{" "}
+              <span className="text-[#C9A84C] font-semibold">
+                {activeCategory.name}
+              </span>
+            </>
           )}
         </p>
-        <p className="text-white/25 text-xs sm:text-right">Prices in INR · inclusive of GST</p>
+        <span
+          style={{
+            fontFamily: "var(--font-body)",
+            fontSize: "0.75rem",
+            fontWeight: 400,
+            color: "rgba(232, 220, 200, 0.3)",
+          }}
+        >
+          Prices in INR · Inclusive of GST
+        </span>
       </div>
 
       {filtered.length === 0 ? (
-        <div className="text-center py-24 flex flex-col items-center gap-4">
-          <div className="w-20 h-20 rounded-full bg-white/[0.05] border border-white/10 flex items-center justify-center">
-            <svg className="w-9 h-9 text-white/20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-          </div>
-          <p className="text-white/50 text-lg font-semibold">No vehicles available</p>
-          <p className="text-white/30 text-sm max-w-xs">There are no vehicles in this category right now. Try a different filter or check back later.</p>
-          <Link
-            href="/fleet"
-            className="mt-2 inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-white/5 border border-white/15 text-white text-sm font-medium hover:bg-white/10 transition-colors duration-200"
-          >
-            ← View all vehicles
-          </Link>
+        <div className="text-center py-24 bg-white/[0.04] backdrop-blur-xl border border-white/10 rounded-[20px]">
+          <p className="text-white/40 text-lg font-light">No vehicles available in this category.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filtered.map((vehicle) => (
             <VehicleCard key={vehicle.id} vehicle={vehicle} />
           ))}
@@ -158,57 +177,53 @@ async function FleetGrid({ categorySlug }: { categorySlug?: string }) {
   );
 }
 
-// ─── Page ─────────────────────────────────────────────────────────────────────
+// ─── Main Page ────────────────────────────────────────────────────────────────
 interface FleetPageProps {
   searchParams: Promise<{ category?: string }>;
 }
 
 export default async function FleetPage({ searchParams }: FleetPageProps) {
-  const { category } = await searchParams;
+  const resolvedParams = await searchParams;
+  const categorySlug = resolvedParams.category;
 
   return (
-    <div className="min-h-screen bg-[#0a0f1e]">
-      {/* Page header */}
-      <div className="relative pt-32 pb-16 px-4 sm:px-6 lg:px-8 overflow-hidden bg-[#060b18]">
-        <div
-          className="absolute inset-0 opacity-[0.03]"
-          style={{
-            backgroundImage:
-              "linear-gradient(rgba(201,168,76,1) 1px, transparent 1px), linear-gradient(90deg, rgba(201,168,76,1) 1px, transparent 1px)",
-            backgroundSize: "60px 60px",
-          }}
-        />
-        <div className="absolute inset-x-0 bottom-0 h-px bg-white/10" />
-
-        <div className="relative z-10 max-w-7xl mx-auto">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-            <div className="flex-1 max-w-xl">
-              <p className="text-[#c9a84c] text-xs font-semibold tracking-[0.2em] uppercase mb-3">Available Now</p>
-              <h1 className="text-4xl sm:text-5xl font-black text-white mb-3">Our Fleet</h1>
-              <p className="text-white/40 text-base leading-relaxed">
-                Inspection-verified, fully insured. Delivered to your door or airport.
-              </p>
-            </div>
-            <div className="flex items-center gap-4">
-              <a
-                href="tel:+919876543210"
-                className="inline-flex items-center gap-2 px-5 py-3 rounded-xl border border-white/15 text-white/70 hover:text-white hover:border-white/30 text-sm font-medium transition-all duration-200"
-                id="fleet-call-btn"
-              >
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
-                </svg>
-                Need help choosing?
-              </a>
-            </div>
-          </div>
+    <div className="min-h-screen bg-[#121210]">
+      {/* Page Header */}
+      <div className="max-w-[1400px] mx-auto px-6 sm:px-10 pt-36 pb-8">
+        <div className="flex items-center gap-3.5 mb-4">
+          <span className="block w-6 h-px bg-[#C9A84C]/45" />
+          <p
+            className="text-[#C9A84C] text-[10px] font-semibold uppercase tracking-[0.18em]"
+            style={{ fontFamily: "var(--font-body)" }}
+          >
+            Available Now
+          </p>
         </div>
+        <h1
+          className="text-white mb-4"
+          style={{
+            fontFamily: "var(--font-heading)",
+            fontSize: "clamp(2.5rem, 5vw, 4rem)",
+            fontWeight: 300,
+          }}
+        >
+          Our Fleet
+        </h1>
+        <p
+          className="text-[#E8DCC8]/50 max-w-xl font-light"
+          style={{
+            fontFamily: "var(--font-body)",
+            fontSize: "1.0625rem",
+          }}
+        >
+          Inspection-verified, fully insured. Delivered to your door or airport terminal.
+        </p>
       </div>
 
-      {/* Fleet grid */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pb-24">
+      {/* Fleet Content */}
+      <div className="max-w-[1400px] mx-auto px-6 sm:px-10 pb-36">
         <Suspense fallback={<VehicleGridSkeleton />}>
-          <FleetGrid categorySlug={category} />
+          <FleetGrid categorySlug={categorySlug} />
         </Suspense>
       </div>
     </div>

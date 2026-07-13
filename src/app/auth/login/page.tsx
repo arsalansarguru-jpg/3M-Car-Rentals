@@ -132,38 +132,38 @@ function LoginForm() {
   };
 
   return (
-    <div className="min-h-screen flex bg-[#060b18]">
+    <div className="min-h-screen flex bg-[#0a0b0d]">
       {/* ── Left brand panel ── */}
       <div
         className="hidden lg:flex lg:w-1/2 xl:w-3/5 relative flex-col justify-between p-12 overflow-hidden"
         style={{ backgroundImage: "url('/auth-bg.jpg')", backgroundSize: "cover", backgroundPosition: "center" }}
       >
         {/* Dark overlay */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#060b18]/90 via-[#060b18]/60 to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#060b18]/80 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#0a0b0d]/90 via-[#0a0b0d]/60 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0a0b0d]/80 via-transparent to-transparent" />
 
         {/* Logo */}
         <div className="relative z-10 flex items-center gap-3">
-          <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-[#c9a84c] to-[#e8c96d] shadow-lg">
-            <span className="text-[#0a0f1e] font-black text-base">3M</span>
+          <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-[#3B82F6] to-[#60A5FA] shadow-lg">
+            <span className="text-[#0f1115] text-base" style={{ fontFamily: "var(--font-heading)", fontWeight: 700 }}>3M</span>
           </div>
           <div>
-            <p className="text-white font-bold text-xl leading-none">Car Rentals</p>
-            <p className="text-[#c9a84c] text-[11px] tracking-[0.2em] uppercase font-medium">Goa&apos;s Premium Fleet</p>
+            <p className="text-white leading-none" style={{ fontFamily: "var(--font-heading)", fontSize: "1.25rem", fontWeight: 600 }}>Car Rentals</p>
+            <p className="text-[#3B82F6]" style={{ fontFamily: "var(--font-body)", fontSize: "0.625rem", letterSpacing: "0.18em", textTransform: "uppercase", fontWeight: 500, marginTop: "0.2rem" }}>Goa&apos;s Premium Fleet</p>
           </div>
         </div>
 
         {/* Bottom copy */}
         <div className="relative z-10">
-          <blockquote className="text-white/90 text-2xl font-bold leading-snug mb-4 max-w-md">
+          <blockquote className="mb-5 max-w-md" style={{ fontFamily: "var(--font-heading)", fontSize: "1.375rem", fontWeight: 600, lineHeight: 1.35, color: "rgba(255,255,255,0.9)" }}>
             &ldquo;Every journey deserves a vehicle that matches your ambition.&rdquo;
           </blockquote>
-          <p className="text-white/50 text-sm">Trusted by 500+ premium travellers in Goa</p>
-          <div className="flex gap-6 mt-6">
+          <p style={{ fontFamily: "var(--font-body)", fontSize: "1rem", fontWeight: 400, color: "rgba(255,255,255,0.5)" }}>Trusted by 500+ premium travellers in Goa</p>
+          <div className="flex gap-8 mt-7">
             {["500+ Bookings", "30+ Vehicles", "5★ Rating"].map((s) => (
               <div key={s} className="flex flex-col">
-                <span className="text-[#c9a84c] font-black text-lg">{s.split(" ")[0]}</span>
-                <span className="text-white/40 text-xs">{s.split(" ").slice(1).join(" ")}</span>
+                <span style={{ fontFamily: "var(--font-heading)", fontWeight: 700, fontSize: "1.25rem", color: "#3B82F6", lineHeight: 1.1 }}>{s.split(" ")[0]}</span>
+                <span style={{ fontFamily: "var(--font-body)", fontWeight: 400, fontSize: "0.8125rem", color: "rgba(255,255,255,0.4)", marginTop: "0.2rem" }}>{s.split(" ").slice(1).join(" ")}</span>
               </div>
             ))}
           </div>
@@ -174,26 +174,27 @@ function LoginForm() {
       <div className="flex-1 flex flex-col items-center justify-center px-6 py-12 lg:px-16 xl:px-24">
         {/* Mobile logo */}
         <div className="flex lg:hidden items-center gap-2 mb-10">
-          <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#c9a84c] to-[#e8c96d] flex items-center justify-center">
-            <span className="text-[#0a0f1e] font-black text-sm">3M</span>
+          <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#3B82F6] to-[#60A5FA] flex items-center justify-center">
+            <span className="text-[#0f1115] text-sm" style={{ fontFamily: "var(--font-heading)", fontWeight: 700 }}>3M</span>
           </div>
-          <span className="text-white font-bold text-lg">Car Rentals</span>
+          <span className="text-white" style={{ fontFamily: "var(--font-heading)", fontSize: "1.125rem", fontWeight: 600 }}>Car Rentals</span>
         </div>
 
         <div className="w-full max-w-md">
           <div className="mb-8">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#c9a84c]/10 border border-[#c9a84c]/20 text-[#c9a84c] text-xs font-semibold tracking-widest uppercase mb-4">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#3B82F6]/10 border border-[#3B82F6]/20 text-[#3B82F6] mb-4" style={{ fontFamily: "var(--font-body)", fontSize: "0.6875rem", fontWeight: 500, letterSpacing: "0.12em", textTransform: "uppercase" }}>
               Secure Portal
             </span>
-            <h1 className="text-3xl font-black text-white mt-3">Welcome back</h1>
-            <p className="text-white/50 mt-2 text-sm">Sign in to manage your bookings and fleet access.</p>
+            <h1 style={{ fontFamily: "var(--font-heading)", fontSize: "1.875rem", fontWeight: 700, color: "#ffffff", letterSpacing: "-0.015em", marginTop: "0.75rem" }}>Welcome back</h1>
+            <p style={{ fontFamily: "var(--font-body)", fontSize: "1rem", fontWeight: 400, lineHeight: 1.7, color: "rgba(255,255,255,0.5)", marginTop: "0.5rem" }}>Sign in to manage your bookings and fleet access.</p>
           </div>
 
           {/* ── Google Social Login Option ── */}
           <button
             type="button"
             onClick={handleGoogleLogin}
-            className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-xl border border-white/10 bg-white/[0.02] hover:bg-white/[0.06] text-white font-bold transition-all cursor-pointer text-sm"
+            className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-xl border border-white/10 bg-white/[0.02] hover:bg-white/[0.06] text-white transition-all cursor-pointer"
+            style={{ fontFamily: "var(--font-body)", fontSize: "1rem", fontWeight: 600 }}
           >
             <svg className="w-5 h-5" viewBox="0 0 24 24">
               <path fill="#ea4335" d="M12 5.04c1.66 0 3.2.57 4.38 1.69l3.27-3.27C17.67 1.54 14.98 1 12 1 7.35 1 3.37 3.63 1.39 7.54l3.82 2.96c.92-2.76 3.51-4.46 6.79-4.46z"/>
@@ -206,23 +207,25 @@ function LoginForm() {
 
           <div className="flex items-center gap-3 my-6">
             <div className="flex-1 h-px bg-white/10" />
-            <span className="text-[10px] text-white/30 font-black uppercase tracking-wider">or sign in with</span>
+            <span style={{ fontFamily: "var(--font-body)", fontSize: "0.8125rem", fontWeight: 500, color: "rgba(255,255,255,0.3)", letterSpacing: "0.06em" }}>or sign in with</span>
             <div className="flex-1 h-px bg-white/10" />
           </div>
 
           {/* ── Tab Switcher between Email and OTP ── */}
-          <div className="grid grid-cols-2 gap-2 bg-white/[0.02] border border-white/10 p-1.5 rounded-xl mb-6 text-xs">
+          <div className="grid grid-cols-2 gap-2 bg-white/[0.02] border border-white/10 p-1.5 rounded-xl mb-6">
             <button
               type="button"
               onClick={() => { setLoginMethod("email"); setAuthError(null); }}
-              className={`py-2 rounded-lg font-bold tracking-wider uppercase transition-all cursor-pointer ${loginMethod === "email" ? "bg-[#c9a84c] text-[#0a0f1e]" : "text-white/40 hover:text-white/70"}`}
+              className={`py-2.5 rounded-lg transition-all cursor-pointer ${loginMethod === "email" ? "bg-[#3B82F6] text-[#0f1115]" : "text-white/40 hover:text-white/70"}`}
+              style={{ fontFamily: "var(--font-body)", fontSize: "0.875rem", fontWeight: 600 }}
             >
               Other Email
             </button>
             <button
               type="button"
               onClick={() => { setLoginMethod("otp"); setAuthError(null); }}
-              className={`py-2 rounded-lg font-bold tracking-wider uppercase transition-all cursor-pointer ${loginMethod === "otp" ? "bg-[#c9a84c] text-[#0a0f1e]" : "text-white/40 hover:text-white/70"}`}
+              className={`py-2.5 rounded-lg transition-all cursor-pointer ${loginMethod === "otp" ? "bg-[#3B82F6] text-[#0f1115]" : "text-white/40 hover:text-white/70"}`}
+              style={{ fontFamily: "var(--font-body)", fontSize: "0.875rem", fontWeight: 600 }}
             >
               Mobile OTP
             </button>
@@ -261,8 +264,8 @@ function LoginForm() {
               {/* Password */}
               <div className="flex flex-col gap-1.5 w-full">
                 <div className="flex items-center justify-between">
-                  <label htmlFor="password" className="text-sm font-medium text-white/70 select-none cursor-pointer">Password</label>
-                  <Link href="/auth/forgot-password" className="text-xs text-[#c9a84c] hover:text-white transition-colors">Forgot password?</Link>
+                  <label htmlFor="password" className="select-none cursor-pointer" style={{ fontFamily: "var(--font-body)", fontSize: "0.875rem", fontWeight: 500, color: "rgba(255,255,255,0.7)" }}>Password</label>
+                  <Link href="/auth/forgot-password" className="text-xs text-[#3B82F6] hover:text-white transition-colors">Forgot password?</Link>
                 </div>
                 <Input
                   id="password"
@@ -312,7 +315,7 @@ function LoginForm() {
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
                       placeholder="+919876543210"
-                      className="w-full bg-white/[0.03] border border-white/10 text-white rounded-xl px-4 py-3 focus:outline-none focus:border-[#c9a84c] text-sm"
+                      className="w-full bg-white/[0.03] border border-white/10 text-white rounded-xl px-4 py-3 focus:outline-none focus:border-[#3B82F6] text-sm"
                       required
                     />
                     <p className="text-[10px] text-white/30 leading-normal font-medium mt-1">
@@ -340,7 +343,7 @@ function LoginForm() {
                       value={otpCode}
                       onChange={(e) => setOtpCode(e.target.value)}
                       placeholder="123456"
-                      className="w-full bg-white/[0.03] border border-white/10 text-white rounded-xl px-4 py-3 focus:outline-none focus:border-[#c9a84c] text-sm font-mono tracking-widest text-center"
+                      className="w-full bg-white/[0.03] border border-white/10 text-white rounded-xl px-4 py-3 focus:outline-none focus:border-[#3B82F6] text-sm font-mono tracking-widest text-center"
                       required
                     />
                   </div>
@@ -359,7 +362,7 @@ function LoginForm() {
                     <button
                       type="button"
                       onClick={() => { setOtpSent(false); setOtpSuccess(null); }}
-                      className="text-xs text-[#c9a84c] hover:text-white transition-colors cursor-pointer"
+                      className="text-xs text-[#3B82F6] hover:text-white transition-colors cursor-pointer"
                     >
                       ← Change phone number
                     </button>
@@ -368,17 +371,19 @@ function LoginForm() {
               )}
             </div>
           )}
-          <p className="mt-6 text-center text-sm text-white/40">
+          <p className="mt-6 text-center" style={{ fontFamily: "var(--font-body)", fontSize: "0.9375rem", fontWeight: 400, color: "rgba(255,255,255,0.4)" }}>
             Don&apos;t have an account?{" "}
-            <Link href="/auth/register" className="text-[#c9a84c] font-semibold hover:text-white transition-colors">
+            <Link href="/auth/register" className="text-[#3B82F6] hover:text-white transition-colors" style={{ fontWeight: 600 }}>
               Create one free
             </Link>
           </p>
 
-          <div className="mt-8 pt-8 border-t border-white/10 flex items-center justify-center gap-6 text-white/25 text-xs">
-            <Link href="/privacy" className="hover:text-white/50 transition-colors">Privacy Policy</Link>
-            <Link href="/terms" className="hover:text-white/50 transition-colors">Terms of Service</Link>
-            <Link href="/" className="hover:text-white/50 transition-colors">← Back to Home</Link>
+          <div className="mt-8 pt-8 border-t border-white/10 flex items-center justify-center gap-6">
+            {["/privacy", "/terms", "/"].map((href, i) => (
+              <Link key={href} href={href} className="hover:text-white/50 transition-colors" style={{ fontFamily: "var(--font-body)", fontSize: "0.8125rem", fontWeight: 400, color: "rgba(255,255,255,0.25)" }}>
+                {["Privacy Policy", "Terms of Service", "← Back to Home"][i]}
+              </Link>
+            ))}
           </div>
         </div>
       </div>
@@ -389,8 +394,8 @@ function LoginForm() {
 export default function LoginPage() {
   return (
     <React.Suspense fallback={
-      <div className="min-h-screen bg-[#060b18] flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-[#c9a84c]/30 border-t-[#c9a84c] rounded-full animate-spin" />
+      <div className="min-h-screen bg-[#0a0b0d] flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-[#3B82F6]/30 border-t-[#3B82F6] rounded-full animate-spin" />
       </div>
     }>
       <LoginForm />

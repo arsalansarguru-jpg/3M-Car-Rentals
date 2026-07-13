@@ -9,33 +9,67 @@ export const metadata = {
 
 export default function AboutPage() {
   return (
-    <div className="min-h-screen bg-[#0a0f1e]">
+    <div className="min-h-screen bg-[#121210]">
       {/* ═══════════════════════════════════════════════════════════════
           HERO SECTION
       ═══════════════════════════════════════════════════════════════ */}
-      <div className="relative pt-32 pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden bg-[#060b18]">
+      <div className="relative pt-36 pb-24 px-4 sm:px-6 lg:px-8 overflow-hidden bg-[#1A1916]">
         {/* Faint grid background */}
         <div
-          className="absolute inset-0 opacity-[0.03] pointer-events-none"
+          className="absolute inset-0 opacity-[0.02] pointer-events-none"
           style={{
             backgroundImage:
               "linear-gradient(rgba(201,168,76,1) 1px, transparent 1px), linear-gradient(90deg, rgba(201,168,76,1) 1px, transparent 1px)",
-            backgroundSize: "60px 60px",
+            backgroundSize: "80px 80px",
           }}
         />
-        <div className="absolute inset-x-0 bottom-0 h-px bg-white/10" />
+        <div className="absolute inset-x-0 bottom-0 h-px bg-[#C9A84C]/10" />
 
         <div className="relative z-10 max-w-7xl mx-auto text-center">
-          <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#c9a84c]/10 border border-[#c9a84c]/20 text-[#c9a84c] text-xs font-semibold tracking-[0.15em] uppercase mb-6">
-            ✨ The 3M Story
-          </span>
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight mb-6 leading-tight max-w-4xl mx-auto">
+          <div className="flex items-center justify-center gap-3 mb-6">
+            <span className="block w-6 h-px bg-[#C9A84C]/40" />
+            <span
+              style={{
+                fontFamily: "var(--font-body)",
+                fontSize: "0.6875rem",
+                fontWeight: 500,
+                letterSpacing: "0.18em",
+                textTransform: "uppercase",
+                color: "#C9A84C",
+              }}
+            >
+              The 3M Story
+            </span>
+            <span className="block w-6 h-px bg-[#C9A84C]/40" />
+          </div>
+          <h1
+            className="text-white tracking-wide mb-6 leading-tight max-w-4xl mx-auto"
+            style={{
+              fontFamily: "var(--font-heading)",
+              fontSize: "clamp(2.5rem, 5vw, 4.5rem)",
+              fontWeight: 300,
+            }}
+          >
             Redefining Travel in{" "}
-            <span className="bg-gradient-to-r from-[#c9a84c] via-[#e8c96d] to-[#c9a84c] bg-clip-text text-transparent">
+            <span
+              style={{
+                background: "linear-gradient(135deg, #C9A84C, #E8DCC8, #C9A84C)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
+              }}
+            >
               Goa
             </span>
           </h1>
-          <p className="text-white/50 text-base sm:text-lg leading-relaxed max-w-2xl mx-auto mb-10">
+          <p
+            className="leading-relaxed max-w-2xl mx-auto mb-10 text-[#E8DCC8]/60"
+            style={{
+              fontFamily: "var(--font-body)",
+              fontSize: "1.125rem",
+              fontWeight: 300,
+            }}
+          >
             Founded with a single mission: to deliver a flawless, high-end, self-drive rental experience that matches the beauty and freedom of Goa.
           </p>
         </div>
@@ -44,12 +78,40 @@ export default function AboutPage() {
       {/* ═══════════════════════════════════════════════════════════════
           OUR STORY SECTION
       ═══════════════════════════════════════════════════════════════ */}
-      <section className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+      <section className="py-32 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           <div>
-            <p className="text-[#c9a84c] font-semibold uppercase tracking-[0.2em] text-[11px] mb-3">Our Genesis</p>
-            <h2 className="text-white font-black text-3xl sm:text-4xl mb-6">Built by Travellers, for Travellers</h2>
-            <div className="space-y-4 text-white/60 text-sm leading-relaxed">
+            <p
+              className="mb-4"
+              style={{
+                fontFamily: "var(--font-body)",
+                fontSize: "0.6875rem",
+                fontWeight: 500,
+                letterSpacing: "0.18em",
+                textTransform: "uppercase",
+                color: "#C9A84C",
+              }}
+            >
+              Our Genesis
+            </p>
+            <h2
+              className="text-white mb-8"
+              style={{
+                fontFamily: "var(--font-heading)",
+                fontSize: "clamp(2rem, 3.5vw, 2.75rem)",
+                fontWeight: 400,
+                letterSpacing: "0.01em",
+              }}
+            >
+              Built by Travellers, for Travellers
+            </h2>
+            <div
+              className="space-y-6 text-[#E8DCC8]/60 leading-relaxed font-light"
+              style={{
+                fontFamily: "var(--font-body)",
+                fontSize: "1rem",
+              }}
+            >
               <p>
                 We noticed that renting a car in Goa was often plagued by poor vehicle quality, lack of transparency in fuel policies, and unreliable drop-off handovers.
               </p>
@@ -62,24 +124,52 @@ export default function AboutPage() {
             </div>
           </div>
 
-          <div className="relative aspect-video lg:aspect-square rounded-2xl border border-white/10 overflow-hidden group">
+          <div className="relative aspect-video lg:aspect-square border border-[#C9A84C]/10 overflow-hidden group">
             {/* Background Image */}
             <Image
               src="/about-car.png"
               alt="Luxury sports car with golden accents"
               fill
               sizes="(max-width: 1024px) 100vw, 50vw"
-              className="object-cover object-center group-hover:scale-105 transition-transform duration-700 pointer-events-none"
+              className="object-cover object-center group-hover:scale-105 transition-transform duration-700 pointer-events-none opacity-80"
             />
             {/* Dark gradient overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-[#060b18]/95 via-[#060b18]/60 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#121210] via-[#121210]/40 to-transparent" />
 
             <div className="absolute inset-x-0 bottom-0 p-8 sm:p-10 z-10 flex flex-col justify-end h-full">
-              <div className="w-14 h-14 rounded-xl bg-[#c9a84c]/10 border border-[#c9a84c]/20 flex items-center justify-center mb-5">
-                <span className="text-[#c9a84c] text-2xl font-black">3M</span>
+              <div
+                className="w-16 h-16 border border-[#C9A84C]/25 flex items-center justify-center mb-6"
+                style={{ background: "rgba(18, 18, 16, 0.6)" }}
+              >
+                <span
+                  style={{
+                    fontFamily: "var(--font-heading)",
+                    color: "#C9A84C",
+                    fontSize: "1.5rem",
+                    fontWeight: 500,
+                  }}
+                >
+                  3M
+                </span>
               </div>
-              <h3 className="text-white font-bold text-xl mb-2">Impeccable Standards</h3>
-              <p className="text-white/60 text-xs sm:text-sm leading-relaxed max-w-sm">
+              <h3
+                className="text-white mb-2"
+                style={{
+                  fontFamily: "var(--font-heading)",
+                  fontSize: "1.5rem",
+                  fontWeight: 400,
+                }}
+              >
+                Impeccable Standards
+              </h3>
+              <p
+                className="text-[#E8DCC8]/50 max-w-sm"
+                style={{
+                  fontFamily: "var(--font-body)",
+                  fontSize: "0.875rem",
+                  fontWeight: 300,
+                }}
+              >
                 Goa&apos;s premium fleet. Verified, detailed, and delivered wherever you are.
               </p>
             </div>
@@ -90,11 +180,35 @@ export default function AboutPage() {
       {/* ═══════════════════════════════════════════════════════════════
           CORE PILLARS SECTION
       ═══════════════════════════════════════════════════════════════ */}
-      <section className="bg-[#060b18] py-24 px-4 sm:px-6 lg:px-8">
+      <section className="bg-[#1A1916] py-32 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <p className="text-[#c9a84c] font-semibold uppercase tracking-[0.2em] text-[11px] mb-3">Our Values</p>
-            <h2 className="text-white font-black text-3xl sm:text-4xl">What Defines 3M Car Rentals</h2>
+          <div className="text-center mb-20">
+            <div className="flex items-center justify-center gap-3 mb-4">
+              <span className="block w-6 h-px bg-[#C9A84C]/40" />
+              <p
+                style={{
+                  fontFamily: "var(--font-body)",
+                  fontSize: "0.6875rem",
+                  fontWeight: 500,
+                  letterSpacing: "0.18em",
+                  textTransform: "uppercase",
+                  color: "#C9A84C",
+                }}
+              >
+                Our Values
+              </p>
+              <span className="block w-6 h-px bg-[#C9A84C]/40" />
+            </div>
+            <h2
+              className="text-white"
+              style={{
+                fontFamily: "var(--font-heading)",
+                fontSize: "clamp(2rem, 3.5vw, 2.75rem)",
+                fontWeight: 400,
+              }}
+            >
+              What Defines 3M Car Rentals
+            </h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -117,11 +231,28 @@ export default function AboutPage() {
             ].map((pillar) => (
               <div
                 key={pillar.title}
-                className="group relative p-8 rounded-2xl bg-white/[0.02] border border-white/[0.06] hover:bg-white/[0.04] hover:border-[#c9a84c]/20 hover:-translate-y-1 transition-all duration-300 flex flex-col h-full"
+                className="group relative p-10 bg-white/[0.015] border border-white/[0.06] hover:border-[#C9A84C]/20 hover:-translate-y-1 transition-all duration-500 flex flex-col h-full"
               >
-                <div className="text-4xl mb-6">{pillar.icon}</div>
-                <h3 className="text-white font-bold text-lg mb-3">{pillar.title}</h3>
-                <p className="text-white/50 text-sm leading-relaxed">{pillar.desc}</p>
+                <div className="text-4xl mb-8">{pillar.icon}</div>
+                <h3
+                  className="text-white mb-3"
+                  style={{
+                    fontFamily: "var(--font-heading)",
+                    fontSize: "1.5rem",
+                    fontWeight: 400,
+                  }}
+                >
+                  {pillar.title}
+                </h3>
+                <p
+                  className="text-[#E8DCC8]/50 leading-relaxed font-light"
+                  style={{
+                    fontFamily: "var(--font-body)",
+                    fontSize: "0.9375rem",
+                  }}
+                >
+                  {pillar.desc}
+                </p>
               </div>
             ))}
           </div>
@@ -131,11 +262,26 @@ export default function AboutPage() {
       {/* ═══════════════════════════════════════════════════════════════
           MILESTONES & STATS
       ═══════════════════════════════════════════════════════════════ */}
-      <section className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center">
-        <div className="max-w-4xl mx-auto bg-gradient-to-br from-white/[0.02] to-transparent border border-white/[0.06] p-8 sm:p-12 rounded-3xl relative overflow-hidden">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-32 rounded-full bg-[#c9a84c]/5 blur-[60px] pointer-events-none" />
+      <section className="py-32 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center">
+        <div
+          className="max-w-4xl mx-auto p-12 relative overflow-hidden"
+          style={{
+            background: "rgba(255, 255, 255, 0.01)",
+            border: "1px solid rgba(201, 168, 76, 0.1)",
+          }}
+        >
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-32 rounded-full bg-[#C9A84C]/5 blur-[80px] pointer-events-none" />
 
-          <h2 className="text-white font-black text-2xl sm:text-3xl mb-8 relative z-10">Our Journey in Numbers</h2>
+          <h2
+            className="text-white mb-10 relative z-10"
+            style={{
+              fontFamily: "var(--font-heading)",
+              fontSize: "2rem",
+              fontWeight: 400,
+            }}
+          >
+            Our Journey in Numbers
+          </h2>
           
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 relative z-10">
             {[
@@ -144,8 +290,28 @@ export default function AboutPage() {
               { value: "100%", label: "Transparency Guaranteed" },
             ].map((stat) => (
               <div key={stat.label}>
-                <p className="text-white font-black text-4xl sm:text-5xl mb-2">{stat.value}</p>
-                <p className="text-white/40 text-xs font-semibold uppercase tracking-wider">{stat.label}</p>
+                <p
+                  className="text-white mb-2"
+                  style={{
+                    fontFamily: "var(--font-heading)",
+                    fontSize: "3rem",
+                    fontWeight: 300,
+                  }}
+                >
+                  {stat.value}
+                </p>
+                <p
+                  style={{
+                    fontFamily: "var(--font-body)",
+                    fontSize: "0.6875rem",
+                    fontWeight: 500,
+                    letterSpacing: "0.16em",
+                    textTransform: "uppercase",
+                    color: "rgba(212, 197, 176, 0.4)",
+                  }}
+                >
+                  {stat.label}
+                </p>
               </div>
             ))}
           </div>
@@ -155,15 +321,31 @@ export default function AboutPage() {
       {/* ═══════════════════════════════════════════════════════════════
           FINAL CTA
       ═══════════════════════════════════════════════════════════════ */}
-      <section className="bg-[#060b18] py-20 border-t border-white/5">
+      <section className="bg-[#1A1916] py-24 border-t border-[#C9A84C]/8">
         <div className="max-w-4xl mx-auto text-center px-6">
-          <h2 className="text-white font-black text-3xl mb-4">Experience Goa at Your Own Pace</h2>
-          <p className="text-white/50 text-sm leading-relaxed max-w-md mx-auto mb-8">
+          <h2
+            className="text-white mb-4"
+            style={{
+              fontFamily: "var(--font-heading)",
+              fontSize: "2.5rem",
+              fontWeight: 400,
+            }}
+          >
+            Experience Goa at Your Own Pace
+          </h2>
+          <p
+            className="leading-relaxed max-w-md mx-auto mb-10 text-[#E8DCC8]/50"
+            style={{
+              fontFamily: "var(--font-body)",
+              fontSize: "1rem",
+              fontWeight: 300,
+            }}
+          >
             Choose self-drive freedom. Secure your keys online and have them waiting for you at the airport arrivals gate.
           </p>
           <Link
             href="/fleet"
-            className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl font-bold bg-gradient-to-r from-[#c9a84c] to-[#e8c96d] text-[#0a0f1e] text-sm shadow-lg shadow-[#c9a84c]/20 hover:-translate-y-1 transition-all duration-300"
+            className="inline-flex items-center gap-3 px-10 py-4 bg-[#C9A84C] text-[#121210] hover:bg-[#D4B96A] transition-all duration-300 shadow-lg shadow-[#C9A84C]/10 text-xs font-semibold uppercase tracking-[0.14em]"
           >
             Explore the Fleet
           </Link>

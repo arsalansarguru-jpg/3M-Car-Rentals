@@ -4,6 +4,7 @@ import React from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import type { VehicleWithCategory } from "@/types/database";
+import { Button } from "@/components/ui/Button";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 function formatINR(n: number) {
@@ -173,42 +174,44 @@ export default function BookingForm({ vehicle }: BookingFormProps) {
   if (success) {
     return (
       <div className="flex flex-col items-center justify-center py-12 gap-6 text-center">
-        <div className="w-20 h-20 rounded-full bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center">
-          <svg className="w-10 h-10 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+        <div className="w-20 h-20 bg-emerald-500/10 border border-emerald-500/25 flex items-center justify-center rounded-full">
+          <svg className="w-8 h-8 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path d="M5 13l4 4L19 7" />
           </svg>
         </div>
         <div>
-          <h3 className="text-white font-black text-2xl mb-2">Booking Confirmed! 🎉</h3>
-          <p className="text-white/50 text-sm max-w-xs">
+          <h3 className="text-white font-normal text-2xl mb-2" style={{ fontFamily: "var(--font-heading)" }}>Booking Confirmed!</h3>
+          <p className="text-[#E8DCC8]/50 text-sm max-w-xs font-light" style={{ fontFamily: "var(--font-body)" }}>
             Your reservation has been created. We&apos;ll be in touch to confirm details.
           </p>
-          <p className="text-[#c9a84c] font-mono font-black text-lg mt-3">
+          <p className="text-[#C9A84C] font-mono font-bold text-lg mt-4">
             Ref: {success}
           </p>
         </div>
-        <div className="flex gap-3">
-          <button
+        <div className="flex flex-col sm:flex-row gap-4 w-full pt-4">
+          <Button
             onClick={() => router.push("/dashboard/client")}
-            className="px-6 py-3 rounded-xl font-bold bg-gradient-to-r from-[#c9a84c] to-[#e8c96d] text-[#0a0f1e] text-sm hover:-translate-y-0.5 transition-all duration-200 cursor-pointer"
+            variant="primary"
+            className="flex-1 rounded-[20px]"
           >
             View My Bookings
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={() => router.push("/fleet")}
-            className="px-6 py-3 rounded-xl font-semibold border border-white/20 text-white/70 text-sm hover:bg-white/5 transition-all duration-200 cursor-pointer"
+            variant="outline"
+            className="flex-1 rounded-[20px]"
           >
             Back to Fleet
-          </button>
+          </Button>
         </div>
       </div>
     );
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5">
+    <form onSubmit={handleSubmit} className="space-y-6">
       {error && (
-        <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-sm flex items-start gap-2">
+        <div className="p-4 bg-red-500/10 border border-red-500/25 text-red-400 text-sm flex items-start gap-2.5 rounded-[20px]">
           <svg className="w-4 h-4 shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
             <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
           </svg>
@@ -217,48 +220,50 @@ export default function BookingForm({ vehicle }: BookingFormProps) {
       )}
 
       {/* Pickup Location */}
-      <div>
-        <label className="block text-sm font-medium text-white/70 mb-1.5">
-          Pickup Location <span className="text-red-400">*</span>
+      <div className="flex flex-col">
+        <label className="text-[#E8DCC8]/65 text-[10px] font-semibold uppercase tracking-[0.16em] mb-2" style={{ fontFamily: "var(--font-body)" }}>
+          Pickup Location <span className="text-[#C9A84C]">*</span>
         </label>
         <select
           id="pickup-location"
           value={pickup}
           onChange={(e) => setPickup(e.target.value)}
           required
-          className="w-full bg-white/[0.04] border border-white/10 text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#c9a84c]/50 focus:bg-white/[0.06] transition-colors cursor-pointer"
+          className="w-full bg-white/[0.08] border border-white/12 text-white px-4 py-3.5 text-sm focus:outline-none focus:border-blue-500/40 focus:ring-2 focus:ring-blue-500/10 transition-colors cursor-pointer rounded-[20px]"
+          style={{ fontFamily: "var(--font-body)" }}
         >
-          <option value="" className="bg-[#0a0f1e] text-white/40">Select pickup location…</option>
+          <option value="" className="bg-[#121210] text-[#E8DCC8]/40">Select pickup location…</option>
           {LOCATIONS.map((l) => (
-            <option key={l} value={l} className="bg-[#0a0f1e]">{l}</option>
+            <option key={l} value={l} className="bg-[#121210]">{l}</option>
           ))}
         </select>
       </div>
 
       {/* Drop-off Location */}
-      <div>
-        <label className="block text-sm font-medium text-white/70 mb-1.5">
-          Return Location <span className="text-red-400">*</span>
+      <div className="flex flex-col">
+        <label className="text-[#E8DCC8]/65 text-[10px] font-semibold uppercase tracking-[0.16em] mb-2" style={{ fontFamily: "var(--font-body)" }}>
+          Return Location <span className="text-[#C9A84C]">*</span>
         </label>
         <select
           id="dropoff-location"
           value={dropoff}
           onChange={(e) => setDropoff(e.target.value)}
           required
-          className="w-full bg-white/[0.04] border border-white/10 text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#c9a84c]/50 focus:bg-white/[0.06] transition-colors cursor-pointer"
+          className="w-full bg-white/[0.08] border border-white/12 text-white px-4 py-3.5 text-sm focus:outline-none focus:border-blue-500/40 focus:ring-2 focus:ring-blue-500/10 transition-colors cursor-pointer rounded-[20px]"
+          style={{ fontFamily: "var(--font-body)" }}
         >
-          <option value="" className="bg-[#0a0f1e] text-white/40">Select return location…</option>
+          <option value="" className="bg-[#121210] text-[#E8DCC8]/40">Select return location…</option>
           {LOCATIONS.map((l) => (
-            <option key={l} value={l} className="bg-[#0a0f1e]">{l}</option>
+            <option key={l} value={l} className="bg-[#121210]">{l}</option>
           ))}
         </select>
       </div>
 
       {/* Date range */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
-          <label htmlFor="pickup-datetime" className="block text-sm font-medium text-white/70 mb-1.5">
-            Pickup Date & Time <span className="text-red-400">*</span>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+        <div className="flex flex-col">
+          <label htmlFor="pickup-datetime" className="text-[#E8DCC8]/65 text-[10px] font-semibold uppercase tracking-[0.16em] mb-2" style={{ fontFamily: "var(--font-body)" }}>
+            Pickup Date & Time <span className="text-[#C9A84C]">*</span>
           </label>
           <input
             id="pickup-datetime"
@@ -267,12 +272,13 @@ export default function BookingForm({ vehicle }: BookingFormProps) {
             value={pickupDate}
             onChange={(e) => setPickupDate(e.target.value)}
             required
-            className="w-full bg-white/[0.04] border border-white/10 text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#c9a84c]/50 focus:bg-white/[0.06] transition-colors [color-scheme:dark]"
+            className="w-full bg-white/[0.08] border border-white/12 text-white px-4 py-3.5 text-sm focus:outline-none focus:border-blue-500/40 focus:ring-2 focus:ring-blue-500/10 transition-all [color-scheme:dark] rounded-[20px]"
+            style={{ fontFamily: "var(--font-body)" }}
           />
         </div>
-        <div>
-          <label htmlFor="return-datetime" className="block text-sm font-medium text-white/70 mb-1.5">
-            Return Date & Time <span className="text-red-400">*</span>
+        <div className="flex flex-col">
+          <label htmlFor="return-datetime" className="text-[#E8DCC8]/65 text-[10px] font-semibold uppercase tracking-[0.16em] mb-2" style={{ fontFamily: "var(--font-body)" }}>
+            Return Date & Time <span className="text-[#C9A84C]">*</span>
           </label>
           <input
             id="return-datetime"
@@ -281,16 +287,17 @@ export default function BookingForm({ vehicle }: BookingFormProps) {
             value={returnDate}
             onChange={(e) => setReturnDate(e.target.value)}
             required
-            className="w-full bg-white/[0.04] border border-white/10 text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#c9a84c]/50 focus:bg-white/[0.06] transition-colors [color-scheme:dark]"
+            className="w-full bg-white/[0.08] border border-white/12 text-white px-4 py-3.5 text-sm focus:outline-none focus:border-blue-500/40 focus:ring-2 focus:ring-blue-500/10 transition-all [color-scheme:dark] rounded-[20px]"
+            style={{ fontFamily: "var(--font-body)" }}
           />
         </div>
       </div>
 
       {/* Special Requests */}
-      <div>
-        <label htmlFor="special-notes" className="block text-sm font-medium text-white/70 mb-1.5">
+      <div className="flex flex-col">
+        <label htmlFor="special-notes" className="text-[#E8DCC8]/65 text-[10px] font-semibold uppercase tracking-[0.16em] mb-2" style={{ fontFamily: "var(--font-body)" }}>
           Special Requests
-          <span className="text-white/30 font-normal ml-1">(optional)</span>
+          <span className="text-[#E8DCC8]/30 font-normal ml-1">(optional)</span>
         </label>
         <textarea
           id="special-notes"
@@ -298,47 +305,49 @@ export default function BookingForm({ vehicle }: BookingFormProps) {
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
           placeholder="E.g. Hotel name for delivery, child seat needed, early pickup request…"
-          className="w-full bg-white/[0.04] border border-white/10 text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#c9a84c]/50 focus:bg-white/[0.06] transition-colors resize-none placeholder:text-white/25"
+          className="w-full bg-white/[0.08] border border-white/12 text-white px-4 py-3.5 text-sm focus:outline-none focus:border-blue-500/40 focus:ring-2 focus:ring-blue-500/10 transition-colors resize-none placeholder:text-white/20 rounded-[20px]"
+          style={{ fontFamily: "var(--font-body)" }}
         />
       </div>
 
       {/* Live pricing breakdown */}
       {pricingBreakdown && (
-        <div className="rounded-xl bg-[#c9a84c]/5 border border-[#c9a84c]/20 p-5 space-y-2.5">
-          <p className="text-[#c9a84c] text-xs font-bold uppercase tracking-wider mb-3">Price Breakdown</p>
-          <div className="flex justify-between text-sm">
-            <span className="text-white/50">
+        <div className="border border-white/12 bg-white/[0.04] p-6 space-y-3.5 rounded-[20px] shadow-sm">
+          <p className="text-[#C9A84C] text-[10px] font-semibold uppercase tracking-[0.16em] mb-2" style={{ fontFamily: "var(--font-body)" }}>Price Breakdown</p>
+          <div className="flex justify-between text-sm font-light text-[#E8DCC8]/70" style={{ fontFamily: "var(--font-body)" }}>
+            <span>
               {pricingBreakdown.diffDays >= 1
                 ? `${pricingBreakdown.diffDays} day${pricingBreakdown.diffDays > 1 ? "s" : ""} × ${formatINR(vehicle.daily_rate)}`
                 : `${Math.ceil(pricingBreakdown.diffHours)} hr × ${formatINR(vehicle.hourly_rate)}`}
             </span>
-            <span className="text-white font-semibold">{formatINR(pricingBreakdown.baseAmount)}</span>
+            <span className="text-white font-medium">{formatINR(pricingBreakdown.baseAmount)}</span>
           </div>
-          <div className="flex justify-between text-sm">
-            <span className="text-white/50">GST (18%)</span>
-            <span className="text-white font-semibold">{formatINR(pricingBreakdown.taxAmount)}</span>
+          <div className="flex justify-between text-sm font-light text-[#E8DCC8]/70" style={{ fontFamily: "var(--font-body)" }}>
+            <span>GST (18%)</span>
+            <span className="text-white font-medium">{formatINR(pricingBreakdown.taxAmount)}</span>
           </div>
-          <div className="h-px bg-white/10 my-1" />
-          <div className="flex justify-between">
-            <span className="text-white font-bold">Total</span>
-            <span className="text-[#c9a84c] font-black text-xl">{formatINR(pricingBreakdown.totalAmount)}</span>
+          <div className="h-px bg-white/5 my-2" />
+          <div className="flex justify-between items-baseline">
+            <span className="text-white font-medium" style={{ fontFamily: "var(--font-body)" }}>Total</span>
+            <span className="text-[#C9A84C] font-normal text-2xl" style={{ fontFamily: "var(--font-heading)" }}>{formatINR(pricingBreakdown.totalAmount)}</span>
           </div>
-          <p className="text-white/30 text-xs pt-1">
+          <p className="text-[#E8DCC8]/35 text-xs pt-1 font-light" style={{ fontFamily: "var(--font-body)" }}>
             + {formatINR(vehicle.security_deposit)} refundable security deposit
           </p>
         </div>
       )}
 
-      <button
+      <Button
         id="submit-booking-btn"
         type="submit"
         disabled={submitting}
-        className="w-full py-4 rounded-xl font-black text-[#0a0f1e] bg-gradient-to-r from-[#c9a84c] to-[#e8c96d] hover:shadow-lg hover:shadow-[#c9a84c]/25 hover:-translate-y-0.5 disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none transition-all duration-200 text-base cursor-pointer"
+        variant="primary"
+        className="w-full py-4 rounded-[20px]"
       >
         {submitting ? "Creating Booking…" : "Confirm Reservation →"}
-      </button>
+      </Button>
 
-      <p className="text-center text-white/25 text-xs">
+      <p className="text-center text-[#E8DCC8]/30 text-xs font-light" style={{ fontFamily: "var(--font-body)" }}>
         No payment required now · Booking pending staff confirmation
       </p>
     </form>

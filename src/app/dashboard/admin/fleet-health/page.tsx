@@ -178,7 +178,7 @@ export default function FleetHealthPage() {
       {/* ── Header ── */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-white/[0.06] pb-6">
         <div>
-          <p className="text-[#c9a84c] text-[10px] font-mono tracking-widest uppercase mb-1">Fleet Operations</p>
+          <p className="text-[#3B82F6] text-[10px] font-mono tracking-widest uppercase mb-1">Fleet Operations</p>
           <h1 className="text-white font-black text-3xl sm:text-4xl tracking-tight leading-none">AI Fleet Health Center</h1>
           <p className="text-white/40 text-sm mt-2">Compliance checks, component diagnostics, FASTag flow, and wear forecasts.</p>
         </div>
@@ -278,7 +278,7 @@ export default function FleetHealthPage() {
             <button
               onClick={() => setActiveTab("monitor")}
               className={`px-4 py-2 text-xs font-extrabold uppercase tracking-wider border-b-2 transition-all cursor-pointer ${
-                activeTab === "monitor" ? "border-[#c9a84c] text-[#c9a84c]" : "border-transparent text-white/40 hover:text-white/70"
+                activeTab === "monitor" ? "border-[#3B82F6] text-[#3B82F6]" : "border-transparent text-white/40 hover:text-white/70"
               }`}
             >
               Health Monitor
@@ -286,7 +286,7 @@ export default function FleetHealthPage() {
             <button
               onClick={() => setActiveTab("compliance")}
               className={`px-4 py-2 text-xs font-extrabold uppercase tracking-wider border-b-2 transition-all cursor-pointer ${
-                activeTab === "compliance" ? "border-[#c9a84c] text-[#c9a84c]" : "border-transparent text-white/40 hover:text-white/70"
+                activeTab === "compliance" ? "border-[#3B82F6] text-[#3B82F6]" : "border-transparent text-white/40 hover:text-white/70"
               }`}
             >
               Document Compliance
@@ -294,7 +294,7 @@ export default function FleetHealthPage() {
             <button
               onClick={() => setActiveTab("predictions")}
               className={`px-4 py-2 text-xs font-extrabold uppercase tracking-wider border-b-2 transition-all cursor-pointer ${
-                activeTab === "predictions" ? "border-[#c9a84c] text-[#c9a84c]" : "border-transparent text-white/40 hover:text-white/70"
+                activeTab === "predictions" ? "border-[#3B82F6] text-[#3B82F6]" : "border-transparent text-white/40 hover:text-white/70"
               }`}
             >
               AI Wear Predictions
@@ -302,7 +302,7 @@ export default function FleetHealthPage() {
             <button
               onClick={() => setActiveTab("incidents")}
               className={`px-4 py-2 text-xs font-extrabold uppercase tracking-wider border-b-2 transition-all cursor-pointer ${
-                activeTab === "incidents" ? "border-[#c9a84c] text-[#c9a84c]" : "border-transparent text-white/40 hover:text-white/70"
+                activeTab === "incidents" ? "border-[#3B82F6] text-[#3B82F6]" : "border-transparent text-white/40 hover:text-white/70"
               }`}
             >
               Incidents Logs
@@ -349,7 +349,7 @@ export default function FleetHealthPage() {
                           <td className="p-4 text-right">
                             <button
                               onClick={() => handleOpenServiceModal(v)}
-                              className="px-3 py-1.5 rounded-lg text-[10px] font-bold bg-[#c9a84c]/10 border border-[#c9a84c]/30 text-[#c9a84c] hover:bg-[#c9a84c]/20 transition-all cursor-pointer"
+                              className="px-3 py-1.5 rounded-lg text-[10px] font-bold bg-[#3B82F6]/10 border border-[#3B82F6]/30 text-[#3B82F6] hover:bg-[#3B82F6]/20 transition-all cursor-pointer"
                             >
                               ⚙️ Record Service
                             </button>
@@ -458,7 +458,7 @@ export default function FleetHealthPage() {
                       </div>
 
                       <div className="border-t border-white/[0.06] pt-3 space-y-1">
-                        <div className="text-[9px] text-[#c9a84c] font-black uppercase tracking-wider font-mono">Recommended Service Target</div>
+                        <div className="text-[9px] text-[#3B82F6] font-black uppercase tracking-wider font-mono">Recommended Service Target</div>
                         <p className="text-white/40 text-[11px] leading-relaxed font-semibold">
                           {v.predictions.optimalServiceDate} · {v.predictions.optimalServiceReason}
                         </p>
@@ -503,8 +503,8 @@ export default function FleetHealthPage() {
 
           {/* ── Record Service Modal Overlay ── */}
           {isServiceModalOpen && selectedVehicle && (
-            <div className="fixed inset-0 bg-[#060b18]/80 backdrop-blur-md flex items-center justify-center p-6 z-50 animate-fadeIn">
-              <div className="max-w-md w-full bg-[#0a0f1e] border border-white/[0.08] rounded-3xl p-6 shadow-2xl space-y-6">
+            <div className="fixed inset-0 bg-[#0a0b0d]/80 backdrop-blur-md flex items-center justify-center p-6 z-50 animate-fadeIn">
+              <div className="max-w-md w-full bg-[#0f1115] border border-white/[0.08] rounded-3xl p-6 shadow-2xl space-y-6">
                 <div>
                   <h3 className="text-lg font-black text-white font-sans">Record Maintenance Service</h3>
                   <p className="text-white/40 text-xs font-semibold mt-1">Vehicle: {selectedVehicle.brand} {selectedVehicle.model} ({selectedVehicle.registrationNumber})</p>
@@ -522,14 +522,14 @@ export default function FleetHealthPage() {
                     <select
                       value={serviceType}
                       onChange={(e) => setServiceType(e.target.value)}
-                      className="w-full bg-white/[0.03] border border-white/10 text-white rounded-xl px-4 py-3 focus:outline-none focus:border-[#c9a84c]"
+                      className="w-full bg-white/[0.03] border border-white/10 text-white rounded-xl px-4 py-3 focus:outline-none focus:border-[#3B82F6]"
                     >
-                      <option value="scheduled_service" className="bg-[#0a0f1e]">Scheduled Periodic Service</option>
-                      <option value="oil_change" className="bg-[#0a0f1e]">Engine Oil & Filter Change</option>
-                      <option value="tyre_replacement" className="bg-[#0a0f1e]">Tyres Replacement / Alignment</option>
-                      <option value="battery_replacement" className="bg-[#0a0f1e]">Battery Replacement / Diagnostics</option>
-                      <option value="general_repair" className="bg-[#0a0f1e]">General Mechanical/Body Repair</option>
-                      <option value="detailing" className="bg-[#0a0f1e]">Full Detailing / Cleaning wash</option>
+                      <option value="scheduled_service" className="bg-[#0f1115]">Scheduled Periodic Service</option>
+                      <option value="oil_change" className="bg-[#0f1115]">Engine Oil & Filter Change</option>
+                      <option value="tyre_replacement" className="bg-[#0f1115]">Tyres Replacement / Alignment</option>
+                      <option value="battery_replacement" className="bg-[#0f1115]">Battery Replacement / Diagnostics</option>
+                      <option value="general_repair" className="bg-[#0f1115]">General Mechanical/Body Repair</option>
+                      <option value="detailing" className="bg-[#0f1115]">Full Detailing / Cleaning wash</option>
                     </select>
                   </div>
 
@@ -540,7 +540,7 @@ export default function FleetHealthPage() {
                         type="number"
                         value={serviceOdo}
                         onChange={(e) => setServiceOdo(e.target.value)}
-                        className="w-full bg-white/[0.03] border border-white/10 text-white rounded-xl px-4 py-3 focus:outline-none focus:border-[#c9a84c]"
+                        className="w-full bg-white/[0.03] border border-white/10 text-white rounded-xl px-4 py-3 focus:outline-none focus:border-[#3B82F6]"
                         placeholder="Current mileage"
                         required
                       />
@@ -552,7 +552,7 @@ export default function FleetHealthPage() {
                         type="number"
                         value={serviceCost}
                         onChange={(e) => setServiceCost(e.target.value)}
-                        className="w-full bg-white/[0.03] border border-white/10 text-white rounded-xl px-4 py-3 focus:outline-none focus:border-[#c9a84c]"
+                        className="w-full bg-white/[0.03] border border-white/10 text-white rounded-xl px-4 py-3 focus:outline-none focus:border-[#3B82F6]"
                         placeholder="Total amount"
                         required
                       />
@@ -564,7 +564,7 @@ export default function FleetHealthPage() {
                     <textarea
                       value={serviceDetails}
                       onChange={(e) => setServiceDetails(e.target.value)}
-                      className="w-full bg-white/[0.03] border border-white/10 text-white rounded-xl px-4 py-3 focus:outline-none focus:border-[#c9a84c] h-20 resize-none placeholder:text-white/20"
+                      className="w-full bg-white/[0.03] border border-white/10 text-white rounded-xl px-4 py-3 focus:outline-none focus:border-[#3B82F6] h-20 resize-none placeholder:text-white/20"
                       placeholder="Specify replaced parts, wear status, etc."
                     />
                   </div>
@@ -580,7 +580,7 @@ export default function FleetHealthPage() {
                     <button
                       type="submit"
                       disabled={submittingService}
-                      className="flex-1 py-3 rounded-xl bg-[#c9a84c] text-[#0a0f1e] font-black hover:bg-[#e8c96d] transition-colors cursor-pointer disabled:opacity-50"
+                      className="flex-1 py-3 rounded-xl bg-[#3B82F6] text-[#0f1115] font-black hover:bg-[#60A5FA] transition-colors cursor-pointer disabled:opacity-50"
                     >
                       {submittingService ? "Saving..." : "Save Record"}
                     </button>

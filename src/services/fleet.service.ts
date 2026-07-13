@@ -1,5 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import type { VehicleCategory, VehicleWithCategory } from "@/types/database";
+import fs from "fs";
+import path from "path";
 
 // Fleet service functions run on the server only.
 // They query Supabase directly using the anon client (RLS enforced).
@@ -13,6 +15,21 @@ function getServerSupabase() {
     return null;
   }
   return createClient(url, key);
+}
+
+// -----------------------------------------------------------------------------
+// Helper to read local metadata file
+// -----------------------------------------------------------------------------
+function getLocalMetadata(): Record<string, any> {
+  try {
+    const filePath = path.join(process.cwd(), "src/data/fleet_metadata.json");
+    if (fs.existsSync(filePath)) {
+      return JSON.parse(fs.readFileSync(filePath, "utf8"));
+    }
+  } catch (e) {
+    console.error("[fleet.service] Error reading local metadata:", e);
+  }
+  return {};
 }
 
 // -----------------------------------------------------------------------------
@@ -41,7 +58,47 @@ export async function getAvailableVehicles(): Promise<VehicleWithCategory[]> {
     return [];
   }
 
-  return (data ?? []) as VehicleWithCategory[];
+  const metadata = getLocalMetadata();
+  const enriched = (data ?? []).map((v) => ({
+    ...v,
+    ...(metadata[v.id] || {}),
+  }));
+
+  // Filter only visible vehicles on public page
+  return enriched.filter((v) => v.is_visible !== false) as VehicleWithCategory[];
+}
+
+// -----------------------------------------------------------------------------
+// getAllVehicles (Used in Admin Dashboard)
+// Returns all vehicles (no status filter), sorted by created_at.
+// -----------------------------------------------------------------------------
+export async function getAllVehicles(): Promise<VehicleWithCategory[]> {
+  const supabase = getServerSupabase();
+  if (!supabase) {
+    console.warn("[getAllVehicles] Warning: Supabase client not initialized. Returning empty array.");
+    return [];
+  }
+
+  const { data, error } = await supabase
+    .from("vehicles")
+    .select(`
+      *,
+      category:vehicle_categories (*)
+    `)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("[fleet.service] getAllVehicles error:", error.message);
+    return [];
+  }
+
+  const metadata = getLocalMetadata();
+  const enriched = (data ?? []).map((v) => ({
+    ...v,
+    ...(metadata[v.id] || {}),
+  }));
+
+  return enriched as VehicleWithCategory[];
 }
 
 // -----------------------------------------------------------------------------
@@ -96,5 +153,11 @@ export async function getVehicleById(
     return null;
   }
 
-  return data as VehicleWithCategory;
+  const metadata = getLocalMetadata();
+  const enriched = {
+    ...data,
+    ...(metadata[id] || {}),
+  };
+
+  return enriched as VehicleWithCategory;
 }

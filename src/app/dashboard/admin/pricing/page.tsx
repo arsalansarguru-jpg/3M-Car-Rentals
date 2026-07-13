@@ -354,9 +354,9 @@ export default function DynamicPricingDashboard() {
 
   if (loading && suggestions.length === 0) {
     return (
-      <div className="min-h-screen bg-[#060b18] text-white flex items-center justify-center">
+      <div className="min-h-screen bg-[#0a0b0d] text-white flex items-center justify-center">
         <div className="text-center space-y-4">
-          <div className="w-12 h-12 border-4 border-[#c9a84c] border-t-transparent rounded-full animate-spin mx-auto" />
+          <div className="w-12 h-12 border-4 border-[#3B82F6] border-t-transparent rounded-full animate-spin mx-auto" />
           <p className="text-white/50 text-sm font-semibold tracking-wider uppercase animate-pulse">
             Loading AI Revenue command center...
           </p>
@@ -366,11 +366,11 @@ export default function DynamicPricingDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-[#060b18] text-white p-6 lg:p-10 space-y-10">
+    <div className="min-h-screen bg-[#0a0b0d] text-white p-6 lg:p-10 space-y-10">
       {/* ── Header ── */}
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-white/[0.06] pb-6">
         <div>
-          <span className="text-[#c9a84c] text-[10px] font-mono tracking-widest uppercase">
+          <span className="text-[#3B82F6] text-[10px] font-mono tracking-widest uppercase">
             AI Revenue Management
           </span>
           <h1 className="text-3xl font-black mt-1 leading-none tracking-tight">Dynamic Pricing Engine</h1>
@@ -389,7 +389,7 @@ export default function DynamicPricingDashboard() {
           <button
             disabled={recalculating}
             onClick={handleRecalculate}
-            className="px-5 py-2.5 rounded-xl text-xs font-bold bg-gradient-to-r from-[#c9a84c] to-[#e8c96d] text-black hover:opacity-90 transition-opacity disabled:opacity-50 font-black cursor-pointer shadow-lg"
+            className="px-5 py-2.5 rounded-xl text-xs font-bold bg-gradient-to-r from-[#3B82F6] to-[#60A5FA] text-black hover:opacity-90 transition-opacity disabled:opacity-50 font-black cursor-pointer shadow-lg"
           >
             {recalculating ? "Processing Calculation..." : "Force Recalculate Rate"}
           </button>
@@ -415,7 +415,7 @@ export default function DynamicPricingDashboard() {
           <div className="rounded-2xl border border-white/[0.08] bg-white/[0.01] p-6 space-y-4">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-black tracking-tight">AI Price Recommendations Queue</h2>
-              <span className="inline-flex px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#c9a84c]/10 text-[#c9a84c] border border-[#c9a84c]/20">
+              <span className="inline-flex px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#3B82F6]/10 text-[#3B82F6] border border-[#3B82F6]/20">
                 {suggestions.filter((s) => s.status === "pending").length} Pending Actions
               </span>
             </div>
@@ -450,7 +450,7 @@ export default function DynamicPricingDashboard() {
                             <p className="text-white/30 text-[10px] font-semibold uppercase">{s.category}</p>
                           </td>
                           <td className="py-3.5 px-2 font-mono text-white/80">{formatINR(s.currentPrice)}</td>
-                          <td className="py-3.5 px-2 font-mono font-bold text-[#c9a84c]">
+                          <td className="py-3.5 px-2 font-mono font-bold text-[#3B82F6]">
                             {formatINR(s.suggestedPrice)}
                           </td>
                           <td className="py-3.5 px-2 font-mono text-xs">
@@ -499,7 +499,7 @@ export default function DynamicPricingDashboard() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="rounded-2xl border border-white/[0.08] bg-white/[0.01] p-5 space-y-4">
               <div>
-                <p className="text-[9px] font-mono text-[#c9a84c] uppercase tracking-wider">Revenue Path</p>
+                <p className="text-[9px] font-mono text-[#3B82F6] uppercase tracking-wider">Revenue Path</p>
                 <h3 className="text-sm font-bold text-white">Daily Staged Revenue</h3>
               </div>
               <PricingAreaChart points={revenueSeries} valueFormatter={formatINR} />
@@ -530,7 +530,7 @@ export default function DynamicPricingDashboard() {
                     type="number"
                     value={minPrice}
                     onChange={(e) => setMinPrice(Number(e.target.value))}
-                    className="w-full px-3 py-2 bg-white/[0.03] border border-white/10 rounded-lg text-white focus:outline-none focus:border-[#c9a84c]"
+                    className="w-full px-3 py-2 bg-white/[0.03] border border-white/10 rounded-lg text-white focus:outline-none focus:border-[#3B82F6]"
                   />
                 </div>
                 <div>
@@ -541,7 +541,7 @@ export default function DynamicPricingDashboard() {
                     type="number"
                     value={maxPrice}
                     onChange={(e) => setMaxPrice(Number(e.target.value))}
-                    className="w-full px-3 py-2 bg-white/[0.03] border border-white/10 rounded-lg text-white focus:outline-none focus:border-[#c9a84c]"
+                    className="w-full px-3 py-2 bg-white/[0.03] border border-white/10 rounded-lg text-white focus:outline-none focus:border-[#3B82F6]"
                   />
                 </div>
               </div>
@@ -555,7 +555,7 @@ export default function DynamicPricingDashboard() {
                     type="number"
                     value={maxIncrease}
                     onChange={(e) => setMaxIncrease(Number(e.target.value))}
-                    className="w-full px-3 py-2 bg-white/[0.03] border border-white/10 rounded-lg text-white focus:outline-none focus:border-[#c9a84c]"
+                    className="w-full px-3 py-2 bg-white/[0.03] border border-white/10 rounded-lg text-white focus:outline-none focus:border-[#3B82F6]"
                   />
                 </div>
                 <div>
@@ -566,7 +566,7 @@ export default function DynamicPricingDashboard() {
                     type="number"
                     value={maxDecrease}
                     onChange={(e) => setMaxDecrease(Number(e.target.value))}
-                    className="w-full px-3 py-2 bg-white/[0.03] border border-white/10 rounded-lg text-white focus:outline-none focus:border-[#c9a84c]"
+                    className="w-full px-3 py-2 bg-white/[0.03] border border-white/10 rounded-lg text-white focus:outline-none focus:border-[#3B82F6]"
                   />
                 </div>
               </div>
@@ -581,20 +581,20 @@ export default function DynamicPricingDashboard() {
                     type="checkbox"
                     checked={approvalRequired}
                     onChange={(e) => setApprovalRequired(e.target.checked)}
-                    className="w-4 h-4 accent-[#c9a84c] cursor-pointer"
+                    className="w-4 h-4 accent-[#3B82F6] cursor-pointer"
                   />
                 </div>
 
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="font-semibold text-[#c9a84c]">Autopilot Pricing Mode</p>
+                    <p className="font-semibold text-[#3B82F6]">Autopilot Pricing Mode</p>
                     <p className="text-[11px] text-white/35">Allow AI to immediately update daily rental rates.</p>
                   </div>
                   <input
                     type="checkbox"
                     checked={autoPricingEnabled}
                     onChange={(e) => setAutoPricingEnabled(e.target.checked)}
-                    className="w-4 h-4 accent-[#c9a84c] cursor-pointer"
+                    className="w-4 h-4 accent-[#3B82F6] cursor-pointer"
                   />
                 </div>
               </div>
@@ -603,7 +603,7 @@ export default function DynamicPricingDashboard() {
             <button
               type="submit"
               disabled={savingSettings}
-              className="w-full py-2.5 rounded-xl text-xs font-bold bg-[#c9a84c]/10 border border-[#c9a84c]/30 text-[#c9a84c] hover:bg-[#c9a84c]/20 transition-all cursor-pointer"
+              className="w-full py-2.5 rounded-xl text-xs font-bold bg-[#3B82F6]/10 border border-[#3B82F6]/30 text-[#3B82F6] hover:bg-[#3B82F6]/20 transition-all cursor-pointer"
             >
               {savingSettings ? "Updating AI Parameters..." : "Save AI Controls"}
             </button>
@@ -655,7 +655,7 @@ export default function DynamicPricingDashboard() {
                     </td>
                     <td className="py-2.5 px-2 font-bold text-white/80">{l.vehicle}</td>
                     <td className="py-2.5 px-2 font-mono text-white/40">{formatINR(l.oldPrice)}</td>
-                    <td className="py-2.5 px-2 font-mono font-semibold text-[#c9a84c]">{formatINR(l.newPrice)}</td>
+                    <td className="py-2.5 px-2 font-mono font-semibold text-[#3B82F6]">{formatINR(l.newPrice)}</td>
                     <td className="py-2.5 px-2 text-white/50">{l.confidence}%</td>
                     <td className="py-2.5 px-2 text-white/50 max-w-[250px] truncate" title={l.reason}>
                       {l.reason}
@@ -727,7 +727,7 @@ function KpiCard({ title, value, icon, accent }: { title: string; value: string 
   return (
     <div className={`rounded-xl p-4 border flex items-center justify-between gap-3 transition-all duration-300 hover:scale-[1.02] ${
       accent 
-        ? "bg-gradient-to-br from-[#c9a84c]/10 to-transparent border-[#c9a84c]/25 shadow-lg shadow-[#c9a84c]/5" 
+        ? "bg-gradient-to-br from-[#3B82F6]/10 to-transparent border-[#3B82F6]/25 shadow-lg shadow-[#3B82F6]/5" 
         : "bg-white/[0.02] border-white/[0.08]"
     }`}>
       <div className="space-y-1 min-w-0">

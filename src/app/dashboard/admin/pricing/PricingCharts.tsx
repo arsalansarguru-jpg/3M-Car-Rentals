@@ -121,7 +121,7 @@ export function PricingAreaChart({
         ))}
       </div>
       <p className="mt-1 text-right text-[10px] text-white/40 font-mono">
-        Peak: <span className="text-[#c9a84c] font-bold">{valueFormatter(max)}</span>
+        Peak: <span className="text-[#3B82F6] font-bold">{valueFormatter(max)}</span>
       </p>
     </div>
   );
@@ -130,7 +130,7 @@ export function PricingAreaChart({
 // 2. Bar Chart for Season comparison / distribution
 export function PricingBarChart({
   points,
-  color = "#c9a84c",
+  color = "#3B82F6",
 }: {
   points: PricingSeriesPoint[];
   color?: string;
@@ -207,7 +207,7 @@ export function PricingHorizontalProgress({
           </div>
           <div className="h-1.5 overflow-hidden rounded-full bg-white/[0.04] border border-white/[0.02]">
             <motion.div
-              className="h-full rounded-full bg-gradient-to-r from-[#c9a84c] to-[#e8c96d]"
+              className="h-full rounded-full bg-gradient-to-r from-[#3B82F6] to-[#60A5FA]"
               initial={{ width: 0 }}
               whileInView={{ width: `${Math.min(100, (r.value / max) * 100)}%` }}
               viewport={{ once: true }}

@@ -320,9 +320,9 @@ export default function RevenueManagementDashboard() {
 
   if (loading && fleet.length === 0) {
     return (
-      <div className="min-h-screen bg-[#060b18] text-white flex items-center justify-center">
+      <div className="min-h-screen bg-[#0a0b0d] text-white flex items-center justify-center">
         <div className="text-center space-y-4">
-          <div className="w-12 h-12 border-4 border-[#c9a84c] border-t-transparent rounded-full animate-spin mx-auto" />
+          <div className="w-12 h-12 border-4 border-[#3B82F6] border-t-transparent rounded-full animate-spin mx-auto" />
           <p className="text-white/50 text-sm font-semibold tracking-wider uppercase animate-pulse">
             Booting AI Revenue Optimizer...
           </p>
@@ -332,11 +332,11 @@ export default function RevenueManagementDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-[#060b18] text-white p-6 lg:p-10 space-y-8">
+    <div className="min-h-screen bg-[#0a0b0d] text-white p-6 lg:p-10 space-y-8">
       {/* ── Page Header ── */}
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-white/[0.06] pb-6">
         <div>
-          <span className="text-[#c9a84c] text-[10px] font-mono tracking-widest uppercase">
+          <span className="text-[#3B82F6] text-[10px] font-mono tracking-widest uppercase">
             AI Revenue Management Suite V2.0
           </span>
           <h1 className="text-3xl font-black mt-1 leading-none tracking-tight">Revenue Control Center</h1>
@@ -354,7 +354,7 @@ export default function RevenueManagementDashboard() {
           </Link>
           <button
             onClick={() => setRefreshTrigger((prev) => prev + 1)}
-            className="px-5 py-2.5 rounded-xl text-xs font-bold bg-[#c9a84c]/10 border border-[#c9a84c]/30 text-[#c9a84c] hover:bg-[#c9a84c]/20 transition-all font-black cursor-pointer shadow-lg"
+            className="px-5 py-2.5 rounded-xl text-xs font-bold bg-[#3B82F6]/10 border border-[#3B82F6]/30 text-[#3B82F6] hover:bg-[#3B82F6]/20 transition-all font-black cursor-pointer shadow-lg"
           >
             🔄 Sync Data
           </button>
@@ -401,7 +401,7 @@ export default function RevenueManagementDashboard() {
                     recommendations.map((rec, idx) => (
                       <li key={idx} className="flex items-center justify-between gap-4 pt-3.5 first:pt-0">
                         <div className="flex items-start gap-3">
-                          <span className="flex items-center justify-center w-6 h-6 rounded-full bg-[#c9a84c]/10 border border-[#c9a84c]/20 text-xs font-bold text-[#c9a84c]">
+                          <span className="flex items-center justify-center w-6 h-6 rounded-full bg-[#3B82F6]/10 border border-[#3B82F6]/20 text-xs font-bold text-[#3B82F6]">
                             {idx + 1}
                           </span>
                           <p className="text-sm font-semibold text-white/80 mt-0.5">{rec}</p>
@@ -409,7 +409,7 @@ export default function RevenueManagementDashboard() {
                         <button
                           disabled={executingIndex !== null}
                           onClick={() => handleExecuteAction(idx, rec)}
-                          className="px-3.5 py-1.5 bg-[#c9a84c] text-[#0a0f1e] font-extrabold text-[10px] uppercase tracking-wider rounded-lg hover:bg-[#e8c96d] disabled:opacity-50 transition-all cursor-pointer whitespace-nowrap"
+                          className="px-3.5 py-1.5 bg-[#3B82F6] text-[#0f1115] font-extrabold text-[10px] uppercase tracking-wider rounded-lg hover:bg-[#60A5FA] disabled:opacity-50 transition-all cursor-pointer whitespace-nowrap"
                         >
                           {executingIndex === idx ? "Executing..." : "Execute"}
                         </button>
@@ -452,7 +452,7 @@ export default function RevenueManagementDashboard() {
                           </td>
                           <td className="py-3 px-2 font-mono font-bold text-white/80">{formatINR(c.clv)}</td>
                           <td className="py-3 pl-2 text-right">
-                            <button className="text-[10px] text-[#c9a84c] hover:underline font-bold">Inspect Profile</button>
+                            <button className="text-[10px] text-[#3B82F6] hover:underline font-bold">Inspect Profile</button>
                           </td>
                         </tr>
                       ))}
@@ -540,7 +540,7 @@ export default function RevenueManagementDashboard() {
                         <td className="py-2.5 px-2">
                           <div className="flex items-center gap-2">
                             <div className="w-16 bg-white/[0.04] h-1.5 rounded-full overflow-hidden">
-                              <div className="h-full bg-[#c9a84c] rounded-full" style={{ width: `${f.utilization}%` }} />
+                              <div className="h-full bg-[#3B82F6] rounded-full" style={{ width: `${f.utilization}%` }} />
                             </div>
                             <span className="font-mono text-white/60 text-[10px]">{f.utilization}%</span>
                           </div>
@@ -575,15 +575,15 @@ export default function RevenueManagementDashboard() {
                 <h3 className="text-sm font-bold text-white/90 uppercase tracking-wider">Dynamic Promotions Recommendations</h3>
                 <ul className="space-y-4">
                   {promotions.map((p, i) => (
-                    <li key={i} className="p-4 rounded-xl border border-[#c9a84c]/20 bg-[#c9a84c]/[0.02] flex items-center justify-between gap-4">
+                    <li key={i} className="p-4 rounded-xl border border-[#3B82F6]/20 bg-[#3B82F6]/[0.02] flex items-center justify-between gap-4">
                       <div>
                         <div className="flex items-center gap-2">
                           <h4 className="font-black text-white/95">{p.promoName}</h4>
-                          <span className="px-2 py-0.5 rounded bg-[#c9a84c] text-black font-mono font-black text-[9px]">{p.promoCode}</span>
+                          <span className="px-2 py-0.5 rounded bg-[#3B82F6] text-black font-mono font-black text-[9px]">{p.promoCode}</span>
                         </div>
                         <p className="text-xs text-white/40 mt-1 font-medium">{p.reason}</p>
                       </div>
-                      <button className="px-4 py-2 bg-[#c9a84c]/10 border border-[#c9a84c]/30 text-[#c9a84c] hover:bg-[#c9a84c]/20 text-[10px] uppercase tracking-wider font-extrabold rounded-lg cursor-pointer whitespace-nowrap">
+                      <button className="px-4 py-2 bg-[#3B82F6]/10 border border-[#3B82F6]/30 text-[#3B82F6] hover:bg-[#3B82F6]/20 text-[10px] uppercase tracking-wider font-extrabold rounded-lg cursor-pointer whitespace-nowrap">
                         Launch Campaign
                       </button>
                     </li>
@@ -599,7 +599,7 @@ export default function RevenueManagementDashboard() {
                     <li key={i} className="p-4 rounded-xl border border-white/[0.04] bg-white/[0.01] flex items-center justify-between gap-4">
                       <div>
                         <h4 className="font-bold text-white/90">
-                          Upsell: {u.brand} {u.model} → <span className="text-[#c9a84c]">{u.targetUpgradeBrand} {u.targetUpgradeModel}</span>
+                          Upsell: {u.brand} {u.model} → <span className="text-[#3B82F6]">{u.targetUpgradeBrand} {u.targetUpgradeModel}</span>
                         </h4>
                         <p className="text-xs text-white/40 mt-1">Acceptance probability: {u.probability}% | Exp Revenue Growth: +{formatINR(u.revenueIncrease)}/day</p>
                       </div>
@@ -625,7 +625,7 @@ export default function RevenueManagementDashboard() {
                     <tbody className="divide-y divide-white/[0.03]">
                       {cancellations.map((c) => (
                         <tr key={c.bookingId} className="hover:bg-white/[0.005] transition-colors">
-                          <td className="py-2.5 pr-2 font-mono font-bold text-[#c9a84c]">{c.bookingRef}</td>
+                          <td className="py-2.5 pr-2 font-mono font-bold text-[#3B82F6]">{c.bookingRef}</td>
                           <td className="py-2.5 px-2 text-white/80">{c.customerName}</td>
                           <td className="py-2.5 px-2">
                             <span className={`inline-flex px-1.5 py-0.5 rounded text-[10px] font-bold ${
@@ -712,7 +712,7 @@ export default function RevenueManagementDashboard() {
               <button
                 type="submit"
                 disabled={savingSettings}
-                className="w-full py-2.5 bg-[#c9a84c]/10 border border-[#c9a84c]/30 text-[#c9a84c] hover:bg-[#c9a84c]/20 text-xs font-bold rounded-xl cursor-pointer transition-all"
+                className="w-full py-2.5 bg-[#3B82F6]/10 border border-[#3B82F6]/30 text-[#3B82F6] hover:bg-[#3B82F6]/20 text-xs font-bold rounded-xl cursor-pointer transition-all"
               >
                 {savingSettings ? "Updating Thresholds..." : "Save AI Controls"}
               </button>
@@ -770,7 +770,7 @@ function KpiCard({ title, value, icon, accent }: { title: string; value: string 
   return (
     <div className={`rounded-xl p-4 border flex items-center justify-between gap-3 transition-all duration-300 hover:scale-[1.02] ${
       accent 
-        ? "bg-gradient-to-br from-[#c9a84c]/10 to-transparent border-[#c9a84c]/25 shadow-lg shadow-[#c9a84c]/5" 
+        ? "bg-gradient-to-br from-[#3B82F6]/10 to-transparent border-[#3B82F6]/25 shadow-lg shadow-[#3B82F6]/5" 
         : "bg-white/[0.02] border-white/[0.08]"
     }`}>
       <div className="space-y-1 min-w-0">
@@ -790,7 +790,7 @@ function TabButton({ active, children, onClick }: { active: boolean; children: R
       onClick={onClick}
       className={`px-4 py-2 text-xs font-extrabold uppercase tracking-wider border-b-2 transition-all cursor-pointer ${
         active 
-          ? "border-[#c9a84c] text-[#c9a84c]" 
+          ? "border-[#3B82F6] text-[#3B82F6]" 
           : "border-transparent text-white/40 hover:text-white/70"
       }`}
     >
@@ -804,7 +804,7 @@ function ForecastBar({ label, value, conf }: { label: string; value: number; con
     <div className="flex-1 flex flex-col items-center gap-2">
       <div className="relative w-12 bg-white/[0.02] border border-white/[0.06] rounded-t-xl h-full flex flex-col justify-end overflow-hidden">
         <motion.div
-          className="bg-gradient-to-t from-[#c9a84c]/60 to-[#e8c96d]"
+          className="bg-gradient-to-t from-[#3B82F6]/60 to-[#60A5FA]"
           initial={{ height: 0 }}
           animate={{ height: `${value}%` }}
           transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}

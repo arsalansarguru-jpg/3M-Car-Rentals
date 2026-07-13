@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { supabase } from "@/lib/supabase";
 import type { Vehicle, VehicleCategory } from "@/types/database";
+import { Button } from "@/components/ui/Button";
 
 interface VehicleModalProps {
   isOpen: boolean;
@@ -139,23 +140,26 @@ export default function VehicleModal({ isOpen, onClose, categories, vehicle, onS
   const isEditMode = !!vehicle;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-      <div className="bg-[#0a0f1e] border border-white/[0.08] rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
-        <div className="flex items-center justify-between p-6 border-b border-white/[0.08]">
-          <h2 className="text-xl font-black text-white">{isEditMode ? "Edit Vehicle" : "Add New Vehicle"}</h2>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
+      <div className="glass-modal w-full max-w-2xl flex flex-col max-h-[90vh] overflow-hidden rounded-[20px] bg-[#121210]/95 backdrop-blur-[24px] border border-white/12 shadow-[0_20px_50px_rgba(0,0,0,0.6)]">
+        
+        {/* Header */}
+        <div className="flex items-center justify-between p-6 border-b border-white/10">
+          <h2 style={{ fontFamily: "var(--font-heading)", fontSize: "1.25rem", fontWeight: 500, color: "#ffffff" }}>{isEditMode ? "Edit Vehicle" : "Add New Vehicle"}</h2>
           <button
             onClick={onClose}
-            className="text-white/40 hover:text-white transition-colors cursor-pointer"
+            className="text-white/40 hover:text-white transition-colors cursor-pointer p-2 hover:bg-white/5 rounded-full"
           >
-            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         </div>
 
+        {/* Content */}
         <div className="flex-1 overflow-y-auto p-6">
           {error && (
-            <div className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-sm font-medium">
+            <div className="mb-6 p-4 rounded-[20px] bg-red-500/10 border border-red-500/25 text-red-400 text-sm">
               {error}
             </div>
           )}
@@ -163,106 +167,109 @@ export default function VehicleModal({ isOpen, onClose, categories, vehicle, onS
           <form id="vehicle-form" onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               {/* Basic Info */}
-              <div className="space-y-1">
-                <label className="text-xs font-semibold text-white/60 uppercase tracking-wider">Registration No *</label>
-                <input required type="text" name="registration_number" value={formData.registration_number} onChange={handleChange} className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-[#c9a84c] transition-colors" placeholder="e.g. GA03 AB 1234" />
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[#E8DCC8]/60 text-[10px] font-semibold uppercase tracking-[0.14em]" style={{ fontFamily: "var(--font-body)" }}>Registration No *</label>
+                <input required type="text" name="registration_number" value={formData.registration_number} onChange={handleChange} className="w-full bg-white/[0.08] border border-white/12 rounded-[20px] px-4 py-2.5 text-white focus:outline-none focus:border-blue-500/40 focus:ring-2 focus:ring-blue-500/10 transition-all placeholder:text-white/20" placeholder="e.g. GA03 AB 1234" />
               </div>
               
-              <div className="space-y-1">
-                <label className="text-xs font-semibold text-white/60 uppercase tracking-wider">Category *</label>
-                <select required name="category_id" value={formData.category_id} onChange={handleChange} className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-[#c9a84c] transition-colors cursor-pointer appearance-none">
-                  <option value="" className="bg-[#0a0f1e]">Select Category</option>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[#E8DCC8]/60 text-[10px] font-semibold uppercase tracking-[0.14em]" style={{ fontFamily: "var(--font-body)" }}>Category *</label>
+                <select required name="category_id" value={formData.category_id} onChange={handleChange} className="w-full bg-white/[0.08] border border-white/12 rounded-[20px] px-4 py-2.5 text-white focus:outline-none focus:border-blue-500/40 focus:ring-2 focus:ring-blue-500/10 transition-all cursor-pointer [color-scheme:dark]">
+                  <option value="" className="bg-[#121210] text-[#E8DCC8]/30">Select Category</option>
                   {categories.map(c => (
-                    <option key={c.id} value={c.id} className="bg-[#0a0f1e]">{c.name}</option>
+                    <option key={c.id} value={c.id} className="bg-[#121210]">{c.name}</option>
                   ))}
                 </select>
               </div>
 
-              <div className="space-y-1">
-                <label className="text-xs font-semibold text-white/60 uppercase tracking-wider">Brand *</label>
-                <input required type="text" name="brand" value={formData.brand} onChange={handleChange} className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-[#c9a84c] transition-colors" placeholder="e.g. BMW" />
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[#E8DCC8]/60 text-[10px] font-semibold uppercase tracking-[0.14em]" style={{ fontFamily: "var(--font-body)" }}>Brand *</label>
+                <input required type="text" name="brand" value={formData.brand} onChange={handleChange} className="w-full bg-white/[0.08] border border-white/12 rounded-[20px] px-4 py-2.5 text-white focus:outline-none focus:border-blue-500/40 focus:ring-2 focus:ring-blue-500/10 transition-all placeholder:text-white/20" placeholder="e.g. BMW" />
               </div>
 
-              <div className="space-y-1">
-                <label className="text-xs font-semibold text-white/60 uppercase tracking-wider">Model *</label>
-                <input required type="text" name="model" value={formData.model} onChange={handleChange} className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-[#c9a84c] transition-colors" placeholder="e.g. X5" />
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[#E8DCC8]/60 text-[10px] font-semibold uppercase tracking-[0.14em]" style={{ fontFamily: "var(--font-body)" }}>Model *</label>
+                <input required type="text" name="model" value={formData.model} onChange={handleChange} className="w-full bg-white/[0.08] border border-white/12 rounded-[20px] px-4 py-2.5 text-white focus:outline-none focus:border-blue-500/40 focus:ring-2 focus:ring-blue-500/10 transition-all placeholder:text-white/20" placeholder="e.g. X5" />
               </div>
 
-              <div className="space-y-1">
-                <label className="text-xs font-semibold text-white/60 uppercase tracking-wider">Variant (Optional)</label>
-                <input type="text" name="variant" value={formData.variant} onChange={handleChange} className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-[#c9a84c] transition-colors" placeholder="e.g. xDrive40i" />
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[#E8DCC8]/60 text-[10px] font-semibold uppercase tracking-[0.14em]" style={{ fontFamily: "var(--font-body)" }}>Variant (Optional)</label>
+                <input type="text" name="variant" value={formData.variant} onChange={handleChange} className="w-full bg-white/[0.08] border border-white/12 rounded-[20px] px-4 py-2.5 text-white focus:outline-none focus:border-blue-500/40 focus:ring-2 focus:ring-blue-500/10 transition-all placeholder:text-white/20" placeholder="e.g. xDrive40i" />
               </div>
 
-              <div className="space-y-1">
-                <label className="text-xs font-semibold text-white/60 uppercase tracking-wider">Year *</label>
-                <input required type="number" name="year" value={formData.year} onChange={handleChange} className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-[#c9a84c] transition-colors" />
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[#E8DCC8]/60 text-[10px] font-semibold uppercase tracking-[0.14em]" style={{ fontFamily: "var(--font-body)" }}>Year *</label>
+                <input required type="number" name="year" value={formData.year} onChange={handleChange} className="w-full bg-white/[0.08] border border-white/12 rounded-[20px] px-4 py-2.5 text-white focus:outline-none focus:border-blue-500/40 focus:ring-2 focus:ring-blue-500/10 transition-all" />
               </div>
 
               {/* Specs */}
-              <div className="space-y-1">
-                <label className="text-xs font-semibold text-white/60 uppercase tracking-wider">Fuel Type *</label>
-                <select required name="fuel_type" value={formData.fuel_type} onChange={handleChange} className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-[#c9a84c] transition-colors cursor-pointer appearance-none">
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[#E8DCC8]/60 text-[10px] font-semibold uppercase tracking-[0.14em]" style={{ fontFamily: "var(--font-body)" }}>Fuel Type *</label>
+                <select required name="fuel_type" value={formData.fuel_type} onChange={handleChange} className="w-full bg-white/[0.08] border border-white/12 rounded-[20px] px-4 py-2.5 text-white focus:outline-none focus:border-blue-500/40 focus:ring-2 focus:ring-blue-500/10 transition-all cursor-pointer [color-scheme:dark]">
                   {['Petrol', 'Diesel', 'Electric', 'Hybrid'].map(f => (
-                    <option key={f} value={f} className="bg-[#0a0f1e]">{f}</option>
+                    <option key={f} value={f} className="bg-[#121210]">{f}</option>
                   ))}
                 </select>
               </div>
 
-              <div className="space-y-1">
-                <label className="text-xs font-semibold text-white/60 uppercase tracking-wider">Transmission *</label>
-                <select required name="transmission" value={formData.transmission} onChange={handleChange} className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-[#c9a84c] transition-colors cursor-pointer appearance-none">
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[#E8DCC8]/60 text-[10px] font-semibold uppercase tracking-[0.14em]" style={{ fontFamily: "var(--font-body)" }}>Transmission *</label>
+                <select required name="transmission" value={formData.transmission} onChange={handleChange} className="w-full bg-white/[0.08] border border-white/12 rounded-[20px] px-4 py-2.5 text-white focus:outline-none focus:border-blue-500/40 focus:ring-2 focus:ring-blue-500/10 transition-all cursor-pointer [color-scheme:dark]">
                   {['Automatic', 'Manual'].map(t => (
-                    <option key={t} value={t} className="bg-[#0a0f1e]">{t}</option>
+                    <option key={t} value={t} className="bg-[#121210]">{t}</option>
                   ))}
                 </select>
               </div>
 
-              <div className="space-y-1">
-                <label className="text-xs font-semibold text-white/60 uppercase tracking-wider">Seating Cap *</label>
-                <input required type="number" name="seating_capacity" value={formData.seating_capacity} onChange={handleChange} className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-[#c9a84c] transition-colors" />
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[#E8DCC8]/60 text-[10px] font-semibold uppercase tracking-[0.14em]" style={{ fontFamily: "var(--font-body)" }}>Seating Cap *</label>
+                <input required type="number" name="seating_capacity" value={formData.seating_capacity} onChange={handleChange} className="w-full bg-white/[0.08] border border-white/12 rounded-[20px] px-4 py-2.5 text-white focus:outline-none focus:border-blue-500/40 focus:ring-2 focus:ring-blue-500/10 transition-all" />
               </div>
 
-              <div className="space-y-1">
-                <label className="text-xs font-semibold text-white/60 uppercase tracking-wider">Luggage Cap</label>
-                <input type="number" name="luggage_capacity" value={formData.luggage_capacity} onChange={handleChange} className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-[#c9a84c] transition-colors" />
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[#E8DCC8]/60 text-[10px] font-semibold uppercase tracking-[0.14em]" style={{ fontFamily: "var(--font-body)" }}>Luggage Cap</label>
+                <input type="number" name="luggage_capacity" value={formData.luggage_capacity} onChange={handleChange} className="w-full bg-white/[0.08] border border-white/12 rounded-[20px] px-4 py-2.5 text-white focus:outline-none focus:border-blue-500/40 focus:ring-2 focus:ring-blue-500/10 transition-all" />
               </div>
 
               {/* Pricing */}
-              <div className="space-y-1">
-                <label className="text-xs font-semibold text-white/60 uppercase tracking-wider">Daily Rate (₹) *</label>
-                <input required type="number" name="daily_rate" value={formData.daily_rate} onChange={handleChange} className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-[#c9a84c] transition-colors" />
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[#E8DCC8]/60 text-[10px] font-semibold uppercase tracking-[0.14em]" style={{ fontFamily: "var(--font-body)" }}>Daily Rate (₹) *</label>
+                <input required type="number" name="daily_rate" value={formData.daily_rate} onChange={handleChange} className="w-full bg-white/[0.08] border border-white/12 rounded-[20px] px-4 py-2.5 text-white focus:outline-none focus:border-blue-500/40 focus:ring-2 focus:ring-blue-500/10 transition-all" />
               </div>
 
-              <div className="space-y-1">
-                <label className="text-xs font-semibold text-white/60 uppercase tracking-wider">Hourly Rate (₹) *</label>
-                <input required type="number" name="hourly_rate" value={formData.hourly_rate} onChange={handleChange} className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-[#c9a84c] transition-colors" />
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[#E8DCC8]/60 text-[10px] font-semibold uppercase tracking-[0.14em]" style={{ fontFamily: "var(--font-body)" }}>Hourly Rate (₹) *</label>
+                <input required type="number" name="hourly_rate" value={formData.hourly_rate} onChange={handleChange} className="w-full bg-white/[0.08] border border-white/12 rounded-[20px] px-4 py-2.5 text-white focus:outline-none focus:border-blue-500/40 focus:ring-2 focus:ring-blue-500/10 transition-all" />
               </div>
 
-              <div className="space-y-1 md:col-span-2">
-                <label className="text-xs font-semibold text-white/60 uppercase tracking-wider">Security Deposit (₹) *</label>
-                <input required type="number" name="security_deposit" value={formData.security_deposit} onChange={handleChange} className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-[#c9a84c] transition-colors" />
+              <div className="flex flex-col gap-1.5 md:col-span-2">
+                <label className="text-[#E8DCC8]/60 text-[10px] font-semibold uppercase tracking-[0.14em]" style={{ fontFamily: "var(--font-body)" }}>Security Deposit (₹) *</label>
+                <input required type="number" name="security_deposit" value={formData.security_deposit} onChange={handleChange} className="w-full bg-white/[0.08] border border-white/12 rounded-[20px] px-4 py-2.5 text-white focus:outline-none focus:border-blue-500/40 focus:ring-2 focus:ring-blue-500/10 transition-all" />
               </div>
             </div>
           </form>
         </div>
 
-        <div className="p-6 border-t border-white/[0.08] flex justify-end gap-3 bg-[#060b18]">
-          <button
+        {/* Footer */}
+        <div className="p-6 border-t border-white/10 flex justify-end gap-3">
+          <Button
             type="button"
             onClick={onClose}
             disabled={loading}
-            className="px-6 py-2.5 rounded-xl text-sm font-semibold text-white border border-white/10 hover:bg-white/5 transition-colors cursor-pointer"
+            variant="outline"
+            className="rounded-[20px]"
           >
             Cancel
-          </button>
-          <button
+          </Button>
+          <Button
             form="vehicle-form"
             type="submit"
             disabled={loading}
-            className="px-6 py-2.5 rounded-xl text-sm font-black bg-[#c9a84c] text-[#0a0f1e] hover:bg-[#e8c96d] disabled:opacity-50 transition-colors cursor-pointer"
+            variant="primary"
+            className="rounded-[20px]"
           >
             {loading ? (isEditMode ? "Saving..." : "Adding...") : (isEditMode ? "Save Changes" : "Add Vehicle")}
-          </button>
+          </Button>
         </div>
       </div>
     </div>

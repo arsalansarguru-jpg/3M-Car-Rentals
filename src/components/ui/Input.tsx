@@ -21,7 +21,8 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
         {label && (
           <label
             htmlFor={inputId}
-            className="text-sm font-medium text-white/70 select-none cursor-pointer"
+            className="text-[10px] font-semibold text-[#E8DCC8]/60 uppercase tracking-[0.14em] select-none cursor-pointer mb-0.5"
+            style={{ fontFamily: "var(--font-body)" }}
           >
             {label}
           </label>
@@ -38,38 +39,36 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
               [errorId]: !!error,
             })}
             className={clsx(
-              "w-full h-11 px-4 text-sm font-normal text-white bg-white/5 border border-white/10 outline-none transition-all placeholder-white/25 focus:bg-white/8",
+              "w-full h-11 px-4 text-sm font-normal text-white bg-white/[0.08] border border-white/12 outline-none transition-all placeholder-white/20 focus:bg-white/[0.12]",
               rightElement ? "pr-11" : "",
-              
-              // Custom UXS border radius (10px)
-              "rounded-input",
+              "rounded-[20px]", // Rounded corners: 20px
 
-              // Validation border states mapping
+              // Glass input focus states
               {
-                "border-red-500/30 bg-red-500/5 focus:border-red-500/60 focus:ring-1 focus:ring-red-500/20": !!error,
-                "border-emerald-500/30 bg-emerald-500/5 focus:border-emerald-500/60 focus:ring-1 focus:ring-emerald-500/20": success && !error,
-                "border-white/10 focus:border-[#c9a84c]/60 focus:ring-1 focus:ring-[#c9a84c]/20": !error && !success,
+                "border-red-500/35 bg-red-500/5 focus:border-red-500/60 focus:ring-2 focus:ring-red-500/10": !!error,
+                "border-emerald-500/35 bg-emerald-500/5 focus:border-emerald-500/60 focus:ring-2 focus:ring-emerald-500/10": success && !error,
+                "border-white/12 focus:border-blue-500/40 focus:ring-2 focus:ring-blue-500/10": !error && !success,
               },
               className
             )}
             {...props}
           />
           {rightElement && (
-            <div className="absolute right-3 flex items-center justify-center">
+            <div className="absolute right-3.5 flex items-center justify-center">
               {rightElement}
             </div>
           )}
         </div>
 
-        {/* Validation Helper copy states */}
+        {/* Validation Helper states */}
         {error && (
-          <p id={errorId} className="text-xs font-medium text-red-400 mt-0.5 animate-fadeIn">
+          <p id={errorId} className="text-xs font-light text-red-400 mt-1 pl-2">
             {error}
           </p>
         )}
 
         {helperText && !error && (
-          <p id={helperId} className="text-xs font-normal text-white/40 mt-0.5">
+          <p id={helperId} className="text-xs font-light text-white/30 mt-1 pl-2">
             {helperText}
           </p>
         )}

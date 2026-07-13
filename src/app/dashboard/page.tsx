@@ -35,7 +35,7 @@ export default function DashboardRedirect() {
 
   return (
     <div className="flex items-center justify-center py-24">
-      <div className="w-8 h-8 border-4 border-[#c9a84c]/20 border-t-[#c9a84c] rounded-full animate-spin" />
+      <div className="w-8 h-8 border-4 border-[#3B82F6]/20 border-t-[#3B82F6] rounded-full animate-spin" />
     </div>
   );
 }
