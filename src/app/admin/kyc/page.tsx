@@ -36,6 +36,7 @@ interface LicenseData {
   verified_status: "pending" | "approved" | "rejected";
   rejection_reason: string | null;
   audit_trail: any[];
+  created_at: string;
   user: {
     first_name: string;
     last_name: string;
