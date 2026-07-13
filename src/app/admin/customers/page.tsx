@@ -85,7 +85,7 @@ export default function CustomerDirectoryPage() {
               {filtered.map(cust => (
                 <tr 
                   key={cust.id}
-                  onClick={() => router.push(`/dashboard/admin/customers/${cust.id}`)}
+                  onClick={() => router.push(`/admin/customers/${cust.id}`)}
                   className="glass-table-row cursor-pointer group"
                 >
                   <td className="py-4 px-5">

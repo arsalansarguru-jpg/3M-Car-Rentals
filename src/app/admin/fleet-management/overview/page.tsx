@@ -114,7 +114,7 @@ export default function FleetOverviewPage() {
           <Button variant="secondary" size="sm" onClick={fetchVehicles} className="gap-2">
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} /> Refresh
           </Button>
-          <Link href="/dashboard/admin/fleet-management/inventory?action=add">
+          <Link href="/admin/fleet-management/inventory?action=add">
             <Button variant="fleet" size="sm" className="gap-2">
               <Plus className="w-4 h-4" /> Add Vehicle
             </Button>
@@ -250,21 +250,21 @@ export default function FleetOverviewPage() {
                   Operational Shortcuts
                 </h3>
                 <div className="space-y-2">
-                  <Link href="/dashboard/admin/fleet-management/inventory?action=add" className="block">
+                  <Link href="/admin/fleet-management/inventory?action=add" className="block">
                     <div className="flex items-center justify-between p-3.5 rounded-xl bg-white/[0.03] border border-white/5 hover:bg-white/[0.08] hover:border-white/10 transition-all group">
                       <span style={{ fontFamily: "var(--font-body)", fontSize: "0.9375rem", fontWeight: 500 }} className="text-white/80 group-hover:text-white">Add New Vehicle</span>
                       <ChevronRight className="w-4 h-4 text-white/35 group-hover:text-white/70" />
                     </div>
                   </Link>
 
-                  <Link href="/dashboard/admin/fleet-management/maintenance" className="block">
+                  <Link href="/admin/fleet-management/maintenance" className="block">
                     <div className="flex items-center justify-between p-3.5 rounded-xl bg-white/[0.03] border border-white/5 hover:bg-white/[0.08] hover:border-white/10 transition-all group">
                       <span style={{ fontFamily: "var(--font-body)", fontSize: "0.9375rem", fontWeight: 500 }} className="text-white/80 group-hover:text-white">Schedule Maintenance</span>
                       <ChevronRight className="w-4 h-4 text-white/35 group-hover:text-white/70" />
                     </div>
                   </Link>
 
-                  <Link href="/dashboard/admin/fleet-management/pricing" className="block">
+                  <Link href="/admin/fleet-management/pricing" className="block">
                     <div className="flex items-center justify-between p-3.5 rounded-xl bg-white/[0.03] border border-white/5 hover:bg-white/[0.08] hover:border-white/10 transition-all group">
                       <span style={{ fontFamily: "var(--font-body)", fontSize: "0.9375rem", fontWeight: 500 }} className="text-white/80 group-hover:text-white">Update Rate Tiers</span>
                       <ChevronRight className="w-4 h-4 text-white/35 group-hover:text-white/70" />

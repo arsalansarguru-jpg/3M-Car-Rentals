@@ -148,7 +148,7 @@ function VehicleInventoryPageContent() {
     if (searchParams.get("action") === "add") {
       handleAddNew();
       // Remove query param to avoid repeat opening
-      router.replace("/dashboard/admin/fleet-management/inventory");
+      router.replace("/admin/fleet-management/inventory");
     }
   }, [searchParams]);
 

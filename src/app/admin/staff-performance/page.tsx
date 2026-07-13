@@ -30,7 +30,7 @@ export default function StaffPerformanceCenter() {
       try {
         const res = await fetch("/api/staff-performance/dashboard");
         if (res.status === 401) {
-          router.replace("/auth/login?redirect=/dashboard/admin/staff-performance");
+          router.replace("/auth/login?redirect=/admin/staff-performance");
           return;
         }
         if (!res.ok) throw new Error("Failed to fetch dashboard data");

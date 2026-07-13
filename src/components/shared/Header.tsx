@@ -40,7 +40,7 @@ export default function Header() {
           .maybeSingle();
         const roleName = (userRow?.role as unknown as { name: string } | null)?.name ?? "customer";
         const isAdmin = ["admin", "super_admin", "manager", "staff"].includes(roleName);
-        setDashboardHref(isAdmin ? "/dashboard/admin" : "/dashboard/client");
+        setDashboardHref(isAdmin ? "/admin" : "/dashboard/client");
       } else {
         setIsSignedIn(false);
       }

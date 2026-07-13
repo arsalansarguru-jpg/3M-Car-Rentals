@@ -37,7 +37,7 @@ export default function CustomerProfilePage() {
     <div className="space-y-8 max-w-7xl mx-auto">
       {/* ── Breadcrumb & Header ── */}
       <div>
-        <Link href="/dashboard/admin/customers" className="inline-flex items-center gap-2 text-white/50 hover:text-white mb-6 text-sm transition-colors">
+        <Link href="/admin/customers" className="inline-flex items-center gap-2 text-white/50 hover:text-white mb-6 text-sm transition-colors">
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
           Back to Directory
         </Link>

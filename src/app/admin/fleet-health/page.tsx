@@ -106,7 +106,7 @@ export default function FleetHealthPage() {
     try {
       const res = await fetch("/api/fleet-health/dashboard");
       if (res.status === 401) {
-        router.replace("/auth/login?redirect=/dashboard/admin/fleet-health");
+        router.replace("/auth/login?redirect=/admin/fleet-health");
         return;
       }
       const json = await res.json();
@@ -183,7 +183,7 @@ export default function FleetHealthPage() {
           <p className="text-white/40 text-sm mt-2">Compliance checks, component diagnostics, FASTag flow, and wear forecasts.</p>
         </div>
         <Link 
-          href="/dashboard/admin" 
+          href="/admin" 
           className="px-5 py-2.5 rounded-xl text-xs font-bold border border-white/10 text-white hover:bg-white/5 transition-all text-center"
         >
           Return to Command Room

@@ -347,7 +347,7 @@ export default function RevenueManagementDashboard() {
 
         <div className="flex flex-wrap items-center gap-3">
           <Link
-            href="/dashboard/admin"
+            href="/admin"
             className="px-5 py-2.5 rounded-xl text-xs font-bold bg-white/5 border border-white/10 text-white hover:bg-white/10 transition-colors"
           >
             ← Operations Dashboard
