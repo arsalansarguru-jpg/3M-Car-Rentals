@@ -39,6 +39,7 @@ interface MaintenanceJob {
   estimated_cost: number;
   actual_cost: number;
   estimated_completion: string | null;
+  completed_at?: string | null;
   created_at: string;
   vehicle: {
     id: string;
