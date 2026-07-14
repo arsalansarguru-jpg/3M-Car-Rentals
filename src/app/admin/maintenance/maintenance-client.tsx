@@ -11,7 +11,7 @@ import {
   Pagination, 
   Badge, 
   StatusBadge, 
-  Dialog 
+  Modal 
 } from "@/components/ui";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -370,7 +370,7 @@ export default function MaintenanceClient({ initialJobs, availableVehicles }: Ma
       </div>
 
       {/* Create Maintenance Job Dialog */}
-      <Dialog 
+      <Modal 
         isOpen={isCreateOpen} 
         onClose={() => setIsCreateOpen(false)}
         title="Schedule Vehicle Maintenance"
@@ -500,7 +500,7 @@ export default function MaintenanceClient({ initialJobs, availableVehicles }: Ma
             </Button>
           </div>
         </form>
-      </Dialog>
+      </Modal>
     </div>
   );
 }
