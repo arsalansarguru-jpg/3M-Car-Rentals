@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { AuthService } from "@/services/auth.service";
+import { cookies } from "next/headers";
+import { createServerClient } from "@supabase/ssr";
 import { ProfileService } from "@/services/profile.service";
 import { RoleService } from "@/services/role.service";
 
@@ -10,7 +11,29 @@ export async function GET(request: NextRequest) {
 
   if (code) {
     try {
-      const supabase = await AuthService.getServerClient();
+      const cookieStore = await cookies();
+      
+      // Create a dummy response to capture cookies set during code exchange
+      const response = NextResponse.next();
+
+      const supabase = createServerClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+        {
+          cookies: {
+            getAll() {
+              return cookieStore.getAll();
+            },
+            setAll(cookiesToSet) {
+              cookiesToSet.forEach(({ name, value, options }) => {
+                cookieStore.set(name, value, options);
+                response.cookies.set(name, value, options);
+              });
+            },
+          },
+        }
+      );
+
       const { data, error } = await supabase.auth.exchangeCodeForSession(code);
       
       if (!error && data?.user) {
@@ -32,19 +55,16 @@ export async function GET(request: NextRequest) {
         
         const redirectResponse = NextResponse.redirect(new URL(redirectDestination, request.url));
         
-        // Propagate authentication cookies from server client state onto the redirect response
-        const dummyResponse = NextResponse.next();
-        const client = await AuthService.getServerClient(); // fetch initialized server instance to extract cookies
-        
-        // Grab current cookie jar to carry session headers onto redirect header payload
-        request.cookies.getAll().forEach((cookie) => {
-          if (cookie.name.startsWith("sb-")) {
-            redirectResponse.cookies.set(cookie.name, cookie.value, {
-              path: "/",
-              secure: true,
-              sameSite: "lax",
-            });
-          }
+        // Propagate authentication cookies from captured state onto the redirect response
+        response.cookies.getAll().forEach((cookie) => {
+          redirectResponse.cookies.set(cookie.name, cookie.value, {
+            path: cookie.path || "/",
+            domain: cookie.domain,
+            secure: cookie.secure,
+            sameSite: cookie.sameSite,
+            expires: cookie.expires,
+            maxAge: cookie.maxAge,
+          });
         });
 
         return redirectResponse;

@@ -289,3 +289,32 @@ export class NotificationService {
     }
   }
 }
+
+// Register subscribers for Domain Events to make NotificationService event-driven
+import { DomainEventDispatcher } from "@/lib/event-bus";
+
+DomainEventDispatcher.subscribe("BookingCreated", (event) => {
+  NotificationService.publishEvent({
+    recipientId: event.payload.userId,
+    event: "booking_created",
+    variables: {
+      customer_name: event.payload.customerName || "Customer",
+      vehicle_name: event.payload.vehicleName || "Vehicle",
+      booking_ref: event.payload.bookingRef || "REF"
+    },
+    channels: ["Email", "SMS", "WhatsApp", "InApp"]
+  });
+});
+
+DomainEventDispatcher.subscribe("PaymentCompleted", (event) => {
+  NotificationService.publishEvent({
+    recipientId: event.payload.userId,
+    event: "payment_completed",
+    variables: {
+      customer_name: event.payload.customerName || "Customer",
+      amount: String(event.payload.amount || 0),
+      booking_ref: event.payload.bookingRef || "REF"
+    },
+    channels: ["Email", "SMS", "InApp"]
+  });
+});

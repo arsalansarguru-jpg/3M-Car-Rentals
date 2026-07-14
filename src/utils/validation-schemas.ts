@@ -51,3 +51,15 @@ export const vehicleUpdateSchema = z.object({
   vehicleIds: z.array(uuidSchema).min(1, "At least one vehicle ID is required."),
   action: z.enum(["mark_available", "send_to_cleaning", "send_to_maintenance", "disable"])
 });
+
+// ─── Maintenance Job Create Schema ────────────────────────────────────────────
+
+export const maintenanceJobCreateSchema = z.object({
+  vehicleId: uuidSchema,
+  triggerType: z.enum(["mileage", "incident", "duration", "manual"]),
+  priority: z.enum(["low", "medium", "high", "critical"]),
+  description: z.string().max(1000).optional(),
+  workshop: z.string().max(200).optional(),
+  estimatedCost: z.number().nonnegative().optional(),
+  estimatedCompletion: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be YYYY-MM-DD format.").optional()
+});

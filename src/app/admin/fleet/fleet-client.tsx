@@ -25,9 +25,20 @@ import {
   Square,
   Download,
   AlertOctagon,
-  RefreshCw
+  RefreshCw,
+  AlertCircle
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+
+// Design System Imports
+import { KpiCard } from "@/components/ui/Card";
+import { StatGrid } from "@/components/ui/StatGrid";
+import { Drawer } from "@/components/ui/Drawer";
+import { Dialog } from "@/components/ui/Dialog";
+import { StatusBadge, Badge } from "@/components/ui/Badge";
+import { PageHeader } from "@/components/ui/PageHeader";
+import { TableToolbar } from "@/components/ui/Table";
+import { Timeline } from "@/components/ui/Timeline";
 
 interface Vehicle {
   id: string;
@@ -355,13 +366,11 @@ export default function FleetClient({ vehicles: initialVehicles, summary: initia
     <div className="space-y-6 pb-12 font-sans relative">
       
       {/* Page Header */}
-      <div className="flex flex-col md:flex-row justify-between gap-4 items-start md:items-center bg-white/[0.02] border border-white/10 rounded-3xl p-6 backdrop-blur-md">
-        <div>
-          <span className="text-[10px] font-mono text-[#3B82F6] uppercase tracking-widest block mb-1">Prestige Command Center</span>
-          <h1 className="text-3xl font-black text-white tracking-tight" style={{ fontFamily: "var(--font-heading)" }}>Fleet Register</h1>
-          <p className="text-white/40 text-xs mt-1">Review live inventory metrics, availability classifications, and maintenance lanes.</p>
-        </div>
-
+      <PageHeader
+        title="Fleet Register"
+        subtitle="Review live inventory metrics, availability classifications, and maintenance lanes."
+        contextTag="Prestige Command Center"
+      >
         {/* Real-time Indicator Panel */}
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2 bg-[#090a0f] border border-white/10 px-3 py-1.5 rounded-xl text-[10px] text-white">
@@ -381,42 +390,18 @@ export default function FleetClient({ vehicles: initialVehicles, summary: initia
             Synced: {lastUpdated.toLocaleTimeString()}
           </span>
         </div>
-      </div>
+      </PageHeader>
 
       {/* KPI Cards Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
-        {[
-          { title: "Total Vehicles", value: localSummary.total, icon: Car, color: "text-blue-400 bg-blue-500/5 border-blue-500/10" },
-          { title: "Available Units", value: localSummary.available, icon: Sparkles, color: "text-emerald-400 bg-emerald-500/5 border-emerald-500/10" },
-          { title: "Reserved Units", value: reservedCount, icon: Calendar, color: "text-[#C9A84C] bg-amber-500/5 border-amber-500/10" },
-          { title: "Active Trips", value: activeCalculated, icon: Activity, color: "text-[#3B82F6] bg-blue-500/5 border-blue-500/10" },
-          { title: "Detailing/Cleaning", value: localSummary.detailing, icon: Sparkles, color: "text-purple-400 bg-purple-500/5 border-purple-500/10" },
-          { title: "In Maintenance", value: localSummary.maintenance, icon: Wrench, color: "text-red-400 bg-red-500/5 border-red-500/10" },
-          { title: "Inactive/Hidden", value: localSummary.inactive, icon: XCircle, color: "text-slate-400 bg-slate-500/5 border-slate-500/10" }
-        ].map((item, i) => (
-          <motion.div
-            key={item.title}
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.35, delay: i * 0.06 }}
-            className={`border rounded-2xl p-4 flex flex-col justify-between backdrop-blur-xl h-[120px] ${item.color}`}
-          >
-            <div className="flex justify-between items-start">
-              <span className="text-[9px] uppercase font-bold text-white/30 tracking-wider block max-w-[80px] leading-tight">
-                {item.title}
-              </span>
-              <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center">
-                <item.icon className="w-4 h-4 shrink-0" />
-              </div>
-            </div>
-            <div>
-              <span className="text-xl font-black text-white mt-2 block font-mono leading-none">
-                {item.value}
-              </span>
-            </div>
-          </motion.div>
-        ))}
-      </div>
+      <StatGrid cols={7}>
+        <KpiCard title="Total Vehicles" value={localSummary.total} icon={Car} glowColor="blue" />
+        <KpiCard title="Available Units" value={localSummary.available} icon={Sparkles} glowColor="cyan" />
+        <KpiCard title="Reserved Units" value={reservedCount} icon={Calendar} glowColor="indigo" />
+        <KpiCard title="Active Trips" value={activeCalculated} icon={Activity} glowColor="blue" />
+        <KpiCard title="Detailing/Cleaning" value={localSummary.detailing} icon={Sparkles} glowColor="purple" />
+        <KpiCard title="In Maintenance" value={localSummary.maintenance} icon={Wrench} glowColor="pink" />
+        <KpiCard title="Inactive/Hidden" value={localSummary.inactive} icon={XCircle} glowColor="cyan" />
+      </StatGrid>
 
       {/* Search & Filters Panel */}
       <div className="bg-white/[0.02] border border-white/10 rounded-3xl p-6 backdrop-blur-md space-y-4">
@@ -618,9 +603,7 @@ export default function FleetClient({ vehicles: initialVehicles, summary: initia
                   className="w-full h-full object-cover opacity-75 group-hover:scale-105 transition-transform duration-500"
                 />
                 <div className="absolute top-4 left-4">
-                  <span className={`inline-flex px-2.5 py-0.5 rounded-full text-[8.5px] font-bold uppercase tracking-wider border ${getStatusColor(v.availability_status)}`}>
-                    {v.availability_status}
-                  </span>
+                  <StatusBadge status={v.availability_status} />
                 </div>
                 <div className="absolute bottom-4 left-4">
                   <span className="bg-black/60 backdrop-blur-sm text-[9px] text-white/60 font-mono px-2 py-0.5 rounded uppercase tracking-wider">
@@ -646,9 +629,7 @@ export default function FleetClient({ vehicles: initialVehicles, summary: initia
                     </div>
                     <div className="space-y-1">
                       <span className="text-white/30 text-[8px] block uppercase">Cleanliness</span>
-                      <span className={`font-bold flex items-center gap-1 ${getCleanlinessColor(v.cleanliness_status)}`}>
-                        ● {v.cleanliness_status}
-                      </span>
+                      <StatusBadge status={v.cleanliness_status} />
                     </div>
                     <div className="space-y-1">
                       <span className="text-white/30 text-[8px] block uppercase">Mileage</span>
@@ -709,228 +690,155 @@ export default function FleetClient({ vehicles: initialVehicles, summary: initia
       </div>
 
       {/* ─── READ-ONLY DETAILS SIDE DRAWER ─── */}
-      <AnimatePresence>
+      <Drawer
+        isOpen={!!selectedVehicle}
+        onClose={() => setSelectedId(null)}
+        title={`${selectedVehicle?.brand} ${selectedVehicle?.model}`}
+        subtitle={`Registry Code: ${selectedVehicle?.registration_number}`}
+        size="lg"
+      >
         {selectedVehicle && (
-          <div className="fixed inset-0 z-50 flex justify-end select-none">
-            <motion.div 
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-black/85 backdrop-blur-sm" 
-              onClick={() => setSelectedId(null)} 
-            />
-            
-            <motion.div 
-              initial={{ x: "100%" }} animate={{ x: 0 }} exit={{ x: "100%" }}
-              transition={{ type: "spring", bounce: 0, duration: 0.35 }}
-              className="w-full max-w-xl bg-[#0c0d10] border-l border-white/10 h-full relative z-10 flex flex-col justify-between p-6 overflow-y-auto custom-scrollbar"
-            >
-              <div className="space-y-6">
-                
-                {/* Header panel */}
-                <div className="flex justify-between items-center border-b border-white/5 pb-4">
-                  <div>
-                    <span className="text-[9px] font-mono text-[#3B82F6] uppercase tracking-wider">Registry Code: {selectedVehicle.registration_number}</span>
-                    <h3 className="text-white text-xl font-extrabold" style={{ fontFamily: "var(--font-heading)" }}>{selectedVehicle.brand} {selectedVehicle.model}</h3>
-                  </div>
-                  <button 
-                    onClick={() => setSelectedId(null)}
-                    className="p-2 text-white/40 hover:text-white rounded-lg hover:bg-white/5 transition-all"
-                  >
-                    <X className="w-5 h-5" />
-                  </button>
-                </div>
+          <div className="space-y-6 text-left">
+            {/* Specs Cards */}
+            <div className="grid grid-cols-4 gap-3 text-center text-xs font-mono">
+              <div className="bg-[#090a0f] p-3 rounded-xl border border-white/5">
+                <span className="text-white/30 text-[8px] uppercase block">Year</span>
+                <span className="text-white font-bold block mt-0.5">{selectedVehicle.year}</span>
+              </div>
+              <div className="bg-[#090a0f] p-3 rounded-xl border border-white/5">
+                <span className="text-white/30 text-[8px] uppercase block">Fuel Type</span>
+                <span className="text-white font-bold block mt-0.5">{selectedVehicle.fuel_type}</span>
+              </div>
+              <div className="bg-[#090a0f] p-3 rounded-xl border border-white/5">
+                <span className="text-white/30 text-[8px] uppercase block">Gearbox</span>
+                <span className="text-white font-bold block mt-0.5">{selectedVehicle.transmission}</span>
+              </div>
+              <div className="bg-[#090a0f] p-3 rounded-xl border border-white/5">
+                <span className="text-white/30 text-[8px] uppercase block">Rate</span>
+                <span className="text-white font-bold block mt-0.5">{formatINR(selectedVehicle.daily_rate)}</span>
+              </div>
+            </div>
 
-                {/* Specs Cards */}
-                <div className="grid grid-cols-4 gap-3 text-center text-xs font-mono">
-                  <div className="bg-[#090a0f] p-3 rounded-xl border border-white/5">
-                    <span className="text-white/30 text-[8px] uppercase block">Year</span>
-                    <span className="text-white font-bold block mt-0.5">{selectedVehicle.year}</span>
-                  </div>
-                  <div className="bg-[#090a0f] p-3 rounded-xl border border-white/5">
-                    <span className="text-white/30 text-[8px] uppercase block">Fuel Type</span>
-                    <span className="text-white font-bold block mt-0.5">{selectedVehicle.fuel_type}</span>
-                  </div>
-                  <div className="bg-[#090a0f] p-3 rounded-xl border border-white/5">
-                    <span className="text-white/30 text-[8px] uppercase block">Gearbox</span>
-                    <span className="text-white font-bold block mt-0.5">{selectedVehicle.transmission}</span>
-                  </div>
-                  <div className="bg-[#090a0f] p-3 rounded-xl border border-white/5">
-                    <span className="text-white/30 text-[8px] uppercase block">Rate</span>
-                    <span className="text-white font-bold block mt-0.5">{formatINR(selectedVehicle.daily_rate)}</span>
-                  </div>
-                </div>
-
-                {/* Booking History & Revenue */}
-                <div className="p-4 rounded-xl bg-white/[0.01] border border-white/5 space-y-4">
-                  <div className="flex justify-between items-center border-b border-white/5 pb-2">
-                    <span className="text-[10px] text-white/40 uppercase font-bold tracking-wider flex items-center gap-1.5"><History className="w-3.5 h-3.5 text-[#3B82F6]" /> Booking History</span>
-                    <span className="text-[10px] text-emerald-400 font-mono font-bold">Total Revenue: {formatINR(totalRevenue)}</span>
-                  </div>
-                  
-                  <div className="space-y-2 max-h-[140px] overflow-y-auto pr-2 custom-scrollbar font-mono text-[10px]">
-                    {loadingDetails ? (
-                      <div className="text-white/30 italic">Loading reservation history...</div>
-                    ) : bookingHistory.length > 0 ? (
-                      bookingHistory.map((b) => (
-                        <div key={b.id} className="flex justify-between items-center p-2 rounded bg-white/[0.01] border border-white/5">
-                          <div>
-                            <span className="text-[#3B82F6] font-bold block">#{b.booking_reference}</span>
-                            <span className="text-white/30 text-[8px]">{b.user ? `${b.user.first_name} ${b.user.last_name}` : "Unknown"}</span>
-                          </div>
-                          <div className="text-right">
-                            <span className="text-white font-bold block">{formatINR(b.total_amount)}</span>
-                            <span className="text-[8px] text-white/40 uppercase">{b.booking_status}</span>
-                          </div>
-                        </div>
-                      ))
-                    ) : (
-                      <div className="text-white/20 italic p-2 text-center">No historical bookings recorded.</div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Maintenance Logs */}
-                <div className="p-4 rounded-xl bg-white/[0.01] border border-white/5 space-y-4">
-                  <div className="flex justify-between items-center border-b border-white/5 pb-2">
-                    <span className="text-[10px] text-white/40 uppercase font-bold tracking-wider flex items-center gap-1.5"><Wrench className="w-3.5 h-3.5 text-purple-400" /> Maintenance Logs</span>
-                    <span className="text-[10px] text-purple-400 font-mono font-bold">Logs: {maintenanceLogs.length}</span>
-                  </div>
-                  
-                  <div className="space-y-2 max-h-[140px] overflow-y-auto pr-2 custom-scrollbar font-mono text-[10px]">
-                    {loadingDetails ? (
-                      <div className="text-white/30 italic">Loading maintenance history...</div>
-                    ) : maintenanceLogs.length > 0 ? (
-                      maintenanceLogs.map((log) => (
-                        <div key={log.id} className="p-2 rounded bg-white/[0.01] border border-white/5 text-left space-y-1">
-                          <div className="flex justify-between text-white/40">
-                            <span>{log.service_type.replace(/_/g, " ").toUpperCase()}</span>
-                            <span>{new Date(log.date).toLocaleDateString()}</span>
-                          </div>
-                          <p className="text-white font-semibold">{log.details || "No details provided"}</p>
-                          <div className="flex justify-between text-[8px] text-white/30">
-                            <span>Odo: {log.odometer?.toLocaleString()} KM</span>
-                            <span>Cost: {formatINR(log.cost)}</span>
-                          </div>
-                        </div>
-                      ))
-                    ) : (
-                      <div className="text-white/20 italic p-2 text-center">No service history logs found.</div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Vital Health & Expiries (RC, Insurance, PUC, Fastag) */}
-                <div className="p-4 rounded-xl bg-white/[0.01] border border-white/5 space-y-4">
-                  <span className="text-[10px] text-white/40 uppercase font-bold tracking-wider block font-sans">Legal Documentations & Expiries</span>
-                  
-                  {loadingDetails ? (
-                    <div className="text-[10px] text-white/30 font-mono py-4">Syncing vital indicators...</div>
-                  ) : healthDetails ? (
-                    <div className="space-y-2.5 text-xs font-mono">
-                      <div className="flex justify-between border-b border-white/5 pb-1">
-                        <span className="text-white/50 flex items-center gap-1"><ShieldCheck className="w-3.5 h-3.5 text-blue-400" /> Insurance Valid Until:</span>
-                        <span className="text-white">{new Date(healthDetails.insurance_expiry).toLocaleDateString()}</span>
+            {/* Booking History & Revenue */}
+            <div className="p-4 rounded-xl bg-white/[0.01] border border-white/5 space-y-4">
+              <div className="flex justify-between items-center border-b border-white/5 pb-2">
+                <span className="text-[10px] text-white/40 uppercase font-bold tracking-wider flex items-center gap-1.5"><History className="w-3.5 h-3.5 text-[#3B82F6]" /> Booking History</span>
+                <span className="text-[10px] text-emerald-400 font-mono font-bold">Total Revenue: {formatINR(totalRevenue)}</span>
+              </div>
+              
+              <div className="space-y-2 max-h-[140px] overflow-y-auto pr-2 custom-scrollbar font-mono text-[10px]">
+                {loadingDetails ? (
+                  <div className="text-white/30 italic">Loading reservation history...</div>
+                ) : bookingHistory.length > 0 ? (
+                  bookingHistory.map((b) => (
+                    <div key={b.id} className="flex justify-between items-center p-2 rounded bg-white/[0.01] border border-white/5">
+                      <div>
+                        <span className="text-[#3B82F6] font-bold block">#{b.booking_reference}</span>
+                        <span className="text-white/30 text-[8px]">{b.user ? `${b.user.first_name} ${b.user.last_name}` : "Unknown"}</span>
                       </div>
-                      <div className="flex justify-between border-b border-white/5 pb-1">
-                        <span className="text-white/50 flex items-center gap-1"><FileText className="w-3.5 h-3.5 text-emerald-400" /> Registration Certificate:</span>
-                        <span className="text-white">{new Date(healthDetails.rc_expiry).toLocaleDateString()}</span>
-                      </div>
-                      <div className="flex justify-between border-b border-white/5 pb-1">
-                        <span className="text-white/50 flex items-center gap-1"><AlertCircle className="w-3.5 h-3.5 text-purple-400" /> Pollution Certificate (PUC):</span>
-                        <span className="text-white">{new Date(healthDetails.puc_expiry).toLocaleDateString()}</span>
-                      </div>
-                      <div className="flex justify-between border-b border-white/5 pb-1">
-                        <span className="text-white/50 flex items-center gap-1"><Navigation className="w-3.5 h-3.5 text-amber-400" /> GPS Track Coordinates:</span>
-                        <span className="text-white">{selectedVehicle.metadata?.gps_coordinates || "19.0760° N, 72.8777° E"}</span>
-                      </div>
-                      <div className="flex justify-between border-b border-white/5 pb-1">
-                        <span className="text-white/50 flex items-center gap-1"><CreditCard className="w-3.5 h-3.5 text-[#3B82F6]" /> FASTag Balance:</span>
-                        <span className="text-[#3B82F6] font-bold">{formatINR(healthDetails.fastag_balance)}</span>
+                      <div className="text-right">
+                        <span className="text-white font-bold block">{formatINR(b.total_amount)}</span>
+                        <span className="text-[8px] text-white/40 uppercase">{b.booking_status}</span>
                       </div>
                     </div>
-                  ) : (
-                    <div className="text-[10px] text-white/30 font-mono italic py-4">No legal documentation expiries logged for this unit.</div>
-                  )}
-                </div>
+                  ))
+                ) : (
+                  <div className="text-white/20 italic p-2 text-center">No historical bookings recorded.</div>
+                )}
+              </div>
+            </div>
 
-                {/* Audit Logs Trail Timeline inside Drawer */}
-                <div className="p-4 rounded-xl bg-white/[0.01] border border-white/5 space-y-4">
-                  <span className="text-[10px] text-white/40 uppercase font-bold tracking-wider block font-sans">Operation Audit Trails</span>
-                  <div className="space-y-4 max-h-[160px] overflow-y-auto pr-2 custom-scrollbar font-mono text-[9px] text-white/60">
-                    {selectedVehicle.metadata?.audit_trail && selectedVehicle.metadata.audit_trail.length > 0 ? (
-                      selectedVehicle.metadata.audit_trail.map((log: any, idx: number) => (
-                        <div key={idx} className="border-l-2 border-blue-500/30 pl-3 space-y-0.5">
-                          <div className="flex justify-between text-white/30">
-                            <span>{log.user}</span>
-                            <span>{new Date(log.timestamp).toLocaleTimeString()}</span>
-                          </div>
-                          <p className="text-white font-semibold capitalize">Action: {log.action.replace(/_/g, " ")}</p>
-                          <div className="text-white/40">
-                            <span>Change: {log.old_value} ➔ {log.new_value}</span>
-                          </div>
-                        </div>
-                      ))
-                    ) : (
-                      <div className="text-white/20 italic text-center py-2">No modification audits logged for this vehicle profile.</div>
-                    )}
+            {/* Maintenance Logs */}
+            <div className="p-4 rounded-xl bg-white/[0.01] border border-white/5 space-y-4">
+              <div className="flex justify-between items-center border-b border-white/5 pb-2">
+                <span className="text-[10px] text-white/40 uppercase font-bold tracking-wider flex items-center gap-1.5"><Wrench className="w-3.5 h-3.5 text-purple-400" /> Maintenance Logs</span>
+                <span className="text-[10px] text-purple-400 font-mono font-bold">Logs: {maintenanceLogs.length}</span>
+              </div>
+              
+              <div className="space-y-2 max-h-[140px] overflow-y-auto pr-2 custom-scrollbar font-mono text-[10px]">
+                {loadingDetails ? (
+                  <div className="text-white/30 italic">Loading maintenance history...</div>
+                ) : maintenanceLogs.length > 0 ? (
+                  maintenanceLogs.map((log) => (
+                    <div key={log.id} className="p-2 rounded bg-white/[0.01] border border-white/5 text-left space-y-1">
+                      <div className="flex justify-between text-white/40">
+                        <span>{log.service_type.replace(/_/g, " ").toUpperCase()}</span>
+                        <span>{new Date(log.date).toLocaleDateString()}</span>
+                      </div>
+                      <p className="text-white font-semibold">{log.details || "No details provided"}</p>
+                      <div className="flex justify-between text-[8px] text-white/30">
+                        <span>Odo: {log.odometer?.toLocaleString()} KM</span>
+                        <span>Cost: {formatINR(log.cost)}</span>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-white/20 italic p-2 text-center">No service history logs found.</div>
+                )}
+              </div>
+            </div>
+
+            {/* Vital Health & Expiries (RC, Insurance, PUC, Fastag) */}
+            <div className="p-4 rounded-xl bg-white/[0.01] border border-white/5 space-y-4">
+              <span className="text-[10px] text-white/40 uppercase font-bold tracking-wider block font-sans">Legal Documentations & Expiries</span>
+              
+              {loadingDetails ? (
+                <div className="text-[10px] text-white/30 font-mono py-4">Syncing vital indicators...</div>
+              ) : healthDetails ? (
+                <div className="space-y-2.5 text-xs font-mono">
+                  <div className="flex justify-between border-b border-white/5 pb-1">
+                    <span className="text-white/50 flex items-center gap-1"><ShieldCheck className="w-3.5 h-3.5 text-blue-400" /> Insurance Valid Until:</span>
+                    <span className="text-white">{new Date(healthDetails.insurance_expiry).toLocaleDateString()}</span>
+                  </div>
+                  <div className="flex justify-between border-b border-white/5 pb-1">
+                    <span className="text-white/50 flex items-center gap-1"><FileText className="w-3.5 h-3.5 text-emerald-400" /> Registration Certificate:</span>
+                    <span className="text-white">{new Date(healthDetails.rc_expiry).toLocaleDateString()}</span>
+                  </div>
+                  <div className="flex justify-between border-b border-white/5 pb-1">
+                    <span className="text-white/50 flex items-center gap-1"><AlertCircle className="w-3.5 h-3.5 text-purple-400" /> Pollution Certificate (PUC):</span>
+                    <span className="text-white">{new Date(healthDetails.puc_expiry).toLocaleDateString()}</span>
+                  </div>
+                  <div className="flex justify-between border-b border-white/5 pb-1">
+                    <span className="text-white/50 flex items-center gap-1"><Navigation className="w-3.5 h-3.5 text-amber-400" /> GPS Track Coordinates:</span>
+                    <span className="text-white">{selectedVehicle.metadata?.gps_coordinates || "19.0760° N, 72.8777° E"}</span>
+                  </div>
+                  <div className="flex justify-between border-b border-white/5 pb-1">
+                    <span className="text-white/50 flex items-center gap-1"><CreditCard className="w-3.5 h-3.5 text-[#3B82F6]" /> FASTag Balance:</span>
+                    <span className="text-[#3B82F6] font-bold">{formatINR(healthDetails.fastag_balance)}</span>
                   </div>
                 </div>
+              ) : (
+                <div className="text-[10px] text-white/30 font-mono italic py-4">No legal documentation expiries logged for this unit.</div>
+              )}
+            </div>
 
-              </div>
+            {/* Audit Logs Trail Timeline inside Drawer */}
+            <div className="p-4 rounded-xl bg-white/[0.01] border border-white/5 space-y-4">
+              <span className="text-[10px] text-white/40 uppercase font-bold tracking-wider block font-sans">Operation Audit Trails</span>
+              <Timeline 
+                events={(selectedVehicle.metadata?.audit_trail || []).map((log: any) => ({
+                  user: log.user,
+                  timestamp: log.timestamp,
+                  action: log.action,
+                  oldValue: log.old_value,
+                  newValue: log.new_value
+                }))}
+              />
+            </div>
 
-              <div className="mt-8 pt-4 border-t border-white/5 flex justify-end">
-                <Button 
-                  onClick={() => setSelectedId(null)}
-                  variant="outline"
-                  className="rounded-xl text-[10px] uppercase font-bold px-6 py-2 h-auto"
-                >
-                  Close Drawer
-                </Button>
-              </div>
-
-            </motion.div>
           </div>
         )}
-      </AnimatePresence>
+      </Drawer>
 
       {/* Confirmation Dialog Modal overlay */}
-      <AnimatePresence>
-        {confirmationAction && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setConfirmationAction(null)} />
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-[#0c0d10] border border-white/10 p-6 rounded-3xl w-full max-w-sm relative z-10 space-y-5 text-center shadow-2xl"
-            >
-              <div className="w-12 h-12 rounded-full bg-red-500/10 border border-red-500/20 text-red-400 flex items-center justify-center mx-auto">
-                <AlertOctagon className="w-6 h-6" />
-              </div>
-              <div className="space-y-2">
-                <h4 className="text-white font-extrabold text-sm uppercase tracking-wider" style={{ fontFamily: "var(--font-heading)" }}>Confirm Operation</h4>
-                <p className="text-white/50 text-xs leading-relaxed">
-                  Are you sure you want to perform bulk action <span className="text-[#3B82F6] font-bold capitalize">"{confirmationAction.replace(/_/g, " ")}"</span> for the {selectedIds.length} selected vehicles? Every change is audited server-side.
-                </p>
-              </div>
-              <div className="flex gap-3">
-                <Button
-                  variant="outline"
-                  onClick={() => setConfirmationAction(null)}
-                  className="flex-1 rounded-xl text-[10px] uppercase font-bold py-2 h-auto"
-                >
-                  Cancel
-                </Button>
-                <Button
-                  onClick={handleExecuteBulkAction}
-                  className="flex-1 rounded-xl text-[10px] uppercase font-bold py-2 h-auto bg-red-600 hover:bg-red-500 border-none"
-                >
-                  Confirm
-                </Button>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+      <Dialog
+        isOpen={!!confirmationAction}
+        onClose={() => setConfirmationAction(null)}
+        onConfirm={handleExecuteBulkAction}
+        title="Confirm Operation"
+        description={`Are you sure you want to perform bulk action "${confirmationAction?.replace(/_/g, " ")}" for the ${selectedIds.length} selected vehicles? Every change is audited server-side.`}
+        isDestructive={confirmationAction === "disable"}
+      />
 
     </div>
   );

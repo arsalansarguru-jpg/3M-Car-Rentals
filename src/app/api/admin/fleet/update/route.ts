@@ -1,38 +1,50 @@
-import { NextResponse } from "next/server";
 import { requireAdmin } from "@/services/auth-helpers";
 import { AuthService } from "@/services/auth.service";
+import { validateBody, successResponse, errorResponse } from "@/utils/api-helpers";
+import { vehicleUpdateSchema } from "@/utils/validation-schemas";
+import { Logger } from "@/services/logger.service";
+import { AuditService } from "@/services/audit.service";
+import { DomainEventDispatcher } from "@/lib/event-bus";
 
 export async function POST(req: Request) {
   try {
-    // 1. Enforce server-side authentication and admin checking
+    // 1. Enforce server-side authentication and role check
     const resolved = await requireAdmin();
     const user = resolved.user;
     const userEmail = user?.email || "admin@3mrentals.com";
 
-    // Parse parameters
-    const { vehicleIds, action } = await req.json();
-
-    if (!vehicleIds || !Array.isArray(vehicleIds) || !action) {
-      return NextResponse.json({ error: "Invalid update payload" }, { status: 400 });
+    // 2. Standard validation helper using Zod
+    const { data, errorResponse: valError } = await validateBody(vehicleUpdateSchema, req);
+    if (valError) {
+      Logger.warn("Fleet update validation failed", { context: { service: "FleetAPI", action: "update" } });
+      return valError;
     }
 
+    const { vehicleIds, action } = data!;
     const supabase = await AuthService.getServerClient();
 
+    Logger.info("Starting fleet batch update operation", {
+      context: { service: "FleetAPI", action: "batchUpdate" },
+      meta: { vehicleCount: vehicleIds.length, action }
+    });
+
     for (const vehicleId of vehicleIds) {
-      // Fetch current vehicle profile
+      // Fetch current vehicle record for oldValue audits mapping
       const { data: vehicle } = await supabase
         .from("vehicles")
         .select("*")
         .eq("id", vehicleId)
         .single();
 
-      if (!vehicle) continue;
+      if (!vehicle) {
+        Logger.warn(`Vehicle profile not found during batch update: ${vehicleId}`);
+        continue;
+      }
 
       let oldValue = "";
       let newValueStr = "";
       let updatePayload: any = {};
 
-      // Map action onto DB updates
       if (action === "mark_available") {
         oldValue = vehicle.availability_status;
         updatePayload.availability_status = "available";
@@ -55,7 +67,6 @@ export async function POST(req: Request) {
         oldValue = health?.cleanliness_status || "Clean";
         newValueStr = "Detailing";
 
-        // Perform cleanliness status update in health table
         await supabase
           .from("vehicle_health")
           .update({ cleanliness_status: "Detailing" })
@@ -64,10 +75,9 @@ export async function POST(req: Request) {
         continue;
       }
 
-      // Append structured audit log entry to metadata.audit_trail JSONB
+      // Legacy audit metadata updates
       const existingMetadata = vehicle.metadata || {};
       const existingAudit = existingMetadata.audit_trail || [];
-
       const logEntry = {
         action,
         user: userEmail,
@@ -76,22 +86,46 @@ export async function POST(req: Request) {
         new_value: newValueStr
       };
 
-      const updatedMetadata = {
+      updatePayload.metadata = {
         ...existingMetadata,
         audit_trail: [...existingAudit, logEntry]
       };
 
-      updatePayload.metadata = updatedMetadata;
+      // 3. Centralized Database Audit Logging
+      await AuditService.logAudit({
+        userEmail,
+        userRole: "admin",
+        action: `vehicle_${action}`,
+        entity: "vehicles",
+        entityId: vehicleId,
+        oldValue: { status: oldValue },
+        newValue: { status: newValueStr }
+      });
 
-      // Persist vehicle updates in PostgreSQL
+      // 4. Update core record in Supabase
       await supabase
         .from("vehicles")
         .update(updatePayload)
         .eq("id", vehicleId);
+
+      // 5. Fire asynchronous Decoupled Domain Event
+      DomainEventDispatcher.publish({
+        eventName: action === "send_to_maintenance" ? "MaintenanceScheduled" : "VehicleStatusUpdated",
+        timestamp: new Date().toISOString(),
+        payload: {
+          vehicleId,
+          action,
+          oldValue,
+          newValue: newValueStr,
+          userId: user?.id || "admin"
+        }
+      });
     }
 
-    return NextResponse.json({ success: true });
+    Logger.info("Fleet batch update completed successfully");
+    return successResponse({ success: true });
   } catch (err: any) {
-    return NextResponse.json({ error: err.message || "Operation failed" }, { status: 500 });
+    Logger.error("Fleet batch update execution failed", err);
+    return errorResponse("SERVER_ERROR", err.message || "An unexpected error occurred", null, 500);
   }
 }

@@ -21,7 +21,8 @@ import {
   X,
   Calendar as CalendarIcon,
   Image,
-  FileText
+  FileText,
+  BarChart3
 } from "lucide-react";
 import { Command as CommandPrimitive } from "cmdk";
 import { motion, AnimatePresence } from "framer-motion";
