@@ -72,7 +72,8 @@ function LoginForm() {
         router.push(redirectDestination);
       }
       router.refresh();
-    } catch {
+    } catch (err) {
+      console.error("[Login Page] Failed to resolve user role:", err);
       router.push(redirectDestination);
       router.refresh();
     }
@@ -91,7 +92,8 @@ function LoginForm() {
       } else if (authData.user) {
         await handleRoleRedirect(authData.user.id);
       }
-    } catch {
+    } catch (err) {
+      console.error("[Login Page] Unexpected signInWithPassword exception:", err);
       setAuthError("An unexpected error occurred. Please try again.");
     } finally {
       setIsLoading(false);
@@ -104,13 +106,14 @@ function LoginForm() {
       const { error: oauthError } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${window.location.origin}${redirectDestination}`,
+          redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(redirectDestination)}`,
         },
       });
       if (oauthError) {
         setAuthError(oauthError.message);
       }
-    } catch {
+    } catch (err) {
+      console.error("[Login Page] Unexpected signInWithOAuth exception:", err);
       setAuthError("Failed to initialize Google login.");
     }
   };
@@ -134,7 +137,8 @@ function LoginForm() {
         setOtpSent(true);
         setOtpSuccess("OTP code sent successfully to your mobile number.");
       }
-    } catch {
+    } catch (err) {
+      console.error("[Login Page] Unexpected signInWithOtp exception:", err);
       setAuthError("Failed to send OTP. Please verify your number format.");
     } finally {
       setOtpLoading(false);
@@ -160,7 +164,8 @@ function LoginForm() {
       } else if (authData.user) {
         await handleRoleRedirect(authData.user.id);
       }
-    } catch {
+    } catch (err) {
+      console.error("[Login Page] Unexpected verifyOtp exception:", err);
       setAuthError("Failed to verify OTP. Please try again.");
     } finally {
       setOtpLoading(false);

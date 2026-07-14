@@ -161,3 +161,106 @@ export async function getVehicleById(
 
   return enriched as VehicleWithCategory;
 }
+
+// -----------------------------------------------------------------------------
+// getVehicleCounts
+// Returns total vehicle count across the fleet.
+// -----------------------------------------------------------------------------
+export async function getVehicleCounts(): Promise<number> {
+  const supabase = getServerSupabase();
+  if (!supabase) return 0;
+
+  const { count, error } = await supabase
+    .from("vehicles")
+    .select("*", { count: "exact", head: true });
+
+  if (error) {
+    console.error("[fleet.service] getVehicleCounts error:", error.message);
+    return 0;
+  }
+  return count || 0;
+}
+
+// -----------------------------------------------------------------------------
+// getAvailabilityCounts
+// Returns count of available vehicles (availability_status = 'available').
+// -----------------------------------------------------------------------------
+export async function getAvailabilityCounts(): Promise<number> {
+  const supabase = getServerSupabase();
+  if (!supabase) return 0;
+
+  const { count, error } = await supabase
+    .from("vehicles")
+    .select("*", { count: "exact", head: true })
+    .eq("availability_status", "available");
+
+  if (error) {
+    console.error("[fleet.service] getAvailabilityCounts error:", error.message);
+    return 0;
+  }
+  return count || 0;
+}
+
+// -----------------------------------------------------------------------------
+// getMaintenanceCounts
+// Returns count of maintenance vehicles (availability_status = 'maintenance').
+// -----------------------------------------------------------------------------
+export async function getMaintenanceCounts(): Promise<number> {
+  const supabase = getServerSupabase();
+  if (!supabase) return 0;
+
+  const { count, error } = await supabase
+    .from("vehicles")
+    .select("*", { count: "exact", head: true })
+    .eq("availability_status", "maintenance");
+
+  if (error) {
+    console.error("[fleet.service] getMaintenanceCounts error:", error.message);
+    return 0;
+  }
+  return count || 0;
+}
+
+// -----------------------------------------------------------------------------
+// getDetailingCounts
+// Returns count of detailing/dirty vehicles from vehicle_health.
+// -----------------------------------------------------------------------------
+export async function getDetailingCounts(): Promise<number> {
+  const supabase = getServerSupabase();
+  if (!supabase) return 0;
+
+  const { count, error } = await supabase
+    .from("vehicle_health")
+    .select("*", { count: "exact", head: true })
+    .in("cleanliness_status", ["Dirty", "Detailing"]);
+
+  if (error) {
+    console.error("[fleet.service] getDetailingCounts error:", error.message);
+    return 0;
+  }
+  return count || 0;
+}
+
+// -----------------------------------------------------------------------------
+// getInactiveVehicles
+// Returns vehicles that are set to is_visible = false.
+// -----------------------------------------------------------------------------
+export async function getInactiveVehicles(): Promise<VehicleWithCategory[]> {
+  const supabase = getServerSupabase();
+  if (!supabase) return [];
+
+  const { data, error } = await supabase
+    .from("vehicles")
+    .select(`
+      *,
+      category:vehicle_categories (*)
+    `)
+    .eq("is_visible", false)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("[fleet.service] getInactiveVehicles error:", error.message);
+    return [];
+  }
+  return (data ?? []) as VehicleWithCategory[];
+}

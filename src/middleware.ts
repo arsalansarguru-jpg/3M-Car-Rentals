@@ -41,100 +41,54 @@ export async function middleware(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   const url = request.nextUrl.clone();
 
-  // Redirect legacy /auth/login -> /login and /auth/register -> /signup
+  // Helper redirect function to preserve cookie/session headers
+  const redirect = (redirectUrl: string | URL) => {
+    const redirectResponse = NextResponse.redirect(redirectUrl);
+    response.cookies.getAll().forEach((cookie) => {
+      redirectResponse.cookies.set(cookie.name, cookie.value, {
+        path: cookie.path,
+        domain: cookie.domain,
+        secure: cookie.secure,
+        sameSite: cookie.sameSite,
+        expires: cookie.expires,
+        maxAge: cookie.maxAge,
+      });
+    });
+    return redirectResponse;
+  };
+
+  // Redirect legacy auth endpoints
   if (url.pathname === "/auth/login") {
     url.pathname = "/login";
-    return NextResponse.redirect(url);
+    return redirect(url);
   }
   if (url.pathname === "/auth/register") {
     url.pathname = "/signup";
-    return NextResponse.redirect(url);
+    return redirect(url);
   }
 
-  // 1. Protecting Admin routes (/admin/*, excluding /admin/login)
-  if (url.pathname.startsWith("/admin") && url.pathname !== "/admin/login") {
+  // 1. Guard protected path groups: /dashboard/* and /admin/*
+  const isDashboardRoute = url.pathname.startsWith("/dashboard");
+  const isAdminRoute = url.pathname.startsWith("/admin") && url.pathname !== "/admin/login";
+
+  if (isDashboardRoute || isAdminRoute) {
     if (!user) {
-      url.pathname = "/admin/login";
-      return NextResponse.redirect(url);
-    }
-
-    const { data: userData } = await supabase
-      .from("users")
-      .select("role:roles(name)")
-      .eq("auth_user_id", user.id)
-      .maybeSingle();
-
-    const roleName = (userData as any)?.role?.name || "";
-    const isAdmin = ["admin", "super_admin", "manager", "staff"].includes(roleName);
-
-    if (!isAdmin) {
-      url.pathname = "/dashboard";
-      return NextResponse.redirect(url);
+      console.log(`[Middleware] [UNAUTHORIZED] Blocking access to ${url.pathname}. Redirecting to /login.`);
+      const loginUrl = new URL("/login", request.url);
+      loginUrl.searchParams.set("redirect", url.pathname + url.search);
+      return redirect(loginUrl);
     }
   }
 
-  // 2. Protecting Customer Dashboard routes (/dashboard/* and /dashboard itself)
-  if (url.pathname.startsWith("/dashboard")) {
-    if (!user) {
-      url.pathname = "/login";
-      return NextResponse.redirect(url);
-    }
-
-    const { data: userData } = await supabase
-      .from("users")
-      .select("role:roles(name)")
-      .eq("auth_user_id", user.id)
-      .maybeSingle();
-
-    const roleName = (userData as any)?.role?.name || "";
-    const isAdmin = ["admin", "super_admin", "manager", "staff"].includes(roleName);
-
-    if (isAdmin) {
-      url.pathname = "/admin";
-      return NextResponse.redirect(url);
-    }
-  }
-
-  // 3. Redirecting authenticated users away from Login and Signup
-  if (url.pathname === "/login" || url.pathname === "/signup") {
-    if (user) {
-      const { data: userData } = await supabase
-        .from("users")
-        .select("role:roles(name)")
-        .eq("auth_user_id", user.id)
-        .maybeSingle();
-
-      const roleName = (userData as any)?.role?.name || "";
-      const isAdmin = ["admin", "super_admin", "manager", "staff"].includes(roleName);
-
-      if (isAdmin) {
-        url.pathname = "/admin";
-      } else {
-        url.pathname = "/dashboard";
-      }
-      return NextResponse.redirect(url);
-    }
-  }
-
-  // 4. Redirecting authenticated admin away from Admin Login
-  if (url.pathname === "/admin/login") {
-    if (user) {
-      const { data: userData } = await supabase
-        .from("users")
-        .select("role:roles(name)")
-        .eq("auth_user_id", user.id)
-        .maybeSingle();
-
-      const roleName = (userData as any)?.role?.name || "";
-      const isAdmin = ["admin", "super_admin", "manager", "staff"].includes(roleName);
-
-      if (isAdmin) {
-        url.pathname = "/admin";
-      } else {
-        url.pathname = "/dashboard";
-      }
-      return NextResponse.redirect(url);
-    }
+  // 2. Redirect authenticated users away from auth portals
+  const isAuthPortal = url.pathname === "/login" || url.pathname === "/signup" || url.pathname === "/admin/login";
+  if (isAuthPortal && user) {
+    // Note: Database role resolution is moved out of middleware.
+    // Authenticated users hitting guest paths are routed to `/dashboard`.
+    // The dashboard pages/layouts will evaluate roles and redirect admins if needed.
+    const destination = url.pathname === "/admin/login" ? "/admin" : "/dashboard";
+    console.log(`[Middleware] [AUTH_EVENT] Authenticated user ${user.email} attempted to visit auth page. Redirecting to ${destination}.`);
+    return redirect(new URL(destination, request.url));
   }
 
   return response;
