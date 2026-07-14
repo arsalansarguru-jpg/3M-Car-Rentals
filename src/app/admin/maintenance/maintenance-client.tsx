@@ -363,6 +363,7 @@ export default function MaintenanceClient({ initialJobs, availableVehicles }: Ma
               currentPage={currentPage}
               totalPages={totalPages}
               onPageChange={(p) => setCurrentPage(p)}
+              totalItems={filteredJobs.length}
             />
           </div>
         )}

@@ -174,7 +174,7 @@ export const TableToolbar: React.FC<TableToolbarProps> = ({ title, children, cla
 export interface PaginationProps {
   currentPage: number;
   totalPages: number;
-  totalItems: number;
+  totalItems?: number;
   onPageChange: (page: number) => void;
   className?: string;
 }
@@ -191,7 +191,7 @@ export const Pagination: React.FC<PaginationProps> = ({
   return (
     <div className={clsx("border-t border-white/5 px-6 py-4 flex items-center justify-between bg-white/[0.01]", className)}>
       <span className="text-xs text-white/40">
-        Page {currentPage} of {totalPages} ({totalItems} records)
+        Page {currentPage} of {totalPages} {totalItems !== undefined && `(${totalItems} records)`}
       </span>
       <div className="flex gap-2">
         <Button
