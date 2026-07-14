@@ -15,92 +15,133 @@ export interface TableColumn<T> {
 }
 
 export interface TableProps<T> extends React.TableHTMLAttributes<HTMLTableElement> {
-  columns: TableColumn<T>[];
-  data: T[];
+  columns?: TableColumn<T>[];
+  data?: T[];
+  headers?: string[];
   onRowClick?: (row: T) => void;
   emptyMessage?: string;
   isLoading?: boolean;
 }
 
-export function Table<T>({
+export function Table<T = any>({
   columns,
   data,
+  headers,
   onRowClick,
   emptyMessage = "No matching records found.",
   isLoading = false,
   className,
+  children,
   ...props
 }: TableProps<T>) {
+  // Mode 1: Columns and Data are provided
+  if (columns && data) {
+    return (
+      <div className={clsx("border border-white/15 bg-white/[0.01] rounded-3xl overflow-hidden backdrop-blur-xl", className)}>
+        <div className="overflow-x-auto w-full">
+          <table className="w-full text-left border-collapse" {...props}>
+            <thead>
+              <tr className="border-b border-white/10 text-white/50 text-[10px] font-bold uppercase tracking-wider bg-white/[0.02]">
+                {columns.map((col, idx) => (
+                  <th
+                    key={idx}
+                    className={clsx(
+                      "py-4 px-6",
+                      col.align === "center" && "text-center",
+                      col.align === "right" && "text-right",
+                      col.className
+                    )}
+                  >
+                    {col.header}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-white/5 text-xs text-white/80">
+              {isLoading ? (
+                <tr>
+                  <td colSpan={columns.length} className="py-12 text-center text-white/30 font-mono italic">
+                    Loading datasets...
+                  </td>
+                </tr>
+              ) : data.length === 0 ? (
+                <tr>
+                  <td colSpan={columns.length} className="py-12 text-center text-white/30 font-mono italic">
+                    {emptyMessage}
+                  </td>
+                </tr>
+              ) : (
+                data.map((row, rowIdx) => (
+                  <tr
+                    key={rowIdx}
+                    onClick={() => onRowClick?.(row)}
+                    className={clsx(
+                      "transition-colors",
+                      onRowClick ? "hover:bg-white/[0.02] cursor-pointer" : "hover:bg-white/[0.01]"
+                    )}
+                  >
+                    {columns.map((col, colIdx) => {
+                      let content: React.ReactNode = "";
+                      if (col.accessor) {
+                        content = typeof col.accessor === "function"
+                          ? col.accessor(row)
+                          : (row[col.accessor] as React.ReactNode);
+                      }
+
+                      return (
+                        <td
+                          key={colIdx}
+                          className={clsx(
+                            "py-4 px-6",
+                            col.align === "center" && "text-center",
+                            col.align === "right" && "text-right",
+                            col.className
+                          )}
+                        >
+                          {content}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    );
+  }
+
+  // Mode 2: headers prop is provided (e.g. bookings-client.tsx)
+  if (headers) {
+    return (
+      <div className={clsx("border border-white/15 bg-white/[0.01] rounded-3xl overflow-hidden backdrop-blur-xl", className)}>
+        <div className="overflow-x-auto w-full">
+          <table className="w-full text-left border-collapse" {...props}>
+            <thead>
+              <tr className="border-b border-white/10 text-white/50 text-[10px] font-bold uppercase tracking-wider bg-white/[0.02]">
+                {headers.map((h, idx) => (
+                  <th key={idx} className="py-4 px-6 font-bold">
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-white/5 text-xs text-white/80">
+              {children}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    );
+  }
+
+  // Mode 3: Simple wrapper Mode (children are thead, tbody, etc.) (e.g. maintenance-client.tsx)
   return (
     <div className={clsx("border border-white/15 bg-white/[0.01] rounded-3xl overflow-hidden backdrop-blur-xl", className)}>
       <div className="overflow-x-auto w-full">
         <table className="w-full text-left border-collapse" {...props}>
-          <thead>
-            <tr className="border-b border-white/10 text-white/50 text-[10px] font-bold uppercase tracking-wider bg-white/[0.02]">
-              {columns.map((col, idx) => (
-                <th
-                  key={idx}
-                  className={clsx(
-                    "py-4 px-6",
-                    col.align === "center" && "text-center",
-                    col.align === "right" && "text-right",
-                    col.className
-                  )}
-                >
-                  {col.header}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-white/5 text-xs text-white/80">
-            {isLoading ? (
-              <tr>
-                <td colSpan={columns.length} className="py-12 text-center text-white/30 font-mono italic">
-                  Loading datasets...
-                </td>
-              </tr>
-            ) : data.length === 0 ? (
-              <tr>
-                <td colSpan={columns.length} className="py-12 text-center text-white/30 font-mono italic">
-                  {emptyMessage}
-                </td>
-              </tr>
-            ) : (
-              data.map((row, rowIdx) => (
-                <tr
-                  key={rowIdx}
-                  onClick={() => onRowClick?.(row)}
-                  className={clsx(
-                    "transition-colors",
-                    onRowClick ? "hover:bg-white/[0.02] cursor-pointer" : "hover:bg-white/[0.01]"
-                  )}
-                >
-                  {columns.map((col, colIdx) => {
-                    let content: React.ReactNode = "";
-                    if (col.accessor) {
-                      content = typeof col.accessor === "function"
-                        ? col.accessor(row)
-                        : (row[col.accessor] as React.ReactNode);
-                    }
-
-                    return (
-                      <td
-                        key={colIdx}
-                        className={clsx(
-                          "py-4 px-6",
-                          col.align === "center" && "text-center",
-                          col.align === "right" && "text-right",
-                          col.className
-                        )}
-                      >
-                        {content}
-                      </td>
-                    );
-                  })}
-                </tr>
-              ))
-            )}
-          </tbody>
+          {children}
         </table>
       </div>
     </div>
