@@ -48,7 +48,7 @@ export async function validateBody<T>(
     const parsed = schema.safeParse(json);
 
     if (!parsed.success) {
-      const details = parsed.error.errors.map((err) => ({
+      const details = parsed.error.issues.map((err) => ({
         field: err.path.join("."),
         message: err.message
       }));
