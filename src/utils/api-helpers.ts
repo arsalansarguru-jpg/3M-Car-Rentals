@@ -93,7 +93,7 @@ export function validateQuery<T>(
     const parsed = schema.safeParse(paramsObj);
 
     if (!parsed.success) {
-      const details = parsed.error.errors.map((err) => ({
+      const details = parsed.error.issues.map((err) => ({
         field: err.path.join("."),
         message: err.message
       }));
