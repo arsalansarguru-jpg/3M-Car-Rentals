@@ -20,6 +20,7 @@ import {
 
 interface Booking {
   id: string;
+  booking_reference: string;
   total_amount: number;
   booking_status: string;
   created_at: string;
