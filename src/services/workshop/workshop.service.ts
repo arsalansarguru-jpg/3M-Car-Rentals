@@ -313,7 +313,7 @@ export class WorkshopService {
 
     const { data: labour } = await supabaseAdmin
       .from("service_labour")
-      .select("total_price", "hours")
+      .select("total_price, hours")
       .eq("job_id", input.jobId);
 
     const partsSum = parts?.reduce((sum, p) => sum + Number(p.total_price), 0) || 0;
