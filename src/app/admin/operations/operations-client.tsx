@@ -198,7 +198,7 @@ export default function OperationsCommandCenterClient({ initialBookings, initial
       <div className="flex flex-col md:flex-row justify-between gap-4 items-start md:items-center bg-white/[0.02] border border-white/10 rounded-3xl p-6 backdrop-blur-md">
         <div>
           <span className="text-[10px] font-mono text-[#3B82F6] uppercase tracking-widest block mb-1">Wall Display Console</span>
-          <h1 className="text-3xl font-black text-white tracking-tight" style={{ fontFamily: "var(--font-heading)" }}>Operations Command</h1>
+          <h1 className="text-3xl font-black text-white tracking-tight" style={{ fontFamily: "var(--font-urbanist)" }}>Operations Command</h1>
           <p className="text-white/40 text-xs mt-1">Real-time dispatch tracks, cleaning slots, and checkout operations.</p>
         </div>
 

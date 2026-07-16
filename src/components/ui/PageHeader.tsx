@@ -22,7 +22,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
         <span className="text-[10px] font-mono text-[#3B82F6] uppercase tracking-widest block mb-1">
           {contextTag}
         </span>
-        <h1 className="text-2xl md:text-3xl font-black text-white tracking-tight" style={{ fontFamily: "var(--font-heading)" }}>
+        <h1 className="text-2xl md:text-3xl font-black text-white tracking-tight" style={{ fontFamily: "var(--font-urbanist)" }}>
           {title}
         </h1>
         {subtitle && (

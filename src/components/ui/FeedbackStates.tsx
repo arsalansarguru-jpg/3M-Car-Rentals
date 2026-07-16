@@ -22,7 +22,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
       <div className="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/30 mb-4">
         <Icon className="w-6 h-6" />
       </div>
-      <h4 className="text-white font-extrabold text-sm uppercase tracking-wider mb-1" style={{ fontFamily: "var(--font-heading)" }}>
+      <h4 className="text-white font-extrabold text-sm uppercase tracking-wider mb-1" style={{ fontFamily: "var(--font-urbanist)" }}>
         {title}
       </h4>
       <p className="text-white/40 text-xs max-w-sm leading-relaxed">

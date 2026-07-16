@@ -76,12 +76,12 @@ function CircularProgress({ percentage, label, sublabel, color = "#3B82F6" }: { 
           />
         </svg>
         <div className="absolute flex flex-col items-center justify-center">
-          <span style={{ fontFamily: "var(--font-heading)", fontSize: "1.25rem", fontWeight: 700, color: "#ffffff", fontVariantNumeric: "tabular-nums" }}>{percentage}%</span>
+          <span style={{ fontFamily: "var(--font-urbanist)", fontSize: "1.25rem", fontWeight: 700, color: "#ffffff", fontVariantNumeric: "tabular-nums" }}>{percentage}%</span>
         </div>
       </div>
       <div className="text-center mt-2">
-        <p style={{ fontFamily: "var(--font-heading)", fontSize: "0.9375rem", fontWeight: 600, color: "#ffffff" }}>{label}</p>
-        <p style={{ fontFamily: "var(--font-body)", fontSize: "0.8125rem", fontWeight: 400, color: "rgba(255,255,255,0.4)" }}>{sublabel}</p>
+        <p style={{ fontFamily: "var(--font-urbanist)", fontSize: "0.9375rem", fontWeight: 600, color: "#ffffff" }}>{label}</p>
+        <p className="text-body-sm text-white/40 font-normal">{sublabel}</p>
       </div>
     </div>
   );
@@ -216,19 +216,19 @@ export default function ExecutiveDashboard() {
       {/* ── Header ── */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
-          <h1 style={{ fontFamily: "var(--font-heading)", fontSize: "clamp(1.875rem, 3.5vw, 2.5rem)", fontWeight: 700, color: "#ffffff", letterSpacing: "-0.015em", lineHeight: 1.1 }}>Workspace OS</h1>
-          <p style={{ fontFamily: "var(--font-body)", fontSize: "1rem", fontWeight: 400, lineHeight: 1.7, color: "rgba(255,255,255,0.5)", marginTop: "0.25rem" }}>Modular telemetrics and intelligence workspace.</p>
+          <h1 style={{ fontFamily: "var(--font-urbanist)", fontSize: "clamp(1.875rem, 3.5vw, 2.5rem)", fontWeight: 700, color: "#ffffff", letterSpacing: "-0.015em", lineHeight: 1.1 }}>Workspace OS</h1>
+          <p className="text-body text-white/50 mt-1">Modular telemetrics and intelligence workspace.</p>
         </div>
         <div className="flex items-center gap-3">
           {isEditMode ? (
             <>
-              <button onClick={resetLayout} className="px-4 py-2" style={{ fontFamily: "var(--font-body)", fontSize: "0.9375rem", fontWeight: 500, color: "rgba(255,255,255,0.5)" }}>Reset</button>
-              <button onClick={saveLayout} className="flex items-center gap-2 bg-[#3B82F6] text-black px-4 py-2 rounded-[20px] shadow-[0_0_15px_rgba(201,168,76,0.3)]" style={{ fontFamily: "var(--font-body)", fontSize: "0.9375rem", fontWeight: 600 }}>
+              <button onClick={resetLayout} className="text-body-sm font-medium text-white/50 px-4 py-2">Reset</button>
+              <button onClick={saveLayout} className="text-body-sm font-semibold flex items-center gap-2 bg-[#3B82F6] text-black px-4 py-2 rounded-[20px] shadow-[0_0_15px_rgba(201,168,76,0.3)]">
                 <Save className="w-4 h-4" /> Save Workspace
               </button>
             </>
           ) : (
-            <button onClick={() => setIsEditMode(true)} className="flex items-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 px-4 py-2 rounded-[20px] text-white transition-colors" style={{ fontFamily: "var(--font-body)", fontSize: "0.9375rem", fontWeight: 500 }}>
+            <button onClick={() => setIsEditMode(true)} className="text-body-sm font-medium flex items-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 px-4 py-2 rounded-[20px] text-white transition-colors">
               <Layout className="w-4 h-4" /> Edit Layout
             </button>
           )}
@@ -262,8 +262,8 @@ export default function ExecutiveDashboard() {
             <div className="flex justify-between items-start relative z-10 p-6 h-full flex-col">
               <div className="flex justify-between w-full">
                 <div>
-                  <p style={{ fontFamily: "var(--font-body)", fontSize: "0.6875rem", fontWeight: 500, textTransform: "uppercase", letterSpacing: "0.12em", color: "rgba(255,255,255,0.5)", marginBottom: "0.5rem" }}>Total Revenue</p>
-                  <h3 style={{ fontFamily: "var(--font-heading)", fontSize: "1.875rem", fontWeight: 700, color: "#ffffff", letterSpacing: "-0.01em", fontVariantNumeric: "tabular-nums" }}>
+                  <p className="text-overline font-medium text-white/50 mb-2">Total Revenue</p>
+                  <h3 style={{ fontFamily: "var(--font-urbanist)", fontSize: "1.875rem", fontWeight: 700, color: "#ffffff", letterSpacing: "-0.01em", fontVariantNumeric: "tabular-nums" }}>
                     <AnimatedCounter value={metrics?.totalRevenue || 0} prefix="₹" />
                   </h3>
                 </div>
@@ -271,7 +271,7 @@ export default function ExecutiveDashboard() {
                   <Wallet className="w-5 h-5" />
                 </div>
               </div>
-              <div className="mt-auto flex items-center gap-1.5" style={{ fontFamily: "var(--font-body)", fontSize: "0.8125rem", fontWeight: 500 }}>
+              <div className="mt-auto flex items-center gap-1.5 text-body-sm font-medium">
                 <ArrowUpRight className="w-3.5 h-3.5 text-emerald-400" />
                 <span className="text-emerald-400">+12.5%</span>
                 <span className="text-white/30 ml-1 hidden sm:inline">vs last month</span>
@@ -288,8 +288,8 @@ export default function ExecutiveDashboard() {
             <div className="flex justify-between items-start relative z-10 p-6 h-full flex-col">
               <div className="flex justify-between w-full">
                 <div>
-                  <p style={{ fontFamily: "var(--font-body)", fontSize: "0.6875rem", fontWeight: 500, textTransform: "uppercase", letterSpacing: "0.12em", color: "rgba(255,255,255,0.5)", marginBottom: "0.5rem" }}>Active Bookings</p>
-                  <h3 style={{ fontFamily: "var(--font-heading)", fontSize: "1.875rem", fontWeight: 700, color: "#ffffff", letterSpacing: "-0.01em", fontVariantNumeric: "tabular-nums" }}>
+                  <p className="text-overline font-medium text-white/50 mb-2">Active Bookings</p>
+                  <h3 style={{ fontFamily: "var(--font-urbanist)", fontSize: "1.875rem", fontWeight: 700, color: "#ffffff", letterSpacing: "-0.01em", fontVariantNumeric: "tabular-nums" }}>
                     <AnimatedCounter value={metrics?.activeBookings || 0} />
                   </h3>
                 </div>
@@ -297,7 +297,7 @@ export default function ExecutiveDashboard() {
                   <TrendingUp className="w-5 h-5" />
                 </div>
               </div>
-              <div className="mt-auto flex items-center gap-1.5" style={{ fontFamily: "var(--font-body)", fontSize: "0.8125rem", fontWeight: 500 }}>
+              <div className="mt-auto flex items-center gap-1.5 text-body-sm font-medium">
                 <ArrowUpRight className="w-3.5 h-3.5 text-emerald-400" />
                 <span className="text-emerald-400">+3.2%</span>
               </div>
@@ -313,8 +313,8 @@ export default function ExecutiveDashboard() {
             <div className="flex justify-between items-start relative z-10 p-6 h-full flex-col">
               <div className="flex justify-between w-full">
                 <div>
-                  <p style={{ fontFamily: "var(--font-body)", fontSize: "0.6875rem", fontWeight: 500, textTransform: "uppercase", letterSpacing: "0.12em", color: "rgba(255,255,255,0.5)", marginBottom: "0.5rem" }}>Customers</p>
-                  <h3 style={{ fontFamily: "var(--font-heading)", fontSize: "1.875rem", fontWeight: 700, color: "#ffffff", letterSpacing: "-0.01em", fontVariantNumeric: "tabular-nums" }}>
+                  <p className="text-overline font-medium text-white/50 mb-2">Customers</p>
+                  <h3 style={{ fontFamily: "var(--font-urbanist)", fontSize: "1.875rem", fontWeight: 700, color: "#ffffff", letterSpacing: "-0.01em", fontVariantNumeric: "tabular-nums" }}>
                     <AnimatedCounter value={metrics?.totalCustomers || 0} />
                   </h3>
                 </div>
@@ -322,7 +322,7 @@ export default function ExecutiveDashboard() {
                   <Users className="w-5 h-5" />
                 </div>
               </div>
-              <div className="mt-auto flex items-center gap-1.5" style={{ fontFamily: "var(--font-body)", fontSize: "0.8125rem", fontWeight: 500 }}>
+              <div className="mt-auto flex items-center gap-1.5 text-body-sm font-medium">
                 <ArrowUpRight className="w-3.5 h-3.5 text-emerald-400" />
                 <span className="text-emerald-400">+8.1%</span>
               </div>
@@ -338,8 +338,8 @@ export default function ExecutiveDashboard() {
             <div className="flex justify-between items-start relative z-10 p-6 h-full flex-col">
               <div className="flex justify-between w-full">
                 <div>
-                  <p style={{ fontFamily: "var(--font-body)", fontSize: "0.6875rem", fontWeight: 500, textTransform: "uppercase", letterSpacing: "0.12em", color: "rgba(255,255,255,0.5)", marginBottom: "0.5rem" }}>Total Vehicles</p>
-                  <h3 style={{ fontFamily: "var(--font-heading)", fontSize: "1.875rem", fontWeight: 700, color: "#ffffff", letterSpacing: "-0.01em", fontVariantNumeric: "tabular-nums" }}>
+                  <p className="text-overline font-medium text-white/50 mb-2">Total Vehicles</p>
+                  <h3 style={{ fontFamily: "var(--font-urbanist)", fontSize: "1.875rem", fontWeight: 700, color: "#ffffff", letterSpacing: "-0.01em", fontVariantNumeric: "tabular-nums" }}>
                     <AnimatedCounter value={metrics?.totalVehicles || 0} />
                   </h3>
                 </div>
@@ -347,7 +347,7 @@ export default function ExecutiveDashboard() {
                   <Car className="w-5 h-5" />
                 </div>
               </div>
-              <div className="mt-auto flex items-center gap-1.5" style={{ fontFamily: "var(--font-body)", fontSize: "0.8125rem", fontWeight: 500 }}>
+              <div className="mt-auto flex items-center gap-1.5 text-body-sm font-medium">
                 <ArrowUpRight className="w-3.5 h-3.5 text-emerald-400" />
                 <span className="text-emerald-400">Stable</span>
               </div>
@@ -370,7 +370,7 @@ export default function ExecutiveDashboard() {
             <div className="absolute top-0 left-0 right-0 h-[2px] rounded-t-[20px] bg-gradient-to-r from-transparent via-[#3B82F6]/60 to-transparent" />
             <div className="p-6 h-full flex flex-col">
                <div className="flex items-center justify-between mb-6 shrink-0">
-                 <h3 style={{ fontFamily: "var(--font-heading)", fontSize: "1rem", fontWeight: 600, color: "#ffffff" }}>Live Activity</h3>
+                 <h3 style={{ fontFamily: "var(--font-urbanist)", fontSize: "1rem", fontWeight: 600, color: "#ffffff" }}>Live Activity</h3>
                  <span className="flex h-2 w-2">
                    <span className="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-emerald-400 opacity-75"></span>
                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
@@ -389,8 +389,8 @@ export default function ExecutiveDashboard() {
                          }`}></div>
                        </div>
                        <div className="ml-10 w-full pt-1.5">
-                         <p style={{ fontFamily: "var(--font-body)", fontSize: "0.9375rem", fontWeight: 400, lineHeight: 1.55, color: "rgba(255,255,255,0.8)" }}>{act.msg}</p>
-                         <p style={{ fontFamily: "var(--font-body)", fontSize: "0.6875rem", fontWeight: 500, textTransform: "uppercase", letterSpacing: "0.1em", color: "rgba(255,255,255,0.4)", marginTop: "0.25rem" }}>{act.time}</p>
+                         <p className="text-body-sm text-white/80 font-normal leading-relaxed">{act.msg}</p>
+                         <p className="text-caption text-white/40 font-medium tracking-wider mt-1">{act.time}</p>
                        </div>
                      </div>
                    ))}
@@ -425,8 +425,8 @@ export default function ExecutiveDashboard() {
       <section id="licensing" className="mt-8 scroll-mt-24">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h2 style={{ fontFamily: "var(--font-heading)", fontSize: "1.5rem", fontWeight: 700, color: "#ffffff", letterSpacing: "-0.01em" }}>Licensing &amp; Compliance</h2>
-            <p style={{ fontFamily: "var(--font-body)", fontSize: "1rem", fontWeight: 400, lineHeight: 1.7, color: "rgba(255,255,255,0.4)", marginTop: "0.25rem" }}>Regulatory status of your fleet and business operations in Goa.</p>
+            <h2 style={{ fontFamily: "var(--font-urbanist)", fontSize: "1.5rem", fontWeight: 700, color: "#ffffff", letterSpacing: "-0.01em" }}>Licensing &amp; Compliance</h2>
+            <p className="text-body text-white/40 font-normal mt-1">Regulatory status of your fleet and business operations in Goa.</p>
           </div>
           <span className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest btn-glass btn-glass-success">All Permits Active</span>
         </div>
@@ -489,7 +489,7 @@ export default function ExecutiveDashboard() {
               }`}
             >
               {lic.status === "expiring" && (
-                <div className="absolute top-0 right-0 px-2.5 py-1 bg-amber-500/15 text-amber-400 border-l border-b border-amber-500/20 rounded-bl-[20px]" style={{ fontFamily: "var(--font-body)", fontSize: "0.6875rem", fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase" }}>
+                <div className="text-status-badge text-amber-400 absolute top-0 right-0 px-2.5 py-1 bg-amber-500/15 border-l border-b border-amber-500/20 rounded-bl-[20px]">
                   Expiring Soon
                 </div>
               )}
@@ -498,11 +498,11 @@ export default function ExecutiveDashboard() {
                   {lic.icon}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p style={{ fontFamily: "var(--font-heading)", fontSize: "0.9375rem", fontWeight: 600, color: "#ffffff" }} className="truncate">{lic.title}</p>
-                  <p style={{ fontFamily: "var(--font-body)", fontSize: "0.75rem", fontWeight: 400, color: "rgba(255,255,255,0.4)", marginTop: "0.2rem" }} className="font-mono truncate">{lic.ref}</p>
+                  <p style={{ fontFamily: "var(--font-urbanist)", fontSize: "0.9375rem", fontWeight: 600, color: "#ffffff" }} className="truncate">{lic.title}</p>
+                  <p className="text-body-sm text-white/40 font-mono truncate mt-0.5">{lic.ref}</p>
                 </div>
               </div>
-              <div className="space-y-1.5" style={{ fontFamily: "var(--font-body)", fontSize: "0.8125rem" }}>
+              <div className="space-y-1.5 text-body-sm">
                 <div className="flex justify-between">
                   <span style={{ color: "rgba(255,255,255,0.4)" }}>Issuer</span>
                   <span style={{ color: "rgba(255,255,255,0.7)" }} className="text-right max-w-[60%] truncate">{lic.issuer}</span>
@@ -516,7 +516,7 @@ export default function ExecutiveDashboard() {
               </div>
               <div className="flex items-center gap-1.5 mt-1">
                 <div className={`w-1.5 h-1.5 rounded-full ${lic.status === "active" ? "bg-emerald-400" : "bg-amber-400"}`} />
-                <span style={{ fontFamily: "var(--font-body)", fontSize: "0.6875rem", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.1em" }} className={lic.status === "active" ? "text-emerald-400" : "text-amber-400"}>
+                <span className={`text-status-badge ${lic.status === "active" ? "text-emerald-400" : "text-amber-400"}`}>
                   {lic.status === "active" ? "Active" : "Renew Soon"}
                 </span>
               </div>

@@ -73,7 +73,7 @@ export const Drawer: React.FC<DrawerProps> = ({
               {/* Header section */}
               <div className="flex justify-between items-center border-b border-white/5 pb-4 mb-6 shrink-0">
                 <div>
-                  <h3 className="text-white text-xl font-extrabold" style={{ fontFamily: "var(--font-heading)" }}>
+                  <h3 className="text-white text-xl font-extrabold" style={{ fontFamily: "var(--font-urbanist)" }}>
                     {title}
                   </h3>
                   {subtitle && (

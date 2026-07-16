@@ -159,7 +159,7 @@ export interface TableToolbarProps {
 export const TableToolbar: React.FC<TableToolbarProps> = ({ title, children, className }) => {
   return (
     <div className={clsx("flex flex-col md:flex-row justify-between gap-4 items-start md:items-center bg-white/[0.02] border border-white/10 rounded-3xl p-6 backdrop-blur-md", className)}>
-      <h3 className="text-white font-extrabold text-sm uppercase tracking-wider" style={{ fontFamily: "var(--font-heading)" }}>
+      <h3 className="text-white font-extrabold text-sm uppercase tracking-wider" style={{ fontFamily: "var(--font-urbanist)" }}>
         {title}
       </h3>
       <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">

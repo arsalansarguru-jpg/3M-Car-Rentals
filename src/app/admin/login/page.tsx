@@ -73,10 +73,10 @@ export default function AdminLoginPage() {
           <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#C9A84C] to-[#E8DCC8] flex items-center justify-center shadow-[0_0_25px_rgba(201,168,76,0.2)] mb-4">
             <ShieldCheck className="w-7 h-7 text-[#121210]" />
           </div>
-          <h1 className="text-white text-2xl font-bold tracking-tight mb-1" style={{ fontFamily: "var(--font-heading)" }}>
+          <h1 className="text-white text-2xl font-bold tracking-tight mb-1" style={{ fontFamily: "var(--font-urbanist)" }}>
             3M Command Center
           </h1>
-          <p className="text-[#E8DCC8]/40 text-xs uppercase tracking-widest font-semibold" style={{ fontFamily: "var(--font-body)" }}>
+          <p className="text-overline font-semibold text-[#E8DCC8]/40">
             Operations & Management Login
           </p>
         </div>

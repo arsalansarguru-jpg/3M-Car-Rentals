@@ -57,7 +57,7 @@ export const Modal: React.FC<ModalProps> = ({
           >
             {title && (
               <div className="flex justify-between items-center border-b border-white/5 pb-3">
-                <h4 className="text-white font-extrabold text-sm uppercase tracking-wider" style={{ fontFamily: "var(--font-heading)" }}>
+                <h4 className="text-white font-extrabold text-sm uppercase tracking-wider" style={{ fontFamily: "var(--font-urbanist)" }}>
                   {title}
                 </h4>
                 <button
@@ -128,7 +128,7 @@ export const Dialog: React.FC<DialogProps> = ({
             </div>
 
             <div className="space-y-2">
-              <h4 className="text-white font-extrabold text-sm uppercase tracking-wider" style={{ fontFamily: "var(--font-heading)" }}>
+              <h4 className="text-white font-extrabold text-sm uppercase tracking-wider" style={{ fontFamily: "var(--font-urbanist)" }}>
                 {title}
               </h4>
               <p className="text-white/50 text-xs leading-relaxed">

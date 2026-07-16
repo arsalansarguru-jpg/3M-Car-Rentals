@@ -145,7 +145,7 @@ export default function VehicleModal({ isOpen, onClose, categories, vehicle, onS
         
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-white/10">
-          <h2 style={{ fontFamily: "var(--font-heading)", fontSize: "1.25rem", fontWeight: 500, color: "#ffffff" }}>{isEditMode ? "Edit Vehicle" : "Add New Vehicle"}</h2>
+          <h2 style={{ fontFamily: "var(--font-urbanist)", fontSize: "1.25rem", fontWeight: 500, color: "#ffffff" }}>{isEditMode ? "Edit Vehicle" : "Add New Vehicle"}</h2>
           <button
             onClick={onClose}
             className="text-white/40 hover:text-white transition-colors cursor-pointer p-2 hover:bg-white/5 rounded-full"
@@ -168,12 +168,12 @@ export default function VehicleModal({ isOpen, onClose, categories, vehicle, onS
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               {/* Basic Info */}
               <div className="flex flex-col gap-1.5">
-                <label className="text-[#E8DCC8]/60 text-[10px] font-semibold uppercase tracking-[0.14em]" style={{ fontFamily: "var(--font-body)" }}>Registration No *</label>
+                <label className="text-[#E8DCC8]/60 text-[10px] font-semibold uppercase tracking-[0.14em]">Registration No *</label>
                 <input required type="text" name="registration_number" value={formData.registration_number} onChange={handleChange} className="w-full bg-white/[0.08] border border-white/12 rounded-[20px] px-4 py-2.5 text-white focus:outline-none focus:border-blue-500/40 focus:ring-2 focus:ring-blue-500/10 transition-all placeholder:text-white/20" placeholder="e.g. GA03 AB 1234" />
               </div>
               
               <div className="flex flex-col gap-1.5">
-                <label className="text-[#E8DCC8]/60 text-[10px] font-semibold uppercase tracking-[0.14em]" style={{ fontFamily: "var(--font-body)" }}>Category *</label>
+                <label className="text-[#E8DCC8]/60 text-[10px] font-semibold uppercase tracking-[0.14em]">Category *</label>
                 <select required name="category_id" value={formData.category_id} onChange={handleChange} className="w-full bg-white/[0.08] border border-white/12 rounded-[20px] px-4 py-2.5 text-white focus:outline-none focus:border-blue-500/40 focus:ring-2 focus:ring-blue-500/10 transition-all cursor-pointer [color-scheme:dark]">
                   <option value="" className="bg-[#121210] text-[#E8DCC8]/30">Select Category</option>
                   {categories.map(c => (
@@ -183,28 +183,28 @@ export default function VehicleModal({ isOpen, onClose, categories, vehicle, onS
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <label className="text-[#E8DCC8]/60 text-[10px] font-semibold uppercase tracking-[0.14em]" style={{ fontFamily: "var(--font-body)" }}>Brand *</label>
+                <label className="text-[#E8DCC8]/60 text-[10px] font-semibold uppercase tracking-[0.14em]">Brand *</label>
                 <input required type="text" name="brand" value={formData.brand} onChange={handleChange} className="w-full bg-white/[0.08] border border-white/12 rounded-[20px] px-4 py-2.5 text-white focus:outline-none focus:border-blue-500/40 focus:ring-2 focus:ring-blue-500/10 transition-all placeholder:text-white/20" placeholder="e.g. BMW" />
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <label className="text-[#E8DCC8]/60 text-[10px] font-semibold uppercase tracking-[0.14em]" style={{ fontFamily: "var(--font-body)" }}>Model *</label>
+                <label className="text-[#E8DCC8]/60 text-[10px] font-semibold uppercase tracking-[0.14em]">Model *</label>
                 <input required type="text" name="model" value={formData.model} onChange={handleChange} className="w-full bg-white/[0.08] border border-white/12 rounded-[20px] px-4 py-2.5 text-white focus:outline-none focus:border-blue-500/40 focus:ring-2 focus:ring-blue-500/10 transition-all placeholder:text-white/20" placeholder="e.g. X5" />
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <label className="text-[#E8DCC8]/60 text-[10px] font-semibold uppercase tracking-[0.14em]" style={{ fontFamily: "var(--font-body)" }}>Variant (Optional)</label>
+                <label className="text-[#E8DCC8]/60 text-[10px] font-semibold uppercase tracking-[0.14em]">Variant (Optional)</label>
                 <input type="text" name="variant" value={formData.variant} onChange={handleChange} className="w-full bg-white/[0.08] border border-white/12 rounded-[20px] px-4 py-2.5 text-white focus:outline-none focus:border-blue-500/40 focus:ring-2 focus:ring-blue-500/10 transition-all placeholder:text-white/20" placeholder="e.g. xDrive40i" />
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <label className="text-[#E8DCC8]/60 text-[10px] font-semibold uppercase tracking-[0.14em]" style={{ fontFamily: "var(--font-body)" }}>Year *</label>
+                <label className="text-[#E8DCC8]/60 text-[10px] font-semibold uppercase tracking-[0.14em]">Year *</label>
                 <input required type="number" name="year" value={formData.year} onChange={handleChange} className="w-full bg-white/[0.08] border border-white/12 rounded-[20px] px-4 py-2.5 text-white focus:outline-none focus:border-blue-500/40 focus:ring-2 focus:ring-blue-500/10 transition-all" />
               </div>
 
               {/* Specs */}
               <div className="flex flex-col gap-1.5">
-                <label className="text-[#E8DCC8]/60 text-[10px] font-semibold uppercase tracking-[0.14em]" style={{ fontFamily: "var(--font-body)" }}>Fuel Type *</label>
+                <label className="text-[#E8DCC8]/60 text-[10px] font-semibold uppercase tracking-[0.14em]">Fuel Type *</label>
                 <select required name="fuel_type" value={formData.fuel_type} onChange={handleChange} className="w-full bg-white/[0.08] border border-white/12 rounded-[20px] px-4 py-2.5 text-white focus:outline-none focus:border-blue-500/40 focus:ring-2 focus:ring-blue-500/10 transition-all cursor-pointer [color-scheme:dark]">
                   {['Petrol', 'Diesel', 'Electric', 'Hybrid'].map(f => (
                     <option key={f} value={f} className="bg-[#121210]">{f}</option>
@@ -213,7 +213,7 @@ export default function VehicleModal({ isOpen, onClose, categories, vehicle, onS
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <label className="text-[#E8DCC8]/60 text-[10px] font-semibold uppercase tracking-[0.14em]" style={{ fontFamily: "var(--font-body)" }}>Transmission *</label>
+                <label className="text-[#E8DCC8]/60 text-[10px] font-semibold uppercase tracking-[0.14em]">Transmission *</label>
                 <select required name="transmission" value={formData.transmission} onChange={handleChange} className="w-full bg-white/[0.08] border border-white/12 rounded-[20px] px-4 py-2.5 text-white focus:outline-none focus:border-blue-500/40 focus:ring-2 focus:ring-blue-500/10 transition-all cursor-pointer [color-scheme:dark]">
                   {['Automatic', 'Manual'].map(t => (
                     <option key={t} value={t} className="bg-[#121210]">{t}</option>
@@ -222,28 +222,28 @@ export default function VehicleModal({ isOpen, onClose, categories, vehicle, onS
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <label className="text-[#E8DCC8]/60 text-[10px] font-semibold uppercase tracking-[0.14em]" style={{ fontFamily: "var(--font-body)" }}>Seating Cap *</label>
+                <label className="text-[#E8DCC8]/60 text-[10px] font-semibold uppercase tracking-[0.14em]">Seating Cap *</label>
                 <input required type="number" name="seating_capacity" value={formData.seating_capacity} onChange={handleChange} className="w-full bg-white/[0.08] border border-white/12 rounded-[20px] px-4 py-2.5 text-white focus:outline-none focus:border-blue-500/40 focus:ring-2 focus:ring-blue-500/10 transition-all" />
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <label className="text-[#E8DCC8]/60 text-[10px] font-semibold uppercase tracking-[0.14em]" style={{ fontFamily: "var(--font-body)" }}>Luggage Cap</label>
+                <label className="text-[#E8DCC8]/60 text-[10px] font-semibold uppercase tracking-[0.14em]">Luggage Cap</label>
                 <input type="number" name="luggage_capacity" value={formData.luggage_capacity} onChange={handleChange} className="w-full bg-white/[0.08] border border-white/12 rounded-[20px] px-4 py-2.5 text-white focus:outline-none focus:border-blue-500/40 focus:ring-2 focus:ring-blue-500/10 transition-all" />
               </div>
 
               {/* Pricing */}
               <div className="flex flex-col gap-1.5">
-                <label className="text-[#E8DCC8]/60 text-[10px] font-semibold uppercase tracking-[0.14em]" style={{ fontFamily: "var(--font-body)" }}>Daily Rate (₹) *</label>
+                <label className="text-[#E8DCC8]/60 text-[10px] font-semibold uppercase tracking-[0.14em]">Daily Rate (₹) *</label>
                 <input required type="number" name="daily_rate" value={formData.daily_rate} onChange={handleChange} className="w-full bg-white/[0.08] border border-white/12 rounded-[20px] px-4 py-2.5 text-white focus:outline-none focus:border-blue-500/40 focus:ring-2 focus:ring-blue-500/10 transition-all" />
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <label className="text-[#E8DCC8]/60 text-[10px] font-semibold uppercase tracking-[0.14em]" style={{ fontFamily: "var(--font-body)" }}>Hourly Rate (₹) *</label>
+                <label className="text-[#E8DCC8]/60 text-[10px] font-semibold uppercase tracking-[0.14em]">Hourly Rate (₹) *</label>
                 <input required type="number" name="hourly_rate" value={formData.hourly_rate} onChange={handleChange} className="w-full bg-white/[0.08] border border-white/12 rounded-[20px] px-4 py-2.5 text-white focus:outline-none focus:border-blue-500/40 focus:ring-2 focus:ring-blue-500/10 transition-all" />
               </div>
 
               <div className="flex flex-col gap-1.5 md:col-span-2">
-                <label className="text-[#E8DCC8]/60 text-[10px] font-semibold uppercase tracking-[0.14em]" style={{ fontFamily: "var(--font-body)" }}>Security Deposit (₹) *</label>
+                <label className="text-[#E8DCC8]/60 text-[10px] font-semibold uppercase tracking-[0.14em]">Security Deposit (₹) *</label>
                 <input required type="number" name="security_deposit" value={formData.security_deposit} onChange={handleChange} className="w-full bg-white/[0.08] border border-white/12 rounded-[20px] px-4 py-2.5 text-white focus:outline-none focus:border-blue-500/40 focus:ring-2 focus:ring-blue-500/10 transition-all" />
               </div>
             </div>

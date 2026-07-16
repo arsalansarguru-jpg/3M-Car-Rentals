@@ -221,7 +221,7 @@ export default function BusinessIntelligenceDashboardClient({ bookings, customer
       <div className="flex flex-col md:flex-row justify-between gap-4 items-start md:items-center bg-white/[0.02] border border-white/10 rounded-3xl p-6 backdrop-blur-md">
         <div>
           <span className="text-[10px] font-mono text-[#3B82F6] uppercase tracking-widest block mb-1">Director Intel</span>
-          <h1 className="text-3xl font-black text-white tracking-tight" style={{ fontFamily: "var(--font-heading)" }}>Business Intelligence</h1>
+          <h1 className="text-3xl font-black text-white tracking-tight" style={{ fontFamily: "var(--font-urbanist)" }}>Business Intelligence</h1>
           <p className="text-white/40 text-xs mt-1">Strategic audit of revenue distribution, order sizes, and customer growths.</p>
         </div>
 
@@ -311,7 +311,7 @@ export default function BusinessIntelligenceDashboardClient({ bookings, customer
         {/* Category shares breakdown */}
         <div className="lg:col-span-4 bg-white/[0.01] border border-white/10 rounded-3xl p-6 backdrop-blur-md space-y-5">
           <div className="flex justify-between items-center border-b border-white/5 pb-3">
-            <h3 className="text-white font-extrabold text-sm uppercase tracking-wider flex items-center gap-1.5" style={{ fontFamily: "var(--font-heading)" }}><PieChart className="w-4 h-4 text-blue-400" /> Revenue Share</h3>
+            <h3 className="text-white font-extrabold text-sm uppercase tracking-wider flex items-center gap-1.5" style={{ fontFamily: "var(--font-urbanist)" }}><PieChart className="w-4 h-4 text-blue-400" /> Revenue Share</h3>
             <span className="text-[10px] text-white/30 font-bold font-mono">Current Period</span>
           </div>
 
@@ -340,7 +340,7 @@ export default function BusinessIntelligenceDashboardClient({ bookings, customer
         {/* Detailed Bookings Ledger */}
         <div className="lg:col-span-8 border border-white/15 bg-white/[0.01] rounded-3xl overflow-hidden backdrop-blur-xl p-6 space-y-4">
           <div className="flex justify-between items-center border-b border-white/5 pb-3">
-            <h3 className="text-white font-extrabold text-sm uppercase tracking-wider flex items-center gap-1.5" style={{ fontFamily: "var(--font-heading)" }}><SlidersHorizontal className="w-4 h-4 text-blue-400" /> Period Audits</h3>
+            <h3 className="text-white font-extrabold text-sm uppercase tracking-wider flex items-center gap-1.5" style={{ fontFamily: "var(--font-urbanist)" }}><SlidersHorizontal className="w-4 h-4 text-blue-400" /> Period Audits</h3>
             <span className="text-[10px] text-white/30 font-bold font-mono">Filtered Period Bookings</span>
           </div>
 

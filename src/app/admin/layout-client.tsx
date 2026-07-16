@@ -221,8 +221,8 @@ export default function AdminDashboardClientLayout({ children, user, profile }: 
                   <item.icon className={`w-5 h-5 shrink-0 ${isActive ? "" : "text-white/35 group-hover:text-white/75"}`} />
                   <motion.span 
                     animate={{ opacity: isSidebarCollapsed ? 0 : 1, width: isSidebarCollapsed ? 0 : "auto", marginLeft: isSidebarCollapsed ? 0 : 12 }}
-                    style={{ fontFamily: "var(--font-body)", fontSize: "0.9375rem", fontWeight: isActive ? 600 : 500 }}
-                    className="whitespace-nowrap overflow-hidden"
+                    style={{ fontWeight: isActive ? 600 : 500 }}
+                    className="text-sidebar-label whitespace-nowrap overflow-hidden"
                   >
                     {item.name}
                   </motion.span>
@@ -250,8 +250,8 @@ export default function AdminDashboardClientLayout({ children, user, profile }: 
                     <item.icon className={`w-4 h-4 shrink-0 ${isActive ? "" : "text-white/35 group-hover:text-white/70"}`} />
                     <motion.span 
                       animate={{ opacity: isSidebarCollapsed ? 0 : 1, width: isSidebarCollapsed ? 0 : "auto", marginLeft: isSidebarCollapsed ? 0 : 10 }}
-                      style={{ fontFamily: "var(--font-body)", fontSize: "0.875rem", fontWeight: isActive ? 600 : 500 }}
-                      className="whitespace-nowrap overflow-hidden"
+                      style={{ fontWeight: isActive ? 600 : 500 }}
+                      className="text-nav-label whitespace-nowrap overflow-hidden"
                     >
                       {item.name}
                     </motion.span>
@@ -269,7 +269,7 @@ export default function AdminDashboardClientLayout({ children, user, profile }: 
           >
             <Search className="w-4 h-4 text-white/50" />
             {!isSidebarCollapsed && (
-              <div className="flex items-center gap-2" style={{ fontFamily: "var(--font-body)", fontSize: "0.8125rem", fontWeight: 500, color: "rgba(255,255,255,0.5)" }}>
+              <div className="text-body-sm font-medium text-white/50 flex items-center gap-2">
                 Search
                 <span className="bg-black/30 border border-white/10 px-1.5 py-0.5 rounded-[20px] font-mono text-[9px] flex items-center gap-0.5"><Command className="w-3 h-3"/> K</span>
               </div>
@@ -281,7 +281,7 @@ export default function AdminDashboardClientLayout({ children, user, profile }: 
           >
             <LogOut className="w-4 h-4" />
             {!isSidebarCollapsed && (
-              <span style={{ fontFamily: "var(--font-body)", fontSize: "0.8125rem", fontWeight: 500 }}>Sign Out</span>
+              <span className="text-body-sm font-medium">Sign Out</span>
             )}
           </button>
         </div>
@@ -321,7 +321,7 @@ export default function AdminDashboardClientLayout({ children, user, profile }: 
                       isActive ? `border-white/10 ${getGlowStyles(item.color)}` : "text-white/55 hover:text-white hover:bg-white/[0.04]"
                     }`}>
                       <item.icon className={`w-5 h-5 shrink-0 mr-3 ${isActive ? "" : "text-white/40"}`} />
-                      <span style={{ fontFamily: "var(--font-body)", fontSize: "0.9375rem", fontWeight: 600 }}>{item.name}</span>
+                      <span className="text-sidebar-label font-semibold">{item.name}</span>
                     </Link>
                   );
                 })}
@@ -332,7 +332,7 @@ export default function AdminDashboardClientLayout({ children, user, profile }: 
                   className="w-full flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 border border-white/5 rounded-[20px] py-3 px-4 transition-colors"
                 >
                   <Search className="w-4 h-4 text-white/50" />
-                  <div className="flex items-center gap-2" style={{ fontFamily: "var(--font-body)", fontSize: "0.8125rem", fontWeight: 500, color: "rgba(255,255,255,0.5)" }}>
+                  <div className="text-body-sm font-medium text-white/50 flex items-center gap-2">
                     Search
                     <span className="bg-black/30 border border-white/10 px-1.5 py-0.5 rounded font-mono text-[9px] flex items-center gap-0.5"><Command className="w-3 h-3"/> K</span>
                   </div>
@@ -342,7 +342,7 @@ export default function AdminDashboardClientLayout({ children, user, profile }: 
                   className="w-full flex items-center justify-center gap-2 bg-red-500/5 hover:bg-red-500/10 border border-red-500/10 hover:border-red-500/20 rounded-[20px] py-3 px-4 text-red-400/70 hover:text-red-400 transition-colors"
                 >
                   <LogOut className="w-4 h-4" />
-                  <span style={{ fontFamily: "var(--font-body)", fontSize: "0.8125rem", fontWeight: 500 }}>Sign Out</span>
+                  <span className="text-body-sm font-medium">Sign Out</span>
                 </button>
               </div>
             </motion.aside>
@@ -359,12 +359,12 @@ export default function AdminDashboardClientLayout({ children, user, profile }: 
              <button onClick={() => setIsMobileMenuOpen(true)} className="lg:hidden p-2 text-white/50 hover:text-white hover:bg-white/5 rounded-lg transition-colors">
                <Menu className="w-6 h-6" />
              </button>
-             <div className="lg:hidden hidden sm:block" style={{ fontFamily: "var(--font-heading)", fontWeight: 500, color: "#ffffff", fontSize: "1rem" }}>3M Mobility</div>
+             <div className="lg:hidden hidden sm:block" style={{ fontFamily: "var(--font-urbanist)", fontWeight: 500, color: "#ffffff", fontSize: "1rem" }}>3M Mobility</div>
              
              <div className="hidden lg:flex items-center gap-2">
-                <span style={{ fontFamily: "var(--font-body)", fontSize: "0.875rem", fontWeight: 400, color: "rgba(255,255,255,0.4)" }}>Dashboard</span>
+                <span className="text-body-sm text-white/40 font-normal">Dashboard</span>
                 <span style={{ color: "rgba(255,255,255,0.2)" }}>/</span>
-                <span style={{ fontFamily: "var(--font-body)", fontSize: "0.875rem", fontWeight: 600, color: "#ffffff" }}>
+                <span className="text-body-sm text-white font-semibold">
                   {pathname === "/admin" ? "Executive Overview" :
                    pathname === "/admin/bookings" ? "Smart Calendar" :
                    pathname?.includes("/admin/customers") ? "Customer 360" :
@@ -386,11 +386,11 @@ export default function AdminDashboardClientLayout({ children, user, profile }: 
             <div className="h-8 w-px bg-white/10"></div>
             <div className="flex items-center gap-3">
               <div className="text-right hidden sm:block">
-                <p style={{ fontFamily: "var(--font-heading)", fontSize: "0.9375rem", fontWeight: 500, color: "#ffffff", lineHeight: 1, marginBottom: "0.25rem" }}>{userDisplayName}</p>
-                <p style={{ fontFamily: "var(--font-body)", fontSize: "0.625rem", color: "#C9A84C", textTransform: "uppercase", letterSpacing: "0.14em", fontWeight: 500, lineHeight: 1 }}>{userRole}</p>
+                <p style={{ fontFamily: "var(--font-urbanist)", fontSize: "0.9375rem", fontWeight: 500, color: "#ffffff", lineHeight: 1, marginBottom: "0.25rem" }}>{userDisplayName}</p>
+                <p className="text-overline font-medium text-[#C9A84C] text-[10px]" style={{ lineHeight: 1 }}>{userRole}</p>
               </div>
               <div className="w-10 h-10 rounded-full bg-white/[0.08] border border-white/12 flex items-center justify-center">
-                <span style={{ fontFamily: "var(--font-heading)", fontSize: "0.875rem", fontWeight: 600, color: "#ffffff" }}>{userInitials}</span>
+                <span style={{ fontFamily: "var(--font-urbanist)", fontSize: "0.875rem", fontWeight: 600, color: "#ffffff" }}>{userInitials}</span>
               </div>
             </div>
           </div>
