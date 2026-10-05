@@ -37,9 +37,51 @@ const manrope = Manrope({
 });
 
 export const metadata: Metadata = {
-  title: "3M Car Rentals — Luxury Self-Drive Experiences in Goa",
+  metadataBase: new URL("https://3mcarrentals.in"),
+  title: {
+    default: "Self-Drive Car Rentals in Goa",
+    template: "%s | 3M Car Rentals",
+  },
   description:
-    "Curated luxury self-drive experiences in Goa. Premium vehicles delivered to your door. Airport pickup at GOX & GOI.",
+    "Book self-drive car rentals in Goa, with delivery to Mopa (GOX), Dabolim (GOI), hotels, and locations across Goa.",
+  openGraph: {
+    type: "website",
+    siteName: "3M Car Rentals",
+    title: "Self-Drive Car Rentals in Goa",
+    description:
+      "Book self-drive car rentals in Goa, with delivery to Mopa (GOX), Dabolim (GOI), hotels, and locations across Goa.",
+    url: "https://3mcarrentals.in",
+    images: [
+      {
+        url: "/hero-bg.jpg",
+        width: 1360,
+        height: 768,
+        alt: "Car rental on a coastal road in Goa",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Self-Drive Car Rentals in Goa | 3M Car Rentals",
+    description:
+      "Book self-drive car rentals in Goa, with delivery to airports, hotels, and locations across Goa.",
+    images: ["/hero-bg.jpg"],
+  },
+};
+
+const organizationJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "3M Car Rentals",
+  url: "https://3mcarrentals.in",
+  logo: "https://3mcarrentals.in/logo.svg",
+  image: "https://3mcarrentals.in/hero-bg.jpg",
+  description:
+    "Self-drive car rentals in Goa, with delivery to airports, hotels, and locations across Goa.",
+  areaServed: {
+    "@type": "AdministrativeArea",
+    name: "Goa, India",
+  },
 };
 
 export default function RootLayout({
@@ -53,6 +95,12 @@ export default function RootLayout({
       className={`${cormorantGaramond.variable} ${sourceSans3.variable} ${urbanist.variable} ${manrope.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-[#121210] text-[#D4C5B0]">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(organizationJsonLd).replace(/</g, "\\u003c"),
+          }}
+        />
         {children}
       </body>
     </html>

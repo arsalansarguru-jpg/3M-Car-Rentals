@@ -5,9 +5,11 @@ import VehicleCard from "@/components/fleet/VehicleCard";
 import type { VehicleCategory } from "@/types/database";
 
 export const metadata = {
-  title: "Our Fleet — 3M Car Rentals Goa",
+  title: "Cars for Rent in Goa | Our Fleet",
   description:
-    "Browse hatchbacks, sedans, SUVs, and luxury cars for self-drive or chauffeur rental in Goa. All inspection-verified, fully insured.",
+    "Compare cars available for rent in Goa, from compact hatchbacks to SUVs. Check vehicle details, rates, and airport delivery options.",
+  alternates: { canonical: "/fleet" },
+  openGraph: { url: "https://3mcarrentals.in/fleet" },
 };
 
 // ─── Skeleton loader ──────────────────────────────────────────────────────────

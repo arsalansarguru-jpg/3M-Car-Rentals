@@ -87,9 +87,25 @@ export async function generateMetadata({ params }: VehicleDetailPageProps): Prom
   const { id } = await params;
   const vehicle = await getVehicleById(id);
   if (!vehicle) return { title: "Vehicle Not Found — 3M Car Rentals" };
+  const title = `${vehicle.year} ${vehicle.brand} ${vehicle.model} for Rent in Goa`;
+  const description = `Rent the ${vehicle.year} ${vehicle.brand} ${vehicle.model} in Goa from ${formatINR(vehicle.daily_rate)}/day. ${vehicle.transmission}, ${vehicle.fuel_type}, ${vehicle.seating_capacity} seats. Airport delivery available.`;
+  const vehicleWithImages = vehicle as typeof vehicle & {
+    featured_image?: string;
+    images?: string[];
+  };
+  const image = vehicleWithImages.featured_image ?? vehicleWithImages.images?.[0] ?? "/hero-bg.jpg";
+
   return {
-    title: `${vehicle.year} ${vehicle.brand} ${vehicle.model} — Book Now | 3M Car Rentals Goa`,
-    description: `Rent the ${vehicle.brand} ${vehicle.model} in Goa from ${formatINR(vehicle.daily_rate)}/day. ${vehicle.transmission}, ${vehicle.fuel_type}, ${vehicle.seating_capacity} seats. Fully insured, airport delivery available.`,
+    title,
+    description,
+    alternates: { canonical: `/fleet/${vehicle.id}` },
+    openGraph: {
+      type: "website",
+      title: `${title} | 3M Car Rentals`,
+      description,
+      url: `https://3mcarrentals.in/fleet/${vehicle.id}`,
+      images: [{ url: image, alt: `${vehicle.year} ${vehicle.brand} ${vehicle.model}` }],
+    },
   };
 }
 

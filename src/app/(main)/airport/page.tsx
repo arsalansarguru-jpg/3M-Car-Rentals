@@ -1,9 +1,11 @@
 import Link from "next/link";
 
 export const metadata = {
-  title: "Airport Car Rentals Goa (GOX & GOI) — 3M Car Rentals",
+  title: "Airport Car Rental in Goa | GOX & GOI Delivery",
   description:
-    "Self-drive car rentals delivered directly to Mopa Airport (GOX) and Dabolim Airport (GOI). Skip the taxi lines and start your Goa holiday immediately.",
+    "Arrange a self-drive rental car for pickup at Manohar International Airport (GOX) or Goa International Airport (GOI).",
+  alternates: { canonical: "/airport" },
+  openGraph: { url: "https://3mcarrentals.in/airport" },
 };
 
 export default function AirportPage() {

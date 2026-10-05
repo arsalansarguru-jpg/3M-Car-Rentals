@@ -5,9 +5,10 @@ import Hero from "@/components/home/Hero";
 import { Button } from "@/components/ui/Button";
 
 export const metadata = {
-  title: "3M Car Rentals — Luxury Self-Drive Experiences in Goa",
+  title: "Self-Drive Car Rentals in Goa",
   description:
-    "Curated luxury self-drive experiences in Goa. Premium vehicles delivered to your door. Airport pickup at GOX & GOI.",
+    "Book self-drive car rentals in Goa, with delivery to Mopa (GOX), Dabolim (GOI), hotels, and locations across Goa.",
+  alternates: { canonical: "/" },
 };
 
 export default async function HomePage() {

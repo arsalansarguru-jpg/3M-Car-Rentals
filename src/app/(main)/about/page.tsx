@@ -2,9 +2,11 @@ import Link from "next/link";
 import Image from "next/image";
 
 export const metadata = {
-  title: "About Us — 3M Car Rentals",
+  title: "About 3M Car Rentals in Goa",
   description:
-    "Learn about the story, values, and quality commitment of 3M Car Rentals. We are Goa's leading premium self-drive car rental agency.",
+    "Learn about 3M Car Rentals and our approach to self-drive car rentals and vehicle delivery across Goa.",
+  alternates: { canonical: "/about" },
+  openGraph: { url: "https://3mcarrentals.in/about" },
 };
 
 export default function AboutPage() {
