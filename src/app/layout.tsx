@@ -78,9 +78,19 @@ const organizationJsonLd = {
   image: "https://3mcarrentals.in/hero-bg.jpg",
   description:
     "Self-drive car rentals in Goa, with delivery to airports, hotels, and locations across Goa.",
+  telephone: "+91-9637901501",
+  email: "3mcarrentals321@gmail.com",
   areaServed: {
     "@type": "AdministrativeArea",
     name: "Goa, India",
+  },
+  contactPoint: {
+    "@type": "ContactPoint",
+    telephone: "+91-9637901501",
+    contactType: "customer service",
+    email: "3mcarrentals321@gmail.com",
+    areaServed: "IN",
+    availableLanguage: ["English", "Hindi"],
   },
 };
 
