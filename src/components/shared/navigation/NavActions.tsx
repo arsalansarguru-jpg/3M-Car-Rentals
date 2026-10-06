@@ -33,7 +33,7 @@ export default function NavActions({ isSignedIn, dashboardHref, onLogout }: NavA
 
           {/* Call Now Text Link */}
           <a
-            href="tel:+919876543210"
+            href="tel:+919637901501"
             id="header-call-now-btn"
             className="text-white/50 hover:text-white transition-colors duration-300 font-semibold tracking-widest text-[11px] md:text-xs uppercase outline-none focus-visible:text-white"
             style={{ fontFamily: "var(--font-body)" }}
@@ -62,7 +62,7 @@ export default function NavActions({ isSignedIn, dashboardHref, onLogout }: NavA
 
           {/* Call Now Text Link */}
           <a
-            href="tel:+919876543210"
+            href="tel:+919637901501"
             id="header-call-now-btn"
             className="text-white/50 hover:text-white transition-colors duration-300 font-semibold tracking-widest text-[11px] md:text-xs uppercase outline-none focus-visible:text-white"
             style={{ fontFamily: "var(--font-body)" }}

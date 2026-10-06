@@ -152,11 +152,11 @@ export default function ContactPage() {
                       Phone / WhatsApp
                     </p>
                     <a
-                      href="tel:+919876543210"
+                      href="tel:+919637901501"
                       className="text-white font-medium hover:text-[#C9A84C] transition-colors duration-300 block mt-1"
                       style={{ fontFamily: "var(--font-body)", fontSize: "1rem" }}
                     >
-                      +91 98765 43210
+                      +91-9637901501
                     </a>
                   </div>
                 </div>
@@ -186,11 +186,11 @@ export default function ContactPage() {
                       Email Concierge
                     </p>
                     <a
-                      href="mailto:hello@3mcarrentals.com"
+                      href="mailto:3mcarrentas321@gmail.com"
                       className="text-white font-medium hover:text-[#C9A84C] transition-colors duration-300 block mt-1"
                       style={{ fontFamily: "var(--font-body)", fontSize: "1rem" }}
                     >
-                      hello@3mcarrentals.com
+                      3mcarrentas321@gmail.com
                     </a>
                   </div>
                 </div>
@@ -343,7 +343,7 @@ export default function ContactPage() {
                       name="phone"
                       value={formData.phone}
                       onChange={handleChange}
-                      placeholder="e.g. +91 98765 43210"
+                      placeholder="e.g. +91-9637901501"
                       required
                     />
                     <div className="grid grid-cols-2 gap-4">

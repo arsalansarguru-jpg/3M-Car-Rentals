@@ -133,7 +133,7 @@ export default function MobileMenu({ isSignedIn, dashboardHref, onLogout }: Mobi
 
             {/* Mobile Call Now Action */}
             <a
-              href="tel:+919876543210"
+              href="tel:+919637901501"
               className="text-white/50 hover:text-white transition-colors duration-300 font-semibold tracking-widest text-[11px] uppercase text-center mt-2 py-2 block min-h-[44px] flex items-center justify-center outline-none focus-visible:text-white"
               style={{ fontFamily: "var(--font-body)" }}
               id="mobile-call-now-btn"
