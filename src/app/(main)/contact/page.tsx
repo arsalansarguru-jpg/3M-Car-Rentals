@@ -186,11 +186,11 @@ export default function ContactPage() {
                       Email Concierge
                     </p>
                     <a
-                      href="mailto:3mcarrentas321@gmail.com"
+                      href="mailto:3mcarrentals321@gmail.com"
                       className="text-white font-medium hover:text-[#C9A84C] transition-colors duration-300 block mt-1"
                       style={{ fontFamily: "var(--font-body)", fontSize: "1rem" }}
                     >
-                      3mcarrentas321@gmail.com
+                      3mcarrentals321@gmail.com
                     </a>
                   </div>
                 </div>
@@ -258,7 +258,7 @@ export default function ContactPage() {
                 If your flight is landing right now and you need immediate self-drive delivery, call us or ping our WhatsApp emergency response desk.
               </p>
               <a
-                href="https://wa.me/919876543210"
+                href="https://wa.me/919637901501"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center gap-2 px-8 py-3.5 bg-[#25d366] text-[#121210] font-semibold text-xs uppercase tracking-[0.12em] hover:bg-[#20ba5a] transition-all duration-300"
