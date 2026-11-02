@@ -6,19 +6,36 @@ import path from "path";
 const DATA_DIR = path.join(process.cwd(), "src/data");
 const FILE_PATH = path.join(DATA_DIR, "fleet_metadata.json");
 
+const TMP_FILE_PATH = path.join("/tmp", "fleet_metadata.json");
+
 function getMetadata(): Record<string, any> {
-  if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
-  if (!fs.existsSync(FILE_PATH)) fs.writeFileSync(FILE_PATH, JSON.stringify({}));
   try {
-    return JSON.parse(fs.readFileSync(FILE_PATH, "utf8"));
+    if (fs.existsSync(TMP_FILE_PATH)) {
+      return JSON.parse(fs.readFileSync(TMP_FILE_PATH, "utf8"));
+    }
+  } catch {}
+
+  try {
+    if (fs.existsSync(FILE_PATH)) {
+      return JSON.parse(fs.readFileSync(FILE_PATH, "utf8"));
+    }
   } catch (e) {
     return {};
   }
+  return {};
 }
 
 function saveMetadata(data: Record<string, any>) {
-  if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
-  fs.writeFileSync(FILE_PATH, JSON.stringify(data, null, 2));
+  try {
+    if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
+    fs.writeFileSync(FILE_PATH, JSON.stringify(data, null, 2));
+  } catch (err: any) {
+    console.warn("[api/vehicles/import] Local FILE_PATH not writable on serverless:", err?.message);
+  }
+
+  try {
+    fs.writeFileSync(TMP_FILE_PATH, JSON.stringify(data, null, 2));
+  } catch {}
 }
 
 export async function POST() {

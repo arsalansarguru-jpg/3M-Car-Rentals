@@ -4,29 +4,69 @@ import path from "path";
 
 const DATA_DIR = path.join(process.cwd(), "src/data");
 const BOOKINGS_FILE = path.join(DATA_DIR, "bookings.json");
+const TMP_BOOKINGS_FILE = path.join("/tmp", "bookings.json");
 const OWNER_PHONE = "919637901501";
 const OWNER_EMAIL = "3mcarrentals321@gmail.com";
 
+declare global {
+  // eslint-disable-next-line no-var
+  var __3m_bookings_cache: any[] | undefined;
+}
+
 function getBookings(): any[] {
+  if (globalThis.__3m_bookings_cache && Array.isArray(globalThis.__3m_bookings_cache)) {
+    return globalThis.__3m_bookings_cache;
+  }
+
+  // 1. Try reading from /tmp (if serverless environment previously wrote updates)
+  try {
+    if (fs.existsSync(TMP_BOOKINGS_FILE)) {
+      const data = JSON.parse(fs.readFileSync(TMP_BOOKINGS_FILE, "utf8"));
+      if (Array.isArray(data)) {
+        globalThis.__3m_bookings_cache = data;
+        return data;
+      }
+    }
+  } catch {
+    // fallback
+  }
+
+  // 2. Read from source project repository
+  try {
+    if (fs.existsSync(BOOKINGS_FILE)) {
+      const data = JSON.parse(fs.readFileSync(BOOKINGS_FILE, "utf8"));
+      if (Array.isArray(data)) {
+        globalThis.__3m_bookings_cache = data;
+        return data;
+      }
+    }
+  } catch (error) {
+    console.error("[api/bookings] Error reading bookings.json:", error);
+  }
+
+  return [];
+}
+
+function saveBookings(bookings: any[]) {
+  globalThis.__3m_bookings_cache = bookings;
+
+  // 1. Try writing to local project filesystem (standard in local development)
   try {
     if (!fs.existsSync(DATA_DIR)) {
       fs.mkdirSync(DATA_DIR, { recursive: true });
     }
-    if (!fs.existsSync(BOOKINGS_FILE)) {
-      return [];
-    }
-    return JSON.parse(fs.readFileSync(BOOKINGS_FILE, "utf8"));
-  } catch (error) {
-    console.error("[api/bookings] Error reading bookings.json:", error);
-    return [];
+    fs.writeFileSync(BOOKINGS_FILE, JSON.stringify(bookings, null, 2), "utf8");
+  } catch (err: any) {
+    // On Vercel / serverless runtime, filesystem is read-only (EROFS) - safely catch and fallback
+    console.warn("[api/bookings] Local BOOKINGS_FILE read-only or not writable on serverless:", err?.message);
   }
-}
 
-function saveBookings(bookings: any[]) {
-  if (!fs.existsSync(DATA_DIR)) {
-    fs.mkdirSync(DATA_DIR, { recursive: true });
+  // 2. Also write to /tmp so serverless lambdas can persist across requests within the instance
+  try {
+    fs.writeFileSync(TMP_BOOKINGS_FILE, JSON.stringify(bookings, null, 2), "utf8");
+  } catch {
+    // ignore platforms without /tmp
   }
-  fs.writeFileSync(BOOKINGS_FILE, JSON.stringify(bookings, null, 2), "utf8");
 }
 
 // GET: Retrieve all bookings

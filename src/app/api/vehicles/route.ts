@@ -6,27 +6,54 @@ import path from "path";
 const DATA_DIR = path.join(process.cwd(), "src/data");
 const FILE_PATH = path.join(DATA_DIR, "fleet_metadata.json");
 
+const TMP_FILE_PATH = path.join("/tmp", "fleet_metadata.json");
+
+declare global {
+  // eslint-disable-next-line no-var
+  var __3m_metadata_cache: Record<string, any> | undefined;
+}
+
 // Helper to read local metadata
 function getMetadata(): Record<string, any> {
-  if (!fs.existsSync(DATA_DIR)) {
-    fs.mkdirSync(DATA_DIR, { recursive: true });
+  if (globalThis.__3m_metadata_cache) {
+    return globalThis.__3m_metadata_cache;
   }
-  if (!fs.existsSync(FILE_PATH)) {
-    fs.writeFileSync(FILE_PATH, JSON.stringify({}));
-  }
+
   try {
-    return JSON.parse(fs.readFileSync(FILE_PATH, "utf8"));
+    if (fs.existsSync(TMP_FILE_PATH)) {
+      const data = JSON.parse(fs.readFileSync(TMP_FILE_PATH, "utf8"));
+      globalThis.__3m_metadata_cache = data;
+      return data;
+    }
+  } catch {}
+
+  try {
+    if (fs.existsSync(FILE_PATH)) {
+      const data = JSON.parse(fs.readFileSync(FILE_PATH, "utf8"));
+      globalThis.__3m_metadata_cache = data;
+      return data;
+    }
   } catch (e) {
     return {};
   }
+  return {};
 }
 
 // Helper to save local metadata
 function saveMetadata(data: Record<string, any>) {
-  if (!fs.existsSync(DATA_DIR)) {
-    fs.mkdirSync(DATA_DIR, { recursive: true });
+  globalThis.__3m_metadata_cache = data;
+  try {
+    if (!fs.existsSync(DATA_DIR)) {
+      fs.mkdirSync(DATA_DIR, { recursive: true });
+    }
+    fs.writeFileSync(FILE_PATH, JSON.stringify(data, null, 2));
+  } catch (err: any) {
+    console.warn("[api/vehicles] Local FILE_PATH not writable on serverless:", err?.message);
   }
-  fs.writeFileSync(FILE_PATH, JSON.stringify(data, null, 2));
+
+  try {
+    fs.writeFileSync(TMP_FILE_PATH, JSON.stringify(data, null, 2));
+  } catch {}
 }
 
 // -----------------------------------------------------------------------------
