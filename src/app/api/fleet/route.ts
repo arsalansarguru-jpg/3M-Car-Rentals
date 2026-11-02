@@ -4,27 +4,66 @@ import path from "path";
 
 const DATA_DIR = path.join(process.cwd(), "src/data");
 const CARS_FILE = path.join(DATA_DIR, "cars.json");
+const TMP_CARS_FILE = path.join("/tmp", "cars.json");
+
+declare global {
+  // eslint-disable-next-line no-var
+  var __3m_cars_cache: any[] | undefined;
+}
 
 function getCars(): any[] {
+  if (globalThis.__3m_cars_cache && Array.isArray(globalThis.__3m_cars_cache)) {
+    return globalThis.__3m_cars_cache;
+  }
+
+  // 1. Try reading from /tmp (if serverless environment previously wrote changes)
+  try {
+    if (fs.existsSync(TMP_CARS_FILE)) {
+      const data = JSON.parse(fs.readFileSync(TMP_CARS_FILE, "utf8"));
+      if (Array.isArray(data)) {
+        globalThis.__3m_cars_cache = data;
+        return data;
+      }
+    }
+  } catch {
+    // fallback
+  }
+
+  // 2. Read from source project repository
+  try {
+    if (fs.existsSync(CARS_FILE)) {
+      const data = JSON.parse(fs.readFileSync(CARS_FILE, "utf8"));
+      if (Array.isArray(data)) {
+        globalThis.__3m_cars_cache = data;
+        return data;
+      }
+    }
+  } catch (error) {
+    console.error("[api/fleet] Error reading cars.json:", error);
+  }
+
+  return [];
+}
+
+function saveCars(cars: any[]) {
+  globalThis.__3m_cars_cache = cars;
+
+  // 1. Try writing to local project filesystem (standard in local development)
   try {
     if (!fs.existsSync(DATA_DIR)) {
       fs.mkdirSync(DATA_DIR, { recursive: true });
     }
-    if (!fs.existsSync(CARS_FILE)) {
-      return [];
-    }
-    return JSON.parse(fs.readFileSync(CARS_FILE, "utf8"));
-  } catch (error) {
-    console.error("[api/fleet] Error reading cars.json:", error);
-    return [];
+    fs.writeFileSync(CARS_FILE, JSON.stringify(cars, null, 2), "utf8");
+  } catch (err: any) {
+    console.warn("[api/fleet] CARS_FILE read-only or not writable on serverless:", err?.message);
   }
-}
 
-function saveCars(cars: any[]) {
-  if (!fs.existsSync(DATA_DIR)) {
-    fs.mkdirSync(DATA_DIR, { recursive: true });
+  // 2. Also write to /tmp so serverless lambdas can persist across requests within the instance
+  try {
+    fs.writeFileSync(TMP_CARS_FILE, JSON.stringify(cars, null, 2), "utf8");
+  } catch {
+    // ignore platforms without /tmp
   }
-  fs.writeFileSync(CARS_FILE, JSON.stringify(cars, null, 2), "utf8");
 }
 
 // GET: Fetch cars (optionally filtered by public visibility)
@@ -139,17 +178,18 @@ export async function DELETE(request: Request) {
 
     let cars = getCars();
     const initialLen = cars.length;
-    cars = cars.filter((c) => c.id !== id);
+    // Allow matching by id directly or case-insensitive
+    cars = cars.filter((c) => c.id !== id && c.id?.toLowerCase() !== id.toLowerCase());
 
     if (cars.length === initialLen) {
       return NextResponse.json(
-        { success: false, error: "Car not found" },
+        { success: false, error: "Car not found with ID: " + id },
         { status: 404 }
       );
     }
 
     saveCars(cars);
-    return NextResponse.json({ success: true, message: "Car deleted successfully" });
+    return NextResponse.json({ success: true, message: "Car deleted successfully", id });
   } catch (err: any) {
     return NextResponse.json({ success: false, error: err.message }, { status: 500 });
   }

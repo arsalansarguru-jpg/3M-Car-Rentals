@@ -275,13 +275,16 @@ export default function SimplifiedAdminPage() {
 
     try {
       const res = await fetch(`/api/fleet?id=${carId}`, { method: "DELETE" });
-      const data = await res.json();
-      if (data.success) {
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data.success) {
         setCars((prev) => prev.filter((c) => c.id !== carId));
         showToast(`Deleted ${carName} from inventory`);
+      } else {
+        showToast(data.error || "Failed to delete vehicle");
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("Failed to delete car:", err);
+      showToast(`Error deleting vehicle: ${err.message}`);
     }
   };
 

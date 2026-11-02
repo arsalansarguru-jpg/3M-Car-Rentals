@@ -103,6 +103,8 @@ export default function FleetClient({ vehicles: initialVehicles, summary: initia
   // Selection state
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [confirmationAction, setConfirmationAction] = useState<string | null>(null);
+  const [vehicleToDelete, setVehicleToDelete] = useState<{ id: string; name: string } | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   // Background refresh state
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
@@ -288,13 +290,55 @@ export default function FleetClient({ vehicles: initialVehicles, summary: initia
 
       if (!res.ok) throw new Error("Bulk action failed");
 
+      if (confirmationAction === "delete") {
+        setLocalVehicles((prev) => prev.filter((v) => !selectedIds.includes(v.id)));
+        setLocalSummary((prev) => ({
+          ...prev,
+          total: Math.max(0, prev.total - selectedIds.length)
+        }));
+      }
+
       // Reset selection and trigger sync refresh
       setSelectedIds([]);
       setConfirmationAction(null);
       syncFleetData();
-      alert("Bulk operation and audit logs committed successfully.");
+      alert(confirmationAction === "delete" ? "Selected vehicles have been permanently removed." : "Bulk operation committed successfully.");
     } catch (err) {
       console.error("[Fleet Client] Bulk update failed:", err);
+      alert("Bulk operation failed. Please check permissions or network connection.");
+    }
+  };
+
+  const handleDeleteSingleVehicle = (id: string, name: string) => {
+    setVehicleToDelete({ id, name });
+  };
+
+  const confirmDeleteSingleVehicle = async () => {
+    if (!vehicleToDelete) return;
+    const { id, name } = vehicleToDelete;
+    setDeletingId(id);
+    try {
+      const res = await fetch(`/api/vehicles?id=${id}`, { method: "DELETE" });
+      if (!res.ok) {
+        const alt = await fetch(`/api/fleet?id=${id}`, { method: "DELETE" });
+        if (!alt.ok) {
+          const errData = await alt.json().catch(() => ({}));
+          throw new Error(errData.error || "Failed to delete vehicle from fleet inventory");
+        }
+      }
+
+      setLocalVehicles((prev) => prev.filter((v) => v.id !== id));
+      setLocalSummary((prev) => ({
+        ...prev,
+        total: Math.max(0, prev.total - 1)
+      }));
+      setVehicleToDelete(null);
+      alert(`Successfully deleted ${name}`);
+    } catch (err: any) {
+      console.error("Failed to delete vehicle:", err);
+      alert(`Could not delete vehicle: ${err.message || "Unknown error"}`);
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -565,6 +609,15 @@ export default function FleetClient({ vehicles: initialVehicles, summary: initia
             Disable
           </Button>
           <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setConfirmationAction("delete")}
+            disabled={selectedIds.length === 0}
+            className="text-[9px] uppercase font-bold py-1.5 h-auto rounded-lg text-red-400 border-red-500/30 hover:bg-red-500/10"
+          >
+            Delete Selected
+          </Button>
+          <Button
             variant="primary"
             size="sm"
             onClick={handleExportCSV}
@@ -655,26 +708,11 @@ export default function FleetClient({ vehicles: initialVehicles, summary: initia
                   <Button 
                     variant="outline" 
                     size="sm"
-                    className="text-[9px] uppercase font-bold py-2 h-auto rounded-xl disabled:opacity-20"
-                    disabled
+                    className="text-[9px] uppercase font-bold py-2 h-auto rounded-xl text-red-400 border-red-500/20 hover:bg-red-500/10 hover:border-red-500/40"
+                    onClick={() => handleDeleteSingleVehicle(v.id, `${v.brand} ${v.model}`)}
+                    disabled={deletingId === v.id}
                   >
-                    Edit
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    className="text-[9px] uppercase font-bold py-2 h-auto rounded-xl disabled:opacity-20"
-                    disabled
-                  >
-                    History
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    className="text-[9px] uppercase font-bold py-2 h-auto rounded-xl disabled:opacity-20"
-                    disabled
-                  >
-                    Maintenance
+                    {deletingId === v.id ? "Deleting..." : "Delete"}
                   </Button>
                 </div>
               </div>
@@ -830,14 +868,28 @@ export default function FleetClient({ vehicles: initialVehicles, summary: initia
         )}
       </Drawer>
 
-      {/* Confirmation Dialog Modal overlay */}
+      {/* Confirmation Dialog Modal overlay for Bulk Actions */}
       <Dialog
         isOpen={!!confirmationAction}
         onClose={() => setConfirmationAction(null)}
         onConfirm={handleExecuteBulkAction}
-        title="Confirm Operation"
-        description={`Are you sure you want to perform bulk action "${confirmationAction?.replace(/_/g, " ")}" for the ${selectedIds.length} selected vehicles? Every change is audited server-side.`}
-        isDestructive={confirmationAction === "disable"}
+        title={confirmationAction === "delete" ? "Delete Selected Vehicles" : "Confirm Operation"}
+        description={
+          confirmationAction === "delete"
+            ? `Are you sure you want to permanently delete the ${selectedIds.length} selected vehicle(s) from your fleet inventory? This action is irreversible.`
+            : `Are you sure you want to perform bulk action "${confirmationAction?.replace(/_/g, " ")}" for the ${selectedIds.length} selected vehicles? Every change is audited server-side.`
+        }
+        isDestructive={confirmationAction === "disable" || confirmationAction === "delete"}
+      />
+
+      {/* Confirmation Dialog Modal overlay for Single Vehicle Delete */}
+      <Dialog
+        isOpen={!!vehicleToDelete}
+        onClose={() => setVehicleToDelete(null)}
+        onConfirm={confirmDeleteSingleVehicle}
+        title="Delete Vehicle"
+        description={`Are you sure you want to permanently delete "${vehicleToDelete?.name}" from your fleet? This action will remove the vehicle from inventory.`}
+        isDestructive={true}
       />
 
     </div>

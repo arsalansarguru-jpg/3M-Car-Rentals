@@ -41,6 +41,49 @@ export async function POST(req: Request) {
         continue;
       }
 
+      // Handle Delete Action
+      if (action === "delete") {
+        try {
+          await supabase.from("vehicle_health").delete().eq("vehicle_id", vehicleId);
+          await supabase.from("pricing_logs").delete().eq("vehicle_id", vehicleId);
+        } catch (cleanupErr) {
+          console.warn("[FleetAPI] Dependent cleanup error:", cleanupErr);
+        }
+
+        const { error: delErr } = await supabase
+          .from("vehicles")
+          .delete()
+          .eq("id", vehicleId);
+
+        if (delErr) {
+          Logger.error("Failed to delete vehicle:", delErr);
+        }
+
+        await AuditService.logAudit({
+          userEmail,
+          userRole: "admin",
+          action: "vehicle_deleted",
+          entity: "vehicles",
+          entityId: vehicleId,
+          oldValue: { status: "Active" },
+          newValue: { status: "Deleted" }
+        });
+
+        DomainEventDispatcher.publish({
+          eventName: "VehicleStatusUpdated",
+          timestamp: new Date().toISOString(),
+          payload: {
+            vehicleId,
+            action: "delete",
+            oldValue: "Active",
+            newValue: "Deleted",
+            userId: user?.id || "admin"
+          }
+        });
+
+        continue;
+      }
+
       let oldValue = "";
       let newValueStr = "";
       let updatePayload: any = {};

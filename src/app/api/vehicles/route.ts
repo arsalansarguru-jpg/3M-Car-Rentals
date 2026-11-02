@@ -300,7 +300,15 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ error: "Missing vehicle ID" }, { status: 400 });
     }
 
-    // Delete from Supabase
+    // 1. Delete associated dependent child records first to satisfy foreign keys
+    try {
+      await supabaseAdmin.from("vehicle_health").delete().eq("vehicle_id", id);
+      await supabaseAdmin.from("pricing_logs").delete().eq("vehicle_id", id);
+    } catch (cleanupErr) {
+      console.warn("[api/vehicles] Dependent cleanup warning:", cleanupErr);
+    }
+
+    // 2. Delete from Supabase
     const { error: dbError } = await supabaseAdmin
       .from("vehicles")
       .delete()

@@ -49,7 +49,7 @@ export const bookingCreateSchema = z.object({
 
 export const vehicleUpdateSchema = z.object({
   vehicleIds: z.array(uuidSchema).min(1, "At least one vehicle ID is required."),
-  action: z.enum(["mark_available", "send_to_cleaning", "send_to_maintenance", "disable"])
+  action: z.enum(["mark_available", "send_to_cleaning", "send_to_maintenance", "disable", "delete"])
 });
 
 // ─── Maintenance Job Create Schema ────────────────────────────────────────────

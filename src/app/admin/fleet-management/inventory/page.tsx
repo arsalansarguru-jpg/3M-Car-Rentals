@@ -234,11 +234,16 @@ function VehicleInventoryPageContent() {
       const res = await fetch(`/api/vehicles?id=${id}`, {
         method: "DELETE"
       });
+      const data = await res.json().catch(() => ({}));
       if (res.ok) {
+        setVehicles((prev) => prev.filter((v) => v.id !== id));
         fetchInventory();
+      } else {
+        alert(data.error || "Failed to delete vehicle");
       }
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
+      alert(e.message || "Failed to delete vehicle");
     }
   };
 
