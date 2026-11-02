@@ -90,7 +90,7 @@ export default function FleetHealthPage() {
     alerts: FleetHealthAlert[];
   } | null>(null);
   
-  const [activeTab, setActiveTab] = React.useState<"monitor" | "compliance" | "predictions" | "incidents">("monitor");
+  const [activeTab, setActiveTab] = React.useState<"monitor" | "compliance" | "predictions" | "incidents" | "upcoming" | "rules">("monitor");
   const [selectedVehicle, setSelectedVehicle] = React.useState<VehicleHealthStatus | null>(null);
   const [isServiceModalOpen, setIsServiceModalOpen] = React.useState(false);
   const [submittingService, setSubmittingService] = React.useState(false);
@@ -101,6 +101,13 @@ export default function FleetHealthPage() {
   const [serviceOdo, setServiceOdo] = React.useState("");
   const [serviceDetails, setServiceDetails] = React.useState("");
   const [formError, setFormError] = React.useState<string | null>(null);
+
+  // Sprint 6 states
+  const [odoInputs, setOdoInputs] = React.useState<Record<string, string>>({});
+  const [isOdoUpdating, setIsOdoUpdating] = React.useState(false);
+  const [notification, setNotification] = React.useState<{ type: "success" | "error"; text: string } | null>(null);
+  const [rules, setRules] = React.useState<any[]>([]);
+  const [loadingRules, setLoadingRules] = React.useState(false);
 
   const fetchDashboardData = React.useCallback(async () => {
     try {
@@ -121,6 +128,69 @@ export default function FleetHealthPage() {
       }, 0);
     }
   }, [router]);
+
+  const fetchRules = React.useCallback(async () => {
+    setLoadingRules(true);
+    try {
+      const res = await fetch("/api/fleet-health/rules");
+      if (res.ok) {
+        const json = await res.json();
+        setRules(json);
+      }
+    } catch (err) {
+      console.error("Failed to fetch maintenance rules:", err);
+    } finally {
+      setLoadingRules(false);
+    }
+  }, []);
+
+  React.useEffect(() => {
+    if (activeTab === "rules") {
+      fetchRules();
+    }
+  }, [activeTab, fetchRules]);
+
+  React.useEffect(() => {
+    if (data?.vehicles) {
+      const initialOdos: Record<string, string> = {};
+      data.vehicles.forEach(v => {
+        initialOdos[v.vehicleId] = String(v.currentOdometer);
+      });
+      setOdoInputs(initialOdos);
+    }
+  }, [data]);
+
+  const handleUpdateOdometer = async (vehicleId: string, odometer: number) => {
+    if (isNaN(odometer) || odometer < 0) {
+      setNotification({ type: "error", text: "Please enter a valid positive odometer mileage." });
+      return;
+    }
+    setIsOdoUpdating(true);
+    setNotification(null);
+    try {
+      const res = await fetch("/api/fleet-health/update-odometer", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ vehicleId, odometer })
+      });
+      const result = await res.json();
+      if (!res.ok) {
+        setNotification({ type: "error", text: result.error || "Failed to update odometer." });
+      } else {
+        let successMsg = `Odometer updated successfully to ${odometer.toLocaleString()} km.`;
+        if (result.triggeredJobs && result.triggeredJobs.length > 0) {
+          const jobDetails = result.triggeredJobs.map((j: any) => `${j.ruleName}`).join(", ");
+          successMsg += ` ⚠️ Automated maintenance ticket created & slot reserved: ${jobDetails}`;
+        }
+        setNotification({ type: "success", text: successMsg });
+        fetchDashboardData();
+      }
+    } catch {
+      setNotification({ type: "error", text: "Network error updating odometer." });
+    } finally {
+      setIsOdoUpdating(false);
+    }
+  };
 
   React.useEffect(() => {
     fetchDashboardData();
@@ -189,6 +259,13 @@ export default function FleetHealthPage() {
           Return to Command Room
         </Link>
       </div>
+
+      {notification && (
+        <div className={`p-4 rounded-xl border flex items-center justify-between gap-3 text-xs ${notification.type === "success" ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400 animate-fade-in" : "bg-red-500/10 border-red-500/20 text-red-400 animate-fade-in"}`}>
+          <span>{notification.text}</span>
+          <button onClick={() => setNotification(null)} className="text-[10px] uppercase font-bold text-white/50 hover:text-white cursor-pointer border border-white/10 px-2 py-0.5 rounded">Dismiss</button>
+        </div>
+      )}
 
       {loading ? (
         <div className="space-y-8">
@@ -284,6 +361,14 @@ export default function FleetHealthPage() {
               Health Monitor
             </button>
             <button
+              onClick={() => setActiveTab("upcoming")}
+              className={`px-4 py-2 text-xs font-extrabold uppercase tracking-wider border-b-2 transition-all cursor-pointer ${
+                activeTab === "upcoming" ? "border-[#3B82F6] text-[#3B82F6]" : "border-transparent text-white/40 hover:text-white/70"
+              }`}
+            >
+              Upcoming & Overdue
+            </button>
+            <button
               onClick={() => setActiveTab("compliance")}
               className={`px-4 py-2 text-xs font-extrabold uppercase tracking-wider border-b-2 transition-all cursor-pointer ${
                 activeTab === "compliance" ? "border-[#3B82F6] text-[#3B82F6]" : "border-transparent text-white/40 hover:text-white/70"
@@ -306,6 +391,14 @@ export default function FleetHealthPage() {
               }`}
             >
               Incidents Logs
+            </button>
+            <button
+              onClick={() => setActiveTab("rules")}
+              className={`px-4 py-2 text-xs font-extrabold uppercase tracking-wider border-b-2 transition-all cursor-pointer ${
+                activeTab === "rules" ? "border-[#3B82F6] text-[#3B82F6]" : "border-transparent text-white/40 hover:text-white/70"
+              }`}
+            >
+              Maintenance Rules
             </button>
           </div>
 
@@ -344,7 +437,23 @@ export default function FleetHealthPage() {
                               {v.cleanlinessStatus}
                             </span>
                           </td>
-                          <td className="p-4 font-mono font-medium text-white">{v.currentOdometer.toLocaleString()} km</td>
+                          <td className="p-4 font-mono font-medium text-white">
+                            <div className="flex items-center gap-2">
+                              <input
+                                type="number"
+                                value={odoInputs[v.vehicleId] ?? ""}
+                                onChange={(e) => setOdoInputs({ ...odoInputs, [v.vehicleId]: e.target.value })}
+                                className="w-20 px-2 py-1 bg-white/[0.04] border border-white/10 rounded text-center text-xs text-white focus:outline-none focus:border-blue-500 font-mono"
+                              />
+                              <button
+                                onClick={() => handleUpdateOdometer(v.vehicleId, Number(odoInputs[v.vehicleId]))}
+                                disabled={isOdoUpdating}
+                                className="px-2 py-1 rounded bg-[#3B82F6] hover:bg-blue-600 text-[#0f1115] disabled:opacity-50 text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer shrink-0"
+                              >
+                                {isOdoUpdating ? "..." : "Set"}
+                              </button>
+                            </div>
+                          </td>
                           <td className="p-4 font-mono font-medium text-white">₹{v.fastagBalance.toFixed(2)}</td>
                           <td className="p-4 text-right">
                             <button
@@ -495,6 +604,205 @@ export default function FleetHealthPage() {
                         );
                       })
                     )}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* VIEW 5: UPCOMING & OVERDUE SERVICES */}
+            {activeTab === "upcoming" && (
+              <div className="space-y-6 animate-fade-in">
+                <div className="rounded-2xl border border-white/[0.08] bg-white/[0.01] p-5">
+                  <h3 className="text-white font-black text-base mb-4 font-sans flex items-center gap-2">
+                    <span>⚠️</span>
+                    <span>Proactive Service Reminders & Alerts</span>
+                  </h3>
+                  <div className="space-y-4 text-xs">
+                    {(() => {
+                      const overdueList: any[] = [];
+                      const upcomingList: any[] = [];
+
+                      data.vehicles.forEach((v) => {
+                        const now = new Date();
+                        
+                        // 1. Mileage check (every 10k standard service)
+                        const kmSinceService = v.currentOdometer - v.lastServiceOdometer;
+                        const serviceKmDiff = 10000 - kmSinceService;
+                        
+                        if (serviceKmDiff <= 0) {
+                          overdueList.push({
+                            vehicle: v,
+                            type: "Scheduled Service",
+                            status: "critical",
+                            dueText: `Overdue by ${Math.abs(serviceKmDiff).toLocaleString()} km`
+                          });
+                        } else if (serviceKmDiff <= 1500) {
+                          upcomingList.push({
+                            vehicle: v,
+                            type: "Scheduled Service",
+                            status: "warning",
+                            dueText: `Due in ${serviceKmDiff.toLocaleString()} km`
+                          });
+                        }
+
+                        // 2. Oil change check
+                        const kmSinceOil = v.nextOilChangeOdometer - v.currentOdometer;
+                        if (kmSinceOil <= 0) {
+                          overdueList.push({
+                            vehicle: v,
+                            type: "Engine Oil Change",
+                            status: "critical",
+                            dueText: `Overdue by ${Math.abs(kmSinceOil).toLocaleString()} km`
+                          });
+                        } else if (kmSinceOil <= 1000) {
+                          upcomingList.push({
+                            vehicle: v,
+                            type: "Engine Oil Change",
+                            status: "warning",
+                            dueText: `Due in ${kmSinceOil.toLocaleString()} km`
+                          });
+                        }
+
+                        // 3. Time check
+                        const nextServDate = new Date(v.nextServiceDate);
+                        const daysDiff = Math.ceil((nextServDate.getTime() - now.getTime()) / (24 * 60 * 60 * 1000));
+                        if (daysDiff <= 0) {
+                          overdueList.push({
+                            vehicle: v,
+                            type: "Annual Inspection",
+                            status: "critical",
+                            dueText: `Overdue by ${Math.abs(daysDiff)} days (${v.nextServiceDate})`
+                          });
+                        } else if (daysDiff <= 15) {
+                          upcomingList.push({
+                            vehicle: v,
+                            type: "Annual Inspection",
+                            status: "warning",
+                            dueText: `Due in ${daysDiff} days (${v.nextServiceDate})`
+                          });
+                        }
+                      });
+
+                      if (overdueList.length === 0 && upcomingList.length === 0) {
+                        return <p className="text-center text-white/30 py-8 font-semibold">All vehicles are healthy and on schedule.</p>;
+                      }
+
+                      return (
+                        <div className="space-y-6">
+                          {overdueList.length > 0 && (
+                            <div className="space-y-3">
+                              <h4 className="text-red-400 font-extrabold uppercase text-[10px] tracking-wider">Critical Overdue Alerts ({overdueList.length})</h4>
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {overdueList.map((item, idx) => (
+                                  <div key={idx} className="p-4 rounded-xl border border-red-500/20 bg-red-500/[0.02] flex items-center justify-between gap-4">
+                                    <div>
+                                      <div className="font-bold text-white">{item.vehicle.brand} {item.vehicle.model}</div>
+                                      <div className="text-[10px] text-white/40 font-mono mt-0.5">{item.vehicle.registrationNumber} · Odo: {item.vehicle.currentOdometer.toLocaleString()} KM</div>
+                                      <p className="text-red-300 font-medium text-[11px] mt-1.5">{item.type} — {item.dueText}</p>
+                                    </div>
+                                    <span className="text-[10px] font-black uppercase px-2.5 py-1 rounded bg-red-500/20 text-red-400 border border-red-500/30">
+                                      Critical Overdue
+                                    </span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                          {upcomingList.length > 0 && (
+                            <div className="space-y-3">
+                              <h4 className="text-amber-400 font-extrabold uppercase text-[10px] tracking-wider">Upcoming Services Near Due ({upcomingList.length})</h4>
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {upcomingList.map((item, idx) => (
+                                  <div key={idx} className="p-4 rounded-xl border border-amber-500/20 bg-amber-500/[0.02] flex items-center justify-between gap-4">
+                                    <div>
+                                      <div className="font-bold text-white">{item.vehicle.brand} {item.vehicle.model}</div>
+                                      <div className="text-[10px] text-white/40 font-mono mt-0.5">{item.vehicle.registrationNumber} · Odo: {item.vehicle.currentOdometer.toLocaleString()} KM</div>
+                                      <p className="text-amber-300 font-medium text-[11px] mt-1.5">{item.type} — {item.dueText}</p>
+                                    </div>
+                                    <span className="text-[10px] font-black uppercase px-2.5 py-1 rounded bg-amber-500/20 text-amber-400 border border-amber-500/30">
+                                      Due Soon
+                                    </span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })()}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* VIEW 6: DATA-DRIVEN RULES */}
+            {activeTab === "rules" && (
+              <div className="space-y-6 animate-fade-in">
+                <div className="rounded-2xl border border-white/[0.08] bg-white/[0.01] p-5">
+                  <div className="flex justify-between items-center mb-4">
+                    <div>
+                      <h3 className="text-white font-black text-base font-sans">Maintenance Schedules & Rules</h3>
+                      <p className="text-white/40 text-xs mt-0.5">Configured intervals and criteria that trigger automatic tickets.</p>
+                    </div>
+                    {loadingRules && <span className="text-xs text-white/40">Loading active rules...</span>}
+                  </div>
+
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left border-collapse text-xs">
+                      <thead>
+                        <tr className="border-b border-white/5 bg-white/[0.02]">
+                          <th className="p-4 font-bold text-white/40 uppercase tracking-wider">Rule Name</th>
+                          <th className="p-4 font-bold text-white/40 uppercase tracking-wider">Applicable Fleet</th>
+                          <th className="p-4 font-bold text-white/40 uppercase tracking-wider">Trigger Type</th>
+                          <th className="p-4 font-bold text-white/40 uppercase tracking-wider">Interval Criteria</th>
+                          <th className="p-4 font-bold text-white/40 uppercase tracking-wider">Automated Actions</th>
+                          <th className="p-4 font-bold text-white/40 uppercase tracking-wider">Priority</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-white/5">
+                        {rules.map((rule) => (
+                          <tr key={rule.id} className="hover:bg-white/[0.01] transition-colors">
+                            <td className="p-4">
+                              <div className="font-bold text-white">{rule.name}</div>
+                              {rule.description && <div className="text-[10px] text-white/40 mt-0.5 leading-normal">{rule.description}</div>}
+                            </td>
+                            <td className="p-4">
+                              <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-white/5 text-white/70 border border-white/10">
+                                {rule.brand === "*" ? "All Brands" : rule.brand} {rule.model === "*" ? "(All Models)" : rule.model}
+                              </span>
+                            </td>
+                            <td className="p-4 uppercase font-mono font-bold text-[#3B82F6]">{rule.trigger_type}</td>
+                            <td className="p-4 font-medium text-white/80">
+                              <div className="space-y-0.5">
+                                {rule.interval_km && <div>Odometer Limit: {rule.interval_km.toLocaleString()} km</div>}
+                                {rule.interval_months && <div>Time Limit: {rule.interval_months} months</div>}
+                                {rule.age_limit_months && <div>Vehicle Age: {rule.age_limit_months} months</div>}
+                              </div>
+                            </td>
+                            <td className="p-4">
+                              <div className="flex flex-wrap gap-1">
+                                {rule.actions.map((act: string, idx: number) => (
+                                  <span key={idx} className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-1.5 py-0.5 rounded text-[9px] font-mono uppercase font-semibold">
+                                    {act.replace("_", " ")}
+                                  </span>
+                                ))}
+                              </div>
+                            </td>
+                            <td className="p-4">
+                              <span className={`px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider ${
+                                rule.priority === "critical" ? "bg-red-500/20 text-red-400 border border-red-500/30" :
+                                rule.priority === "high" ? "bg-amber-500/20 text-amber-400 border border-amber-500/30" :
+                                rule.priority === "medium" ? "bg-blue-500/20 text-blue-400 border border-blue-500/30" :
+                                "bg-white/5 text-white/50"
+                              }`}>
+                                {rule.priority}
+                              </span>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
                   </div>
                 </div>
               </div>

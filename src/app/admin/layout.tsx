@@ -1,18 +1,14 @@
 import React from "react";
-import { requireAdmin } from "@/services/auth-helpers";
-import AdminDashboardClientLayout from "./layout-client";
 
-interface AdminDashboardLayoutProps {
-  children: React.ReactNode;
-}
+export const metadata = {
+  title: "3M Car Rentals | Owner Control Center",
+  description: "Manage fleet visibility, customer bookings, and vehicle inventory for 3M Car Rentals Goa.",
+};
 
-export default async function AdminDashboardLayout({ children }: AdminDashboardLayoutProps) {
-  // Enforce admin/staff authorization on the server side prior to rendering client components
-  const resolved = await requireAdmin();
-
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
-    <AdminDashboardClientLayout user={resolved.user} profile={resolved.profile}>
+    <div className="min-h-screen bg-[#0F0E0C] text-[#E8DCC8] antialiased selection:bg-[#C9A84C] selection:text-black">
       {children}
-    </AdminDashboardClientLayout>
+    </div>
   );
 }

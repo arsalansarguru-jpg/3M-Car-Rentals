@@ -119,6 +119,29 @@ export async function PATCH(req: Request, props: { params: Promise<{ id: string 
       return successResponse(note);
     }
 
+    if (action === "update_priority") {
+      const { priority } = payload;
+      const { error } = await supabaseAdmin
+        .from("maintenance_jobs")
+        .update({ priority })
+        .eq("id", jobId);
+
+      if (error) throw error;
+      return successResponse({ success: true });
+    }
+
+    if (action === "add_photo") {
+      const { photoUrl, stage, description } = payload;
+      const photo = await WorkshopService.addPhoto({
+        jobId,
+        photoUrl,
+        stage,
+        uploadedBy: user!.id,
+        description
+      });
+      return successResponse(photo);
+    }
+
     if (action === "add_part") {
       const { partName, quantity, unitPrice, supplier, batchNumber } = payload;
       const part = await WorkshopService.addPart({
@@ -134,13 +157,13 @@ export async function PATCH(req: Request, props: { params: Promise<{ id: string 
     }
 
     if (action === "add_labour") {
-      const { workDone, hours, hourlyRate } = payload;
+      const { workDone, hours, hourlyRate, technicianId } = payload;
       const labour = await WorkshopService.addLabour({
         jobId,
         workDone,
         hours: Number(hours),
         hourlyRate: Number(hourlyRate),
-        technicianId: user!.id,
+        technicianId: technicianId || user!.id,
         userEmail
       });
       return successResponse(labour);

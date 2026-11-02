@@ -9,6 +9,15 @@ export interface AssignTechnicianInput {
   assignedBy: string;
   estimatedHours: number;
   userEmail: string;
+  priority?: "low" | "medium" | "high" | "critical";
+}
+
+export interface AddPhotoInput {
+  jobId: string;
+  photoUrl: string;
+  stage: "before_service" | "during_repair" | "after_repair";
+  uploadedBy: string;
+  description?: string;
 }
 
 export interface AddNoteInput {
@@ -117,12 +126,17 @@ export class WorkshopService {
       .update({ status: "assigned" })
       .eq("job_id", input.jobId);
 
+    const mUpdates: any = { 
+      status: "in_workshop",
+      assigned_to: input.assignedTo
+    };
+    if (input.priority) {
+      mUpdates.priority = input.priority;
+    }
+
     await supabaseAdmin
       .from("maintenance_jobs")
-      .update({ 
-        status: "in_workshop",
-        assigned_to: input.assignedTo
-      })
+      .update(mUpdates)
       .eq("id", input.jobId);
 
     // 3. Log Audit
@@ -387,5 +401,29 @@ export class WorkshopService {
     });
 
     return report;
+  }
+
+  /**
+   * Records a service photo at a specific stage.
+   */
+  static async addPhoto(input: AddPhotoInput) {
+    const { data: photo, error } = await supabaseAdmin
+      .from("service_photos")
+      .insert({
+        job_id: input.jobId,
+        photo_url: input.photoUrl,
+        stage: input.stage,
+        uploaded_by: input.uploadedBy,
+        description: input.description || null
+      })
+      .select("*")
+      .single();
+
+    if (error) {
+      Logger.error("Failed to insert service photo record", error);
+      throw error;
+    }
+
+    return photo;
   }
 }

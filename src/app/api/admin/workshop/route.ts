@@ -46,7 +46,7 @@ export async function POST(req: Request) {
     const userEmail = user?.email || "admin@3mrentals.com";
 
     const payload = await req.json();
-    const { jobId, assignedTo, estimatedHours } = payload;
+    const { jobId, assignedTo, estimatedHours, priority } = payload;
 
     if (!jobId || !assignedTo) {
       return errorResponse("VALIDATION_ERROR", "Job ID and Assigned To user are required.");
@@ -57,7 +57,8 @@ export async function POST(req: Request) {
       assignedTo,
       assignedBy: user!.id,
       estimatedHours: estimatedHours ? Number(estimatedHours) : 0,
-      userEmail
+      userEmail,
+      priority
     });
 
     return successResponse({ success: true });

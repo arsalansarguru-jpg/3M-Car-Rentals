@@ -9,7 +9,8 @@ import {
   Badge, 
   StatusBadge, 
   Drawer, 
-  Dialog 
+  Dialog,
+  FileUploader
 } from "@/components/ui";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -75,16 +76,22 @@ export default function WorkshopClient({ initialQueue, staffList }: WorkshopClie
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
   const [selectedJobDetails, setSelectedJobDetails] = useState<any>(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<"overview" | "notes" | "costs" | "qc" | "report">("overview");
+  const [activeTab, setActiveTab] = useState<"overview" | "notes" | "photos" | "costs" | "qc" | "report">("overview");
 
   // Form states inside slide-in
   const [techAssignId, setTechAssignId] = useState("");
   const [estHours, setEstHours] = useState("");
+  const [priority, setPriority] = useState<"low" | "medium" | "high" | "critical">("medium");
   const [isSubmitLoading, setIsSubmitLoading] = useState(false);
 
   // Notes form states
   const [noteType, setNoteType] = useState<"inspection" | "recommendation" | "general">("inspection");
   const [noteContent, setNoteContent] = useState("");
+
+  // Photo timeline form states
+  const [photoStage, setPhotoStage] = useState<"before_service" | "during_repair" | "after_repair">("before_service");
+  const [photoUrl, setPhotoUrl] = useState("");
+  const [photoDesc, setPhotoDesc] = useState("");
 
   // Parts form states
   const [partName, setPartName] = useState("");
@@ -97,6 +104,7 @@ export default function WorkshopClient({ initialQueue, staffList }: WorkshopClie
   const [labourWork, setLabourWork] = useState("");
   const [labourHours, setLabourHours] = useState("");
   const [labourRate, setLabourRate] = useState("600");
+  const [labourTechId, setLabourTechId] = useState("");
 
   // QC form states
   const [oilFilled, setOilFilled] = useState(false);
@@ -115,8 +123,9 @@ export default function WorkshopClient({ initialQueue, staffList }: WorkshopClie
 
   // ─── Metrics ────────────────────────────────────────────────────────────────
   const waitingJobs = queue.filter(j => j.status === "pending").length;
-  const underService = queue.filter(j => ["assigned", "in_progress", "waiting_parts"].includes(j.status)).length;
-  const readyDelivery = queue.filter(j => j.status === "quality_check").length;
+  const underRepair = queue.filter(j => ["assigned", "in_progress"].includes(j.status)).length;
+  const waitingParts = queue.filter(j => j.status === "waiting_parts").length;
+  const qualityCheck = queue.filter(j => j.status === "quality_check").length;
   const completedToday = queue.filter(j => j.status === "completed").length;
 
   // Filter queue records
@@ -143,6 +152,9 @@ export default function WorkshopClient({ initialQueue, staffList }: WorkshopClie
       const result = await res.json();
       if (res.ok && result.data) {
         setSelectedJobDetails(result.data);
+        setLabourTechId(result.data.maintenance?.assigned_to || "");
+        setPhotoUrl("");
+        setPhotoDesc("");
         
         // Populate existing QC checklist state if present
         const currentQc = result.data.qualityChecks?.[0];
@@ -199,7 +211,8 @@ export default function WorkshopClient({ initialQueue, staffList }: WorkshopClie
         body: JSON.stringify({
           jobId: selectedJobDetails.job_id,
           assignedTo: techAssignId,
-          estimatedHours: estHours ? parseFloat(estHours) : undefined
+          estimatedHours: estHours ? parseFloat(estHours) : undefined,
+          priority: priority
         })
       });
 
@@ -210,6 +223,60 @@ export default function WorkshopClient({ initialQueue, staffList }: WorkshopClie
       }
     } catch (err) {
       Logger.error("Failed to assign technician", err);
+    } finally {
+      setIsSubmitLoading(false);
+    }
+  };
+
+  const handlePriorityChange = async (newPriority: string) => {
+    if (!selectedJobId || !selectedJobDetails) return;
+    setIsSubmitLoading(true);
+    try {
+      const res = await fetch(`/api/admin/workshop/${selectedJobId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "update_priority",
+          priority: newPriority
+        })
+      });
+
+      if (res.ok) {
+        await refreshDetails();
+        router.refresh();
+      }
+    } catch (err) {
+      Logger.error("Failed to change repair priority", err);
+    } finally {
+      setIsSubmitLoading(false);
+    }
+  };
+
+  const handleAddPhoto = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!photoUrl) return;
+    setIsSubmitLoading(true);
+
+    try {
+      const res = await fetch(`/api/admin/workshop/${selectedJobId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "add_photo",
+          photoUrl,
+          stage: photoStage,
+          description: photoDesc
+        })
+      });
+
+      if (res.ok) {
+        setPhotoUrl("");
+        setPhotoDesc("");
+        await refreshDetails();
+        router.refresh();
+      }
+    } catch (err) {
+      Logger.error("Failed to append service photo logged", err);
     } finally {
       setIsSubmitLoading(false);
     }
@@ -301,7 +368,7 @@ export default function WorkshopClient({ initialQueue, staffList }: WorkshopClie
 
   const handleAddLabour = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!labourWork || !labourHours || !labourRate) return;
+    if (!labourWork || !labourHours || !labourRate || !labourTechId) return;
     setIsSubmitLoading(true);
 
     try {
@@ -312,7 +379,8 @@ export default function WorkshopClient({ initialQueue, staffList }: WorkshopClie
           action: "add_labour",
           workDone: labourWork,
           hours: parseFloat(labourHours),
-          hourlyRate: parseFloat(labourRate)
+          hourlyRate: parseFloat(labourRate),
+          technicianId: labourTechId
         })
       });
 
@@ -412,22 +480,28 @@ export default function WorkshopClient({ initialQueue, staffList }: WorkshopClie
       />
 
       {/* KPI Stats Grid */}
-      <StatGrid cols={4}>
+      <StatGrid cols={5}>
         <KpiCard 
-          title="Waiting Allocation" 
+          title="Vehicles Waiting" 
           value={waitingJobs} 
           icon={Users} 
           glowColor="pink" 
         />
         <KpiCard 
-          title="Under Service" 
-          value={underService} 
+          title="Under Repair" 
+          value={underRepair} 
           icon={Wrench} 
           glowColor="blue" 
         />
         <KpiCard 
-          title="QC Pending / Ready" 
-          value={readyDelivery} 
+          title="Waiting for Parts" 
+          value={waitingParts} 
+          icon={Clock} 
+          glowColor="amber" 
+        />
+        <KpiCard 
+          title="Quality Check" 
+          value={qualityCheck} 
           icon={ClipboardCheck} 
           glowColor="purple" 
         />
@@ -548,6 +622,12 @@ export default function WorkshopClient({ initialQueue, staffList }: WorkshopClie
                 Tech Notes
               </button>
               <button 
+                onClick={() => setActiveTab("photos")}
+                className={`pb-2 px-3 text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer select-none whitespace-nowrap ${activeTab === "photos" ? "text-blue-400 border-b-2 border-blue-400" : "text-white/40 hover:text-white"}`}
+              >
+                Image Timeline
+              </button>
+              <button 
                 onClick={() => setActiveTab("costs")}
                 className={`pb-2 px-3 text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer select-none whitespace-nowrap ${activeTab === "costs" ? "text-blue-400 border-b-2 border-blue-400" : "text-white/40 hover:text-white"}`}
               >
@@ -584,27 +664,43 @@ export default function WorkshopClient({ initialQueue, staffList }: WorkshopClie
 
                   {/* Quick updates buttons */}
                   {selectedJobDetails.status !== "completed" && selectedJobDetails.status !== "pending" && (
-                    <div className="flex flex-col gap-2">
-                      <label className="text-[10px] font-bold text-white/45 uppercase tracking-wider">Update Status Stage</label>
-                      <div className="flex flex-wrap gap-2">
-                        <Button 
-                          onClick={() => handleStatusChange("in_progress")}
-                          className="px-3 py-1.5 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 text-xs font-bold rounded-lg border border-blue-500/20"
+                    <div className="flex flex-col gap-4 bg-white/[0.02] border border-white/10 rounded-xl p-4">
+                      <div className="flex flex-col gap-2">
+                        <label className="text-[10px] font-bold text-white/45 uppercase tracking-wider">Update Status Stage</label>
+                        <div className="flex flex-wrap gap-2">
+                          <Button 
+                            onClick={() => handleStatusChange("in_progress")}
+                            className="px-3 py-1.5 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 text-xs font-bold rounded-lg border border-blue-500/20"
+                          >
+                            Start Repairing
+                          </Button>
+                          <Button 
+                            onClick={() => handleStatusChange("waiting_parts")}
+                            className="px-3 py-1.5 bg-pink-500/10 hover:bg-pink-500/20 text-pink-400 text-xs font-bold rounded-lg border border-pink-500/20"
+                          >
+                            Wait for Parts
+                          </Button>
+                          <Button 
+                            onClick={() => handleStatusChange("quality_check")}
+                            className="px-3 py-1.5 bg-purple-500/10 hover:bg-purple-500/20 text-purple-400 text-xs font-bold rounded-lg border border-purple-500/20"
+                          >
+                            Quality Check
+                          </Button>
+                        </div>
+                      </div>
+                      
+                      <div className="flex flex-col gap-2 border-t border-white/5 pt-3">
+                        <label className="text-[10px] font-bold text-white/45 uppercase tracking-wider">Set Job Priority</label>
+                        <select
+                          value={selectedJobDetails.maintenance.priority}
+                          onChange={(e) => handlePriorityChange(e.target.value)}
+                          className="px-3 py-1.5 bg-[#0f1115] border border-white/10 rounded-lg text-white text-xs outline-none cursor-pointer"
                         >
-                          Start Repairing
-                        </Button>
-                        <Button 
-                          onClick={() => handleStatusChange("waiting_parts")}
-                          className="px-3 py-1.5 bg-pink-500/10 hover:bg-pink-500/20 text-pink-400 text-xs font-bold rounded-lg border border-pink-500/20"
-                        >
-                          Wait for Parts
-                        </Button>
-                        <Button 
-                          onClick={() => handleStatusChange("quality_check")}
-                          className="px-3 py-1.5 bg-purple-500/10 hover:bg-purple-500/20 text-purple-400 text-xs font-bold rounded-lg border border-purple-500/20"
-                        >
-                          Quality Check
-                        </Button>
+                          <option value="low">Low</option>
+                          <option value="medium">Medium</option>
+                          <option value="high">High</option>
+                          <option value="critical">Critical</option>
+                        </select>
                       </div>
                     </div>
                   )}
@@ -670,6 +766,21 @@ export default function WorkshopClient({ initialQueue, staffList }: WorkshopClie
                           onChange={(e) => setEstHours(e.target.value)}
                           className="bg-white/[0.02] border-white/10 text-white rounded-lg focus:border-blue-500/50"
                         />
+                      </div>
+
+                      <div className="flex flex-col gap-2">
+                        <label className="text-[10px] font-bold text-white/50 uppercase">Set Job Priority</label>
+                        <select
+                          value={priority}
+                          onChange={(e) => setPriority(e.target.value as any)}
+                          className="w-full px-3 py-2 bg-white/[0.02] border border-white/10 rounded-lg text-white text-sm outline-none cursor-pointer"
+                          required
+                        >
+                          <option value="low" className="bg-[#0f1115]">Low</option>
+                          <option value="medium" className="bg-[#0f1115]">Medium</option>
+                          <option value="high" className="bg-[#0f1115]">High</option>
+                          <option value="critical" className="bg-[#0f1115]">Critical</option>
+                        </select>
                       </div>
 
                       <Button
@@ -772,7 +883,118 @@ export default function WorkshopClient({ initialQueue, staffList }: WorkshopClie
                 </div>
               )}
 
-              {/* TAB 3: PARTS & LABOR */}
+              {/* TAB 3: IMAGE TIMELINE */}
+              {activeTab === "photos" && (
+                <div className="flex flex-col gap-6">
+                  {/* Photo Upload Form */}
+                  {selectedJobDetails.status !== "completed" && (
+                    <form onSubmit={handleAddPhoto} className="bg-white/[0.02] border border-white/10 rounded-xl p-4 flex flex-col gap-4">
+                      <h4 className="font-bold text-xs uppercase tracking-wide text-blue-400">Add Stage Photo</h4>
+                      
+                      <div className="flex flex-col gap-2">
+                        <label className="text-[10px] font-bold text-white/50 uppercase">Repair Stage</label>
+                        <select
+                          value={photoStage}
+                          onChange={(e) => setPhotoStage(e.target.value as any)}
+                          className="w-full px-3 py-2 bg-[#0f1115] border border-white/10 rounded-lg text-white text-xs outline-none cursor-pointer"
+                          required
+                        >
+                          <option value="before_service" className="bg-[#0f1115]">Before Repair (Arrival)</option>
+                          <option value="during_repair" className="bg-[#0f1115]">During Repair</option>
+                          <option value="after_repair" className="bg-[#0f1115]">After Repair (Completion)</option>
+                        </select>
+                      </div>
+
+                      <FileUploader
+                        label="Photo File Upload"
+                        value={photoUrl}
+                        onChange={(url) => setPhotoUrl(url || "")}
+                      />
+
+                      <div className="flex flex-col gap-2">
+                        <label className="text-[10px] font-bold text-white/50 uppercase">Description / Caption</label>
+                        <Input
+                          placeholder="Describe the photo (e.g. Scuffed bumper, replacement part installed)..."
+                          value={photoDesc}
+                          onChange={(e) => setPhotoDesc(e.target.value)}
+                          className="bg-white/[0.02] border-white/10 text-white rounded-lg text-xs"
+                        />
+                      </div>
+
+                      <Button
+                        type="submit"
+                        disabled={isSubmitLoading || !photoUrl}
+                        className="py-2.5 bg-blue-500 text-[#0f1115] hover:text-white font-bold rounded-lg text-xs transition-all cursor-pointer"
+                      >
+                        Save Photo to Timeline
+                      </Button>
+                    </form>
+                  )}
+
+                  {/* Gallery / Timeline view */}
+                  <div className="flex flex-col gap-4">
+                    <label className="text-[10px] font-bold text-white/55 uppercase tracking-wider block">Maintenance Photo Ledger</label>
+                    {selectedJobDetails.photos?.length === 0 ? (
+                      <span className="text-xs text-white/35">No timeline photos uploaded yet.</span>
+                    ) : (
+                      <div className="flex flex-col gap-6">
+                        {/* Group by stages */}
+                        {["before_service", "during_repair", "after_repair"].map((stageKey) => {
+                          const stagePhotos = selectedJobDetails.photos.filter((p: any) => p.stage === stageKey);
+                          const stageLabel = stageKey === "before_service" ? "Before Repair" : stageKey === "during_repair" ? "During Repair" : "After Repair";
+                          const badgeColor = stageKey === "before_service" ? "pink" : stageKey === "during_repair" ? "blue" : "emerald";
+                          
+                          return (
+                            <div key={stageKey} className="flex flex-col gap-3">
+                              <div className="flex items-center gap-2 border-b border-white/5 pb-1">
+                                <Badge variant={badgeColor as any}>{stageLabel}</Badge>
+                                <span className="text-[10px] text-white/40 font-mono">({stagePhotos.length} photos)</span>
+                              </div>
+                              
+                              {stagePhotos.length === 0 ? (
+                                <span className="text-xs text-white/20 italic pl-2">No photos logged for this stage.</span>
+                              ) : (
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                  {stagePhotos.map((photo: any) => {
+                                    const displayUrl = photo.photo_url.startsWith("https://mock-storage")
+                                      ? "https://images.unsplash.com/photo-1486006920555-c77dce18193b?auto=format&fit=crop&w=600&q=80"
+                                      : photo.photo_url;
+                                    
+                                    return (
+                                      <div key={photo.id} className="bg-white/[0.01] border border-white/10 rounded-xl overflow-hidden shadow-md flex flex-col">
+                                        <div className="relative aspect-video w-full bg-white/[0.02] flex items-center justify-center text-white/20 border-b border-white/5">
+                                          <img 
+                                            src={displayUrl} 
+                                            alt={photo.description || "Repair photo"} 
+                                            className="object-cover w-full h-full opacity-80 animate-fade-in"
+                                          />
+                                          <span className="absolute top-2 left-2 bg-black/60 px-2 py-0.5 rounded text-[8px] font-mono tracking-wide text-white/80">
+                                            {photo.photo_url.split("/").pop().substring(0, 15)}...
+                                          </span>
+                                        </div>
+                                        <div className="p-3 flex flex-col gap-1">
+                                          <p className="text-xs font-semibold text-white/90 leading-tight">
+                                            {photo.description || "No description provided"}
+                                          </p>
+                                          <span className="text-[9px] text-white/40 block">
+                                            Uploaded: {new Date(photo.created_at).toLocaleString()}
+                                          </span>
+                                        </div>
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* TAB 4: PARTS & LABOR */}
               {activeTab === "costs" && (
                 <div className="flex flex-col gap-6">
                   {/* Accumulated Expense Summary */}
@@ -844,6 +1066,24 @@ export default function WorkshopClient({ initialQueue, staffList }: WorkshopClie
                       {/* Log Labour Hours */}
                       <form onSubmit={handleAddLabour} className="bg-white/[0.02] border border-white/10 rounded-xl p-4 flex flex-col gap-4">
                         <h4 className="font-bold text-xs uppercase tracking-wide text-blue-400">Log Labour Work Hours</h4>
+                        
+                        <div className="flex flex-col gap-1.5">
+                          <label className="text-[10px] font-bold text-white/50 uppercase">Technician</label>
+                          <select
+                            value={labourTechId}
+                            onChange={(e) => setLabourTechId(e.target.value)}
+                            className="w-full px-3 py-2 bg-[#0f1115] border border-white/10 rounded-lg text-white text-xs outline-none cursor-pointer"
+                            required
+                          >
+                            <option value="" className="bg-[#0f1115]">Choose a technician...</option>
+                            {staffList.map((staff) => (
+                              <option key={staff.id} value={staff.id} className="bg-[#0f1115]">
+                                {staff.first_name || ""} {staff.last_name || ""} ({staff.email})
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+
                         <Input
                           placeholder="Work Done (e.g. Brake system overhaul)"
                           value={labourWork}
@@ -1017,6 +1257,15 @@ export default function WorkshopClient({ initialQueue, staffList }: WorkshopClie
                       </h4>
                       <div className="flex flex-col gap-2 border-t border-white/5 pt-3">
                         <div className="flex justify-between text-xs">
+                          <span>Technician:</span>
+                          <span className="text-white font-bold">
+                            {(() => {
+                              const tech = staffList.find(s => s.id === selectedJobDetails.report.technician_id);
+                              return tech ? `${tech.first_name || ""} ${tech.last_name || ""} (${tech.email})` : "Unassigned";
+                            })()}
+                          </span>
+                        </div>
+                        <div className="flex justify-between text-xs">
                           <span>Total Duration:</span>
                           <span className="text-white font-bold">{selectedJobDetails.report.duration_hours} Hrs</span>
                         </div>
@@ -1036,8 +1285,24 @@ export default function WorkshopClient({ initialQueue, staffList }: WorkshopClie
                       {selectedJobDetails.report.observations && (
                         <div className="mt-2 text-xs">
                           <span className="text-white/40 block uppercase text-[10px]">Observations</span>
-                          <p className="mt-1 font-sans text-white/70 leading-relaxed bg-white/[0.01] border border-white/5 p-3 rounded-lg">
+                          <p className="mt-1 font-sans text-white/70 leading-relaxed bg-white/[0.02] border border-white/10 p-3 rounded-lg">
                             {selectedJobDetails.report.observations}
+                          </p>
+                        </div>
+                      )}
+                      {selectedJobDetails.report.recommendations && (
+                        <div className="mt-2 text-xs">
+                          <span className="text-white/40 block uppercase text-[10px]">Recommendations</span>
+                          <p className="mt-1 font-sans text-white/70 leading-relaxed bg-white/[0.02] border border-white/10 p-3 rounded-lg">
+                            {selectedJobDetails.report.recommendations}
+                          </p>
+                        </div>
+                      )}
+                      {selectedJobDetails.report.next_service_due && (
+                        <div className="mt-2 text-xs">
+                          <span className="text-white/40 block uppercase text-[10px]">Next Service Due Date</span>
+                          <p className="mt-1 font-sans text-emerald-400 font-bold">
+                            {new Date(selectedJobDetails.report.next_service_due).toLocaleDateString()}
                           </p>
                         </div>
                       )}

@@ -52,7 +52,7 @@ export interface KpiCardProps {
   suffix?: string;
   growth?: number; // Growth percentage
   icon: React.ComponentType<any>;
-  glowColor?: "blue" | "pink" | "purple" | "cyan" | "indigo";
+  glowColor?: "blue" | "pink" | "purple" | "cyan" | "indigo" | "amber";
   isLoading?: boolean;
   className?: string;
 }
@@ -96,7 +96,8 @@ export const KpiCard: React.FC<KpiCardProps> = ({
     pink: "text-pink-400 bg-pink-500/5 border-pink-500/10 hover:shadow-[0_0_25px_rgba(236,72,153,0.15)] hover:border-pink-500/30",
     purple: "text-purple-400 bg-purple-500/5 border-purple-500/10 hover:shadow-[0_0_25px_rgba(168,85,247,0.15)] hover:border-purple-500/30",
     cyan: "text-cyan-400 bg-cyan-500/5 border-cyan-500/10 hover:shadow-[0_0_25px_rgba(6,182,212,0.15)] hover:border-cyan-500/30",
-    indigo: "text-indigo-400 bg-indigo-500/5 border-indigo-500/10 hover:shadow-[0_0_25px_rgba(99,102,241,0.15)] hover:border-indigo-500/30"
+    indigo: "text-indigo-400 bg-indigo-500/5 border-indigo-500/10 hover:shadow-[0_0_25px_rgba(99,102,241,0.15)] hover:border-indigo-500/30",
+    amber: "text-amber-400 bg-amber-500/5 border-amber-500/10 hover:shadow-[0_0_25px_rgba(245,158,11,0.15)] hover:border-amber-500/30"
   };
 
   return (

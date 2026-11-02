@@ -6,7 +6,8 @@
     "dev": "cross-env NODE_OPTIONS=--use-system-ca next dev",
     "build": "cross-env NODE_OPTIONS=--use-system-ca next build",
     "start": "cross-env NODE_OPTIONS=--use-system-ca next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "run-migration": "node src/lib/run_migration.mjs"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

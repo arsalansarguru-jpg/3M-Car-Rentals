@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { createServerClient } from "@supabase/ssr";
 import { getFleetHealthData } from "@/lib/fleet-health-engine";
+import { supabaseAdmin } from "@/lib/supabase-admin";
+import fs from "fs";
+import path from "path";
 
 const ALLOWED_ROLES = ["admin", "super_admin", "manager", "staff", "operations_manager", "branch_manager"];
 
@@ -45,6 +48,15 @@ export async function GET() {
   }
 
   try {
+    // Apply database rule migrations dynamically
+    try {
+      const sqlPath = path.join(process.cwd(), "src/lib/preventive-maintenance-setup.sql");
+      const sql = fs.readFileSync(sqlPath, "utf8");
+      await supabaseAdmin.rpc("exec_sql", { sql });
+    } catch (migErr) {
+      console.error("Auto-applying preventive maintenance setup failed:", migErr);
+    }
+
     const healthData = await getFleetHealthData();
 
     // Compute aggregated metrics
