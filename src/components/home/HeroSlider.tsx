@@ -9,8 +9,8 @@ const SLIDES = [
     title: "Welcome to 3M Car Rentals",
     subtitle: "GOA'S PREMIER SELF-DRIVE EXPERIENCE",
     highlight: "Drive the Freedom of Goa",
-    description: "Explore beaches, forts, and hidden waterfalls in top-condition 4x4s, SUVs, and hatchbacks. Transparent pricing with zero hidden fees.",
-    image: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=1920&q=85",
+    description: "Explore beaches, forts, and palm-lined avenues in top-condition 4x4s, SUVs, and hatchbacks. Transparent pricing with zero hidden fees.",
+    image: "/images/hero/goa_parra_palm_road.jpg",
     badge: "Unlimited Kilometers • 100% Insured",
   },
   {
@@ -19,7 +19,7 @@ const SLIDES = [
     subtitle: "MOPA (GOX) & DABOLIM (GOI)",
     highlight: "Touch Down & Drive Away",
     description: "Your car awaits right at the arrivals terminal. No waiting for taxis, zero surge pricing, and effortless 2-minute handover.",
-    image: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1920&q=85",
+    image: "/images/hero/goa_coastal_road_sunset.jpg",
     badge: "24/7 Airport Handover Guarantee",
   },
   {
@@ -27,9 +27,18 @@ const SLIDES = [
     title: "Adventure Ready 4x4 & SUVs",
     subtitle: "THAR, CRETA, FORTUNER & CRYSTAS",
     highlight: "Experience Goa in High Gear",
-    description: "Whether cruising Candolim beach strip or cruising the ghats to Dudhsagar, drive the ultimate road presence.",
-    image: "https://images.unsplash.com/photo-1618083707368-b3823daa2726?auto=format&fit=crop&w=1920&q=85",
+    description: "Whether cruising Candolim beach strip or cruising the coastal cliffs to Vagator, drive with unmatched road presence.",
+    image: "/images/hero/goa_cliff_overlook_sunset.jpg",
     badge: "Sanitized & Verified Fleet",
+  },
+  {
+    id: 4,
+    title: "Golden Hour Coastlines & Beaches",
+    subtitle: "NORTH & SOUTH GOA TOURS",
+    highlight: "Explore Every Hidden Beach",
+    description: "Discover Palolem, Morjim, and secluded tropical coves at your own relaxed pace with 24/7 roadside assistance.",
+    image: "/images/hero/goa_tropical_beach_sunset.jpg",
+    badge: "24/7 Roadside Assistance",
   },
 ];
 

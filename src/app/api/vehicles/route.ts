@@ -25,7 +25,7 @@ function getMetadata(): Record<string, any> {
       globalThis.__3m_metadata_cache = data;
       return data;
     }
-  } catch {}
+  } catch { }
 
   try {
     if (fs.existsSync(FILE_PATH)) {
@@ -53,7 +53,7 @@ function saveMetadata(data: Record<string, any>) {
 
   try {
     fs.writeFileSync(TMP_FILE_PATH, JSON.stringify(data, null, 2));
-  } catch {}
+  } catch { }
 }
 
 // -----------------------------------------------------------------------------

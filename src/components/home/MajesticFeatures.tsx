@@ -76,7 +76,7 @@ export default function MajesticFeatures() {
             <div className="lg:col-span-5 relative">
               <div className="rounded-2xl overflow-hidden border-2 border-[#C9A84C]/30 shadow-2xl relative">
                 <img
-                  src="https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&w=1000&q=80"
+                  src="/images/hero/goa_cliff_overlook_sunset.jpg"
                   alt="About 3M Car Rentals Goa"
                   className="w-full h-[380px] sm:h-[440px] object-cover"
                 />

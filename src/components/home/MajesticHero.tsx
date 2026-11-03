@@ -7,24 +7,31 @@ import QuickBookingModal from "@/components/booking/QuickBookingModal";
 const SLIDES = [
   {
     id: 1,
-    title: "3M Car Rentals Goa",
-    subtitle: "One of the premier self-drive & cab services in Goa is offered by 3M Car Rentals.",
+    title: "Drive the Scenic Freedom of Goa",
+    subtitle: "Cruise iconic palm-lined Goan avenues and scenic coastal roads with 3M Car Rentals premier self-drive fleet.",
     cta: "Contact Now",
-    image: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=1920&q=85",
+    image: "/images/hero/goa_parra_palm_road.jpg",
   },
   {
     id: 2,
-    title: "Goa's Most Dependable Car Service",
-    subtitle: "We guarantee worry-free, secure self-drive cars & airport transfers to make your Goa holiday unforgettable.",
+    title: "Arabian Sea Sunset Coastal Drives",
+    subtitle: "Enjoy worry-free, sanitized self-drive cars along ocean highways for an unforgettable tropical Goa holiday.",
     cta: "Explore Fleet",
-    image: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1920&q=85",
+    image: "/images/hero/goa_coastal_road_sunset.jpg",
   },
   {
     id: 3,
-    title: "Trained & Sanitized Fleet",
-    subtitle: "Plan your journey, including Mopa (GOX) or Dabolim (GOI) airport transfers, with 2-minute handover simplicity.",
+    title: "Panoramic Beach & Cliff Overlooks",
+    subtitle: "Explore Vagator, Anjuna, and South Goa coastlines with 2-minute airport handover at Mopa (GOX) & Dabolim (GOI).",
     cta: "Book Now",
-    image: "https://images.unsplash.com/photo-1618083707368-b3823daa2726?auto=format&fit=crop&w=1920&q=85",
+    image: "/images/hero/goa_cliff_overlook_sunset.jpg",
+  },
+  {
+    id: 4,
+    title: "Tropical Goa Beach Vacations",
+    subtitle: "Top-condition hatchbacks, sedans, 7-seaters, and 4x4 Thar convertibles delivered right to your hotel or airport.",
+    cta: "Book Your Ride",
+    image: "/images/hero/goa_tropical_beach_sunset.jpg",
   },
 ];
 
